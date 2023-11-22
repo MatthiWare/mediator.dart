@@ -14,6 +14,10 @@ abstract class SubscriberBuilder<T> {
     return _MapSubscriberBuilder(this, mapper);
   }
 
+  SubscriberBuilder<T> where(bool Function(T event) where) {
+    return _WhereSubscriberBuilder(this, where);
+  }
+
   void subscribe(EventHandler<T> handler);
 
   void subscribeFunction(FutureOr<void> Function(T event) handler);
@@ -32,6 +36,41 @@ class _SubscriberBuilder<T> extends SubscriberBuilder<T> {
   @override
   void subscribeFunction(FutureOr<void> Function(T event) handler) {
     _eventManager.subscribe(EventHandler.function(handler));
+  }
+}
+
+class _WhereSubscriberBuilder<T> extends SubscriberBuilder<T> {
+  final SubscriberBuilder<T> _parent;
+  final bool Function(T event) _where;
+
+  _WhereSubscriberBuilder(
+    this._parent,
+    this._where,
+  );
+
+  @override
+  void subscribe(EventHandler<T> handler) {
+    _parent.subscribe(
+      EventHandler.function(
+        (event) => _handleWhere(event, handler.handle),
+      ),
+    );
+  }
+
+  @override
+  void subscribeFunction(FutureOr<void> Function(T event) handler) {
+    _parent.subscribeFunction(
+      (event) => _handleWhere(event, handler),
+    );
+  }
+
+  FutureOr<void> _handleWhere(
+    T event,
+    FutureOr<void> Function(T event) handler,
+  ) {
+    if (_where(event)) {
+      return handler(event);
+    }
   }
 }
 

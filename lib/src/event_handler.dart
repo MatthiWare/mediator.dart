@@ -1,7 +1,7 @@
 import 'dart:async';
 
 /// Handler for [TEvent].
-abstract class EventHandler<TEvent> {
+abstract interface class EventHandler<TEvent> {
   /// Function based event handler
   const factory EventHandler.function(
     FutureOr<void> Function(TEvent event) handler,
