@@ -17,6 +17,20 @@ class EventManager {
     handlers.add(handler);
   }
 
+  /// Dispatches the given [event] to the registered [EventHandler]'s.
+  Future<void> dispatch<TEvent>(TEvent event) async {
+    final handlers = _getHandlersFor<TEvent>();
+
+    assert(
+      handlers.isNotEmpty,
+      'dispatch<$TEvent> was invoked but no handlers are registered to handle this',
+    );
+
+    for (final handler in handlers) {
+      await handler.handle(event);
+    }
+  }
+
   List<EventHandler<TEvent>> _getHandlersFor<TEvent>() {
     final handlers = _handlers.putIfAbsent(
       TEvent,
