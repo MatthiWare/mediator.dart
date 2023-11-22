@@ -1,8 +1,4 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
-library;
+/// A predictable event manager library for domain events.
+library dart_event_manager;
 
 export 'src/event_manager_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
