@@ -40,13 +40,15 @@ abstract class SubscriberBuilder<T> {
   ///
   /// This finalizes the builder and applies all the steps
   /// before subscribing.
-  void subscribe(EventHandler<T> handler);
+  EventSubscription subscribe(EventHandler<T> handler);
 
   /// Subscribes to the given [handler].
   ///
   /// This finalizes the builder and applies all the steps
   /// before subscribing.
-  void subscribeFunction(FutureOr<void> Function(T event) handler);
+  EventSubscription subscribeFunction(
+    FutureOr<void> Function(T event) handler,
+  );
 }
 
 class _SubscriberBuilder<T> extends SubscriberBuilder<T> {
@@ -55,14 +57,14 @@ class _SubscriberBuilder<T> extends SubscriberBuilder<T> {
   _SubscriberBuilder(this._eventManager);
 
   @override
-  void subscribe(EventHandler<T> handler) {
-    _eventManager.subscribe(handler);
-  }
+  EventSubscription subscribe(EventHandler<T> handler) =>
+      _eventManager.subscribe(handler);
 
   @override
-  void subscribeFunction(FutureOr<void> Function(T event) handler) {
-    _eventManager.subscribe(EventHandler.function(handler));
-  }
+  EventSubscription subscribeFunction(
+    FutureOr<void> Function(T event) handler,
+  ) =>
+      _eventManager.subscribe(EventHandler.function(handler));
 }
 
 class _WhereSubscriberBuilder<T> extends SubscriberBuilder<T> {
@@ -75,8 +77,8 @@ class _WhereSubscriberBuilder<T> extends SubscriberBuilder<T> {
   );
 
   @override
-  void subscribe(EventHandler<T> handler) {
-    _parent.subscribe(
+  EventSubscription subscribe(EventHandler<T> handler) {
+    return _parent.subscribe(
       EventHandler.function(
         (event) => _handleWhere(event, handler.handle),
       ),
@@ -84,8 +86,10 @@ class _WhereSubscriberBuilder<T> extends SubscriberBuilder<T> {
   }
 
   @override
-  void subscribeFunction(FutureOr<void> Function(T event) handler) {
-    _parent.subscribeFunction(
+  EventSubscription subscribeFunction(
+    FutureOr<void> Function(T event) handler,
+  ) {
+    return _parent.subscribeFunction(
       (event) => _handleWhere(event, handler),
     );
   }
@@ -110,8 +114,8 @@ class _MapSubscriberBuilder<T, S> extends SubscriberBuilder<S> {
   );
 
   @override
-  void subscribe(EventHandler<S> handler) {
-    _parent.subscribe(
+  EventSubscription subscribe(EventHandler<S> handler) {
+    return _parent.subscribe(
       EventHandler.function(
         (event) => handler.handle(_mapper(event)),
       ),
@@ -119,8 +123,10 @@ class _MapSubscriberBuilder<T, S> extends SubscriberBuilder<S> {
   }
 
   @override
-  void subscribeFunction(FutureOr<void> Function(S event) handler) {
-    _parent.subscribeFunction(
+  EventSubscription subscribeFunction(
+    FutureOr<void> Function(S event) handler,
+  ) {
+    return _parent.subscribeFunction(
       (event) => handler(_mapper(event)),
     );
   }

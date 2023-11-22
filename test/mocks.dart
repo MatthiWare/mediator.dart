@@ -4,3 +4,5 @@ import 'package:mocktail/mocktail.dart';
 class MockEventManager extends Mock implements EventManager {}
 
 class MockEventHandler<T> extends Mock implements EventHandler<T> {}
+
+class MockEventSubscription extends Mock implements EventSubscription {}

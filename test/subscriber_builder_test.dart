@@ -16,6 +16,11 @@ void main() {
 
     setUp(() {
       mockEventManager = MockEventManager();
+
+      when(() => mockEventManager.subscribe<int>(any()))
+          .thenReturn(MockEventSubscription());
+      when(() => mockEventManager.subscribe<String>(any()))
+          .thenReturn(MockEventSubscription());
     });
 
     group('create', () {
@@ -23,6 +28,32 @@ void main() {
         final builder = SubscriberBuilder.create(mockEventManager);
 
         expect(builder, isNotNull);
+      });
+    });
+
+    group('subscribe', () {
+      test('it return a subscription', () {
+        final subscription = SubscriberBuilder<int>.create(mockEventManager)
+            .subscribe(EventHandler.function((event) {}));
+
+        expect(
+          subscription,
+          isA<EventSubscription>(),
+          reason: 'it should return a subscription',
+        );
+      });
+    });
+
+    group('subscribeFunction', () {
+      test('it return a subscription', () {
+        final subscription = SubscriberBuilder<int>.create(mockEventManager)
+            .subscribeFunction((event) {});
+
+        expect(
+          subscription,
+          isA<EventSubscription>(),
+          reason: 'it should return a subscription',
+        );
       });
     });
 

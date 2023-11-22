@@ -1,4 +1,5 @@
 import 'package:dart_event_manager/src/event_handler.dart';
+import 'package:dart_event_manager/src/event_subscription.dart';
 
 class EventManager {
   final _handlers = <Type, List<EventHandler>>{};
@@ -6,15 +7,31 @@ class EventManager {
   EventManager();
 
   /// Subscribes to a given [TEvent] using the [handler].
-  void subscribe<TEvent>(EventHandler<TEvent> handler) {
+  EventSubscription subscribe<TEvent>(EventHandler<TEvent> handler) {
+    final handlers = _getHandlersFor<TEvent>();
+
+    assert(
+      handlers.contains(handler),
+      'subscribe<$TEvent> was called with an already registered handler',
+    );
+
+    final subscription = EventSubscription(() => unsubscribe(handler));
+
+    handlers.add(handler);
+
+    return subscription;
+  }
+
+  /// Unsubscribes the given [handler].
+  void unsubscribe<TEvent>(EventHandler<TEvent> handler) {
     final handlers = _getHandlersFor<TEvent>();
 
     assert(
       !handlers.contains(handler),
-      'subscribe<$TEvent> was called with an already registered handler',
+      'unsubscribe<$TEvent> was called for a handler that was never subscribed to',
     );
 
-    handlers.add(handler);
+    handlers.remove(handler);
   }
 
   /// Dispatches the given [event] to the registered [EventHandler]'s.
