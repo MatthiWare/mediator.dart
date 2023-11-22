@@ -2,24 +2,50 @@ import 'dart:async';
 
 import 'package:dart_event_manager/event_manager.dart';
 
-final x = Stream.empty();
-
+/// Builder that is able to subscribe to the [EventManager].
+///
+/// This is a builder pattern that allows you to manipulate the [T] event
+/// before it reaches the handler defined in either [subscribe] or [subscribeFunction].
+///
+/// To transform the events [map] can be used.
+///
+/// To filter the events [where] can be used.
 abstract class SubscriberBuilder<T> {
   SubscriberBuilder();
 
+  /// Creates a new [SubscriberBuilder] this can be used to mutate
+  /// the events before they reach the [EventHandler] using the builder pattern.
   factory SubscriberBuilder.create(EventManager eventManager) =
       _SubscriberBuilder;
 
+  /// Transforms each event.
+  ///
+  /// It extends the current builder by converting the
+  /// input [T] using the provided [mapper] function into
+  /// output [S]. Only events of type [S] will reach the
+  /// [EventHandler].
   SubscriberBuilder<S> map<S>(S Function(T event) mapper) {
     return _MapSubscriberBuilder(this, mapper);
   }
 
+  /// Filters the events
+  ///
+  /// It extends the current builder so that only inputs
+  /// that pass the [where] clause will be kept for the [EventHandler].
   SubscriberBuilder<T> where(bool Function(T event) where) {
     return _WhereSubscriberBuilder(this, where);
   }
 
+  /// Subscribes to the given [handler].
+  ///
+  /// This finalizes the builder and applies all the steps
+  /// before subscribing.
   void subscribe(EventHandler<T> handler);
 
+  /// Subscribes to the given [handler].
+  ///
+  /// This finalizes the builder and applies all the steps
+  /// before subscribing.
   void subscribeFunction(FutureOr<void> Function(T event) handler);
 }
 
