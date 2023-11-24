@@ -1,10 +1,10 @@
-part of '../subscriber_builder.dart';
+part of '../event_subscription_builder.dart';
 
-class _SkipSubscriberBuilder<T> extends SubscriberBuilder<T> {
-  final SubscriberBuilder<T> parent;
+class _SkipEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
+  final EventSubscriptionBuilder<T> parent;
   final int skips;
 
-  _SkipSubscriberBuilder({
+  _SkipEventSubscriptionBuilder({
     required this.parent,
     required this.skips,
   });

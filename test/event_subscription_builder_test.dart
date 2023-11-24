@@ -1,12 +1,12 @@
 import 'package:dart_event_manager/event_manager.dart';
-import 'package:dart_event_manager/src/subscriber_builder.dart';
+import 'package:dart_event_manager/src/event_subscription_builder.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
 
 void main() {
-  group('SubscriberBulder', () {
+  group('EventSubscriptionBuilder', () {
     late MockEventManager mockEventManager;
 
     setUpAll(() {
@@ -25,7 +25,7 @@ void main() {
 
     group('create', () {
       test('it creates an instance', () {
-        final builder = SubscriberBuilder.create(mockEventManager);
+        final builder = EventSubscriptionBuilder.create(mockEventManager);
 
         expect(builder, isNotNull);
       });
@@ -33,8 +33,9 @@ void main() {
 
     group('subscribe', () {
       test('it return a subscription', () {
-        final subscription = SubscriberBuilder<int>.create(mockEventManager)
-            .subscribe(EventHandler.function((event) {}));
+        final subscription =
+            EventSubscriptionBuilder<int>.create(mockEventManager)
+                .subscribe(EventHandler.function((event) {}));
 
         expect(
           subscription,
@@ -46,8 +47,9 @@ void main() {
 
     group('subscribeFunction', () {
       test('it return a subscription', () {
-        final subscription = SubscriberBuilder<int>.create(mockEventManager)
-            .subscribeFunction((event) {});
+        final subscription =
+            EventSubscriptionBuilder<int>.create(mockEventManager)
+                .subscribeFunction((event) {});
 
         expect(
           subscription,
@@ -59,7 +61,7 @@ void main() {
 
     group('map', () {
       test('it creates a mapped instance', () {
-        final builder = SubscriberBuilder.create(mockEventManager).map(
+        final builder = EventSubscriptionBuilder.create(mockEventManager).map(
           (event) => 123,
         );
 
@@ -70,7 +72,7 @@ void main() {
         const expected = 1234;
         late final int output;
 
-        SubscriberBuilder<String>.create(mockEventManager)
+        EventSubscriptionBuilder<String>.create(mockEventManager)
             .map((event) => expected)
             .subscribeFunction((event) => output = event);
 
@@ -91,7 +93,8 @@ void main() {
 
     group('where', () {
       test('it creates a where instance', () {
-        final builder = SubscriberBuilder<int>.create(mockEventManager).where(
+        final builder =
+            EventSubscriptionBuilder<int>.create(mockEventManager).where(
           (event) => event > 0,
         );
 
@@ -102,7 +105,7 @@ void main() {
         const expected = [0, 55, 99];
         final outputs = <int>[];
 
-        SubscriberBuilder<int>.create(mockEventManager)
+        EventSubscriptionBuilder<int>.create(mockEventManager)
             .where((event) => event < 100)
             .subscribeFunction((event) => outputs.add(event));
 
@@ -128,7 +131,8 @@ void main() {
 
     group('skip', () {
       test('it creates a skip instance', () {
-        final builder = SubscriberBuilder<int>.create(mockEventManager).skip(1);
+        final builder =
+            EventSubscriptionBuilder<int>.create(mockEventManager).skip(1);
 
         expect(builder, isNotNull);
       });
@@ -137,7 +141,7 @@ void main() {
         const expected = [99, 100];
         final outputs = <int>[];
 
-        SubscriberBuilder<int>.create(mockEventManager)
+        EventSubscriptionBuilder<int>.create(mockEventManager)
             .skip(2)
             .subscribeFunction((event) => outputs.add(event));
 

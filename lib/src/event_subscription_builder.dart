@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:dart_event_manager/event_manager.dart';
 
-part 'subscriber_builder/skip_subscriber_builder.dart';
+part 'event_subscription_builder/skip_builder.dart';
 
 /// Builder that is able to subscribe to the [EventManager].
 ///
@@ -12,13 +12,13 @@ part 'subscriber_builder/skip_subscriber_builder.dart';
 /// To transform the events [map] can be used.
 ///
 /// To filter the events [where] can be used.
-abstract class SubscriberBuilder<T> {
-  SubscriberBuilder();
+abstract class EventSubscriptionBuilder<T> {
+  EventSubscriptionBuilder();
 
-  /// Creates a new [SubscriberBuilder] this can be used to mutate
+  /// Creates a new [EventSubscriptionBuilder] this can be used to mutate
   /// the events before they reach the [EventHandler] using the builder pattern.
-  factory SubscriberBuilder.create(EventManager eventManager) =
-      _SubscriberBuilder;
+  factory EventSubscriptionBuilder.create(EventManager eventManager) =
+      _EventSubscriptionBuilder;
 
   /// Transforms each event.
   ///
@@ -26,24 +26,24 @@ abstract class SubscriberBuilder<T> {
   /// input [T] using the provided [mapper] function into
   /// output [S]. Only events of type [S] will reach the
   /// [EventHandler].
-  SubscriberBuilder<S> map<S>(S Function(T event) mapper) {
-    return _MapSubscriberBuilder(this, mapper);
+  EventSubscriptionBuilder<S> map<S>(S Function(T event) mapper) {
+    return _MapEventSubscriptionBuilder(this, mapper);
   }
 
   /// Filters the events
   ///
   /// It extends the current builder so that only inputs
   /// that pass the [where] clause will be kept for the [EventHandler].
-  SubscriberBuilder<T> where(bool Function(T event) where) {
-    return _WhereSubscriberBuilder(this, where);
+  EventSubscriptionBuilder<T> where(bool Function(T event) where) {
+    return _WhereEventSubscriptionBuilder(this, where);
   }
 
   /// Filters the events
   ///
   /// It extends the current builder so that only inputs
   /// that pass the [where] clause will be kept for the [EventHandler].
-  SubscriberBuilder<T> skip(int count) {
-    return _SkipSubscriberBuilder(parent: this, skips: count);
+  EventSubscriptionBuilder<T> skip(int count) {
+    return _SkipEventSubscriptionBuilder(parent: this, skips: count);
   }
 
   /// Subscribes to the given [handler].
@@ -53,7 +53,8 @@ abstract class SubscriberBuilder<T> {
   EventSubscription subscribe(EventHandler<T> handler);
 }
 
-extension SubscriberBuilderFunctionExtension<T> on SubscriberBuilder<T> {
+extension EventSubscriptionBuilderFunctionExtension<T>
+    on EventSubscriptionBuilder<T> {
   /// Subscribes to the given [handler].
   ///
   /// This finalizes the builder and applies all the steps
@@ -65,21 +66,21 @@ extension SubscriberBuilderFunctionExtension<T> on SubscriberBuilder<T> {
   }
 }
 
-class _SubscriberBuilder<T> extends SubscriberBuilder<T> {
+class _EventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
   final EventManager _eventManager;
 
-  _SubscriberBuilder(this._eventManager);
+  _EventSubscriptionBuilder(this._eventManager);
 
   @override
   EventSubscription subscribe(EventHandler<T> handler) =>
       _eventManager.subscribe(handler);
 }
 
-class _WhereSubscriberBuilder<T> extends SubscriberBuilder<T> {
-  final SubscriberBuilder<T> _parent;
+class _WhereEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
+  final EventSubscriptionBuilder<T> _parent;
   final bool Function(T event) _where;
 
-  _WhereSubscriberBuilder(
+  _WhereEventSubscriptionBuilder(
     this._parent,
     this._where,
   );
@@ -103,11 +104,11 @@ class _WhereSubscriberBuilder<T> extends SubscriberBuilder<T> {
   }
 }
 
-class _MapSubscriberBuilder<T, S> extends SubscriberBuilder<S> {
-  final SubscriberBuilder<T> _parent;
+class _MapEventSubscriptionBuilder<T, S> extends EventSubscriptionBuilder<S> {
+  final EventSubscriptionBuilder<T> _parent;
   final S Function(T event) _mapper;
 
-  _MapSubscriberBuilder(
+  _MapEventSubscriptionBuilder(
     this._parent,
     this._mapper,
   );
