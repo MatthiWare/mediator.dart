@@ -125,5 +125,38 @@ void main() {
         );
       });
     });
+
+    group('skip', () {
+      test('it creates a skip instance', () {
+        final builder = SubscriberBuilder<int>.create(mockEventManager).skip(1);
+
+        expect(builder, isNotNull);
+      });
+
+      test('it only executes after skipping the first two events', () {
+        const expected = [99, 100];
+        final outputs = <int>[];
+
+        SubscriberBuilder<int>.create(mockEventManager)
+            .skip(2)
+            .subscribeFunction((event) => outputs.add(event));
+
+        final captureResult = verify(
+          () => mockEventManager.subscribe<int>(captureAny()),
+        );
+        final handler = captureResult.captured.first as EventHandler<int>;
+
+        handler.handle(0); // <- skipped
+        handler.handle(55); // <- skipped
+        handler.handle(99);
+        handler.handle(100);
+
+        expect(
+          outputs,
+          expected,
+          reason: 'First two events should be skipped',
+        );
+      });
+    });
   });
 }

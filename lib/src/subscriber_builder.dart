@@ -36,6 +36,14 @@ abstract class SubscriberBuilder<T> {
     return _WhereSubscriberBuilder(this, where);
   }
 
+  /// Filters the events
+  ///
+  /// It extends the current builder so that only inputs
+  /// that pass the [where] clause will be kept for the [EventHandler].
+  SubscriberBuilder<T> skip(int count) {
+    return _SkipSubscriberBuilder(this, count);
+  }
+
   /// Subscribes to the given [handler].
   ///
   /// This finalizes the builder and applies all the steps
@@ -129,5 +137,46 @@ class _MapSubscriberBuilder<T, S> extends SubscriberBuilder<S> {
     return _parent.subscribeFunction(
       (event) => handler(_mapper(event)),
     );
+  }
+}
+
+class _SkipSubscriberBuilder<T> extends SubscriberBuilder<T> {
+  final SubscriberBuilder<T> _parent;
+  final int _skips;
+
+  int _skipped = 0;
+
+  _SkipSubscriberBuilder(
+    this._parent,
+    this._skips,
+  );
+
+  @override
+  EventSubscription subscribe(EventHandler<T> handler) {
+    return _parent.subscribe(
+      EventHandler.function(
+        (event) => _handleSkips(event, handler.handle),
+      ),
+    );
+  }
+
+  @override
+  EventSubscription subscribeFunction(
+    FutureOr<void> Function(T event) handler,
+  ) {
+    return _parent.subscribeFunction(
+      (event) => _handleSkips(event, handler),
+    );
+  }
+
+  FutureOr<void> _handleSkips(
+    T event,
+    FutureOr<void> Function(T event) handler,
+  ) {
+    if (_skipped >= _skips) {
+      return handler(event);
+    }
+
+    _skipped++;
   }
 }
