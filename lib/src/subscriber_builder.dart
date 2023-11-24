@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:dart_event_manager/event_manager.dart';
 
+part 'subscriber_builder/skip_subscriber_builder.dart';
+
 /// Builder that is able to subscribe to the [EventManager].
 ///
 /// This is a builder pattern that allows you to manipulate the [T] event
@@ -41,7 +43,7 @@ abstract class SubscriberBuilder<T> {
   /// It extends the current builder so that only inputs
   /// that pass the [where] clause will be kept for the [EventHandler].
   SubscriberBuilder<T> skip(int count) {
-    return _SkipSubscriberBuilder(this, count);
+    return _SkipSubscriberBuilder(parent: this, skips: count);
   }
 
   /// Subscribes to the given [handler].
@@ -49,14 +51,18 @@ abstract class SubscriberBuilder<T> {
   /// This finalizes the builder and applies all the steps
   /// before subscribing.
   EventSubscription subscribe(EventHandler<T> handler);
+}
 
+extension SubscriberBuilderFunctionExtension<T> on SubscriberBuilder<T> {
   /// Subscribes to the given [handler].
   ///
   /// This finalizes the builder and applies all the steps
   /// before subscribing.
   EventSubscription subscribeFunction(
     FutureOr<void> Function(T event) handler,
-  );
+  ) {
+    return subscribe(EventHandler.function(handler));
+  }
 }
 
 class _SubscriberBuilder<T> extends SubscriberBuilder<T> {
@@ -67,12 +73,6 @@ class _SubscriberBuilder<T> extends SubscriberBuilder<T> {
   @override
   EventSubscription subscribe(EventHandler<T> handler) =>
       _eventManager.subscribe(handler);
-
-  @override
-  EventSubscription subscribeFunction(
-    FutureOr<void> Function(T event) handler,
-  ) =>
-      _eventManager.subscribe(EventHandler.function(handler));
 }
 
 class _WhereSubscriberBuilder<T> extends SubscriberBuilder<T> {
@@ -90,15 +90,6 @@ class _WhereSubscriberBuilder<T> extends SubscriberBuilder<T> {
       EventHandler.function(
         (event) => _handleWhere(event, handler.handle),
       ),
-    );
-  }
-
-  @override
-  EventSubscription subscribeFunction(
-    FutureOr<void> Function(T event) handler,
-  ) {
-    return _parent.subscribeFunction(
-      (event) => _handleWhere(event, handler),
     );
   }
 
@@ -128,55 +119,5 @@ class _MapSubscriberBuilder<T, S> extends SubscriberBuilder<S> {
         (event) => handler.handle(_mapper(event)),
       ),
     );
-  }
-
-  @override
-  EventSubscription subscribeFunction(
-    FutureOr<void> Function(S event) handler,
-  ) {
-    return _parent.subscribeFunction(
-      (event) => handler(_mapper(event)),
-    );
-  }
-}
-
-class _SkipSubscriberBuilder<T> extends SubscriberBuilder<T> {
-  final SubscriberBuilder<T> _parent;
-  final int _skips;
-
-  int _skipped = 0;
-
-  _SkipSubscriberBuilder(
-    this._parent,
-    this._skips,
-  );
-
-  @override
-  EventSubscription subscribe(EventHandler<T> handler) {
-    return _parent.subscribe(
-      EventHandler.function(
-        (event) => _handleSkips(event, handler.handle),
-      ),
-    );
-  }
-
-  @override
-  EventSubscription subscribeFunction(
-    FutureOr<void> Function(T event) handler,
-  ) {
-    return _parent.subscribeFunction(
-      (event) => _handleSkips(event, handler),
-    );
-  }
-
-  FutureOr<void> _handleSkips(
-    T event,
-    FutureOr<void> Function(T event) handler,
-  ) {
-    if (_skipped >= _skips) {
-      return handler(event);
-    }
-
-    _skipped++;
   }
 }
