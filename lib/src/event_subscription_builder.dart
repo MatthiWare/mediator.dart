@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dart_event_manager/event_manager.dart';
 
 part 'event_subscription_builder/skip_builder.dart';
+part 'event_subscription_builder/map_builder.dart';
 
 /// Builder that is able to subscribe to the [EventManager].
 ///
@@ -27,7 +28,7 @@ abstract class EventSubscriptionBuilder<T> {
   /// output [S]. Only events of type [S] will reach the
   /// [EventHandler].
   EventSubscriptionBuilder<S> map<S>(S Function(T event) mapper) {
-    return _MapEventSubscriptionBuilder(this, mapper);
+    return _MapEventSubscriptionBuilder(parent: this, mapper: mapper);
   }
 
   /// Filters the events
@@ -101,24 +102,5 @@ class _WhereEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
     if (_where(event)) {
       return handler(event);
     }
-  }
-}
-
-class _MapEventSubscriptionBuilder<T, S> extends EventSubscriptionBuilder<S> {
-  final EventSubscriptionBuilder<T> _parent;
-  final S Function(T event) _mapper;
-
-  _MapEventSubscriptionBuilder(
-    this._parent,
-    this._mapper,
-  );
-
-  @override
-  EventSubscription subscribe(EventHandler<S> handler) {
-    return _parent.subscribe(
-      EventHandler.function(
-        (event) => handler.handle(_mapper(event)),
-      ),
-    );
   }
 }
