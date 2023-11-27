@@ -7,7 +7,7 @@ import '../mocks.dart';
 
 void main() {
   group('EventSubscriptionBuilder', () {
-    late MockEventManager mockEventManager;
+    late MockEventHandlerStore mockEventHandlerStore;
 
     setUpAll(() {
       registerFallbackValue(MockEventHandler<String>());
@@ -15,18 +15,13 @@ void main() {
     });
 
     setUp(() {
-      mockEventManager = MockEventManager();
-
-      when(() => mockEventManager.subscribe<int>(any()))
-          .thenReturn(MockEventSubscription());
-      when(() => mockEventManager.subscribe<String>(any()))
-          .thenReturn(MockEventSubscription());
+      mockEventHandlerStore = MockEventHandlerStore();
     });
 
     group('where', () {
       test('it creates a where instance', () {
         final builder =
-            EventSubscriptionBuilder<int>.create(mockEventManager).where(
+            EventSubscriptionBuilder<int>.create(mockEventHandlerStore).where(
           (event) => event > 0,
         );
 
@@ -37,12 +32,12 @@ void main() {
         const expected = [0, 55, 99];
         final outputs = <int>[];
 
-        EventSubscriptionBuilder<int>.create(mockEventManager)
+        EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
             .where((event) => event < 100)
             .subscribeFunction((event) => outputs.add(event));
 
         final captureResult = verify(
-          () => mockEventManager.subscribe<int>(captureAny()),
+          () => mockEventHandlerStore.register<int>(captureAny()),
         );
         final handler = captureResult.captured.first as EventHandler<int>;
 

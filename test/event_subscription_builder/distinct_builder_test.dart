@@ -21,7 +21,7 @@ class _TestEvent {
 
 void main() {
   group('EventSubscriptionBuilder', () {
-    late MockEventManager mockEventManager;
+    late MockEventHandlerStore mockEventHandlerStore;
 
     setUpAll(() {
       registerFallbackValue(MockEventHandler<String>());
@@ -30,20 +30,14 @@ void main() {
     });
 
     setUp(() {
-      mockEventManager = MockEventManager();
-
-      when(() => mockEventManager.subscribe<int>(any()))
-          .thenReturn(MockEventSubscription());
-      when(() => mockEventManager.subscribe<String>(any()))
-          .thenReturn(MockEventSubscription());
-      when(() => mockEventManager.subscribe<_TestEvent>(any()))
-          .thenReturn(MockEventSubscription());
+      mockEventHandlerStore = MockEventHandlerStore();
     });
 
     group('distinct', () {
       test('it creates a distinct instance', () {
         final builder =
-            EventSubscriptionBuilder<int>.create(mockEventManager).distinct();
+            EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
+                .distinct();
 
         expect(builder, isNotNull);
       });
@@ -53,12 +47,12 @@ void main() {
         const expected = [2, 6, 8, 12, 8, 2];
         final outputs = <int>[];
 
-        EventSubscriptionBuilder<int>.create(mockEventManager)
+        EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
             .distinct()
             .subscribeFunction((event) => outputs.add(event));
 
         final captureResult = verify(
-          () => mockEventManager.subscribe<int>(captureAny()),
+          () => mockEventHandlerStore.register<int>(captureAny()),
         );
         final handler = captureResult.captured.first as EventHandler<int>;
 
@@ -79,12 +73,12 @@ void main() {
         final inputs = [a, a, b, b];
         final outputs = <_TestEvent>[];
 
-        EventSubscriptionBuilder<_TestEvent>.create(mockEventManager)
+        EventSubscriptionBuilder<_TestEvent>.create(mockEventHandlerStore)
             .distinct((curr, prev) => curr.hashCode == prev.hashCode)
             .subscribeFunction((event) => outputs.add(event));
 
         final captureResult = verify(
-          () => mockEventManager.subscribe<_TestEvent>(captureAny()),
+          () => mockEventHandlerStore.register<_TestEvent>(captureAny()),
         );
         final handler =
             captureResult.captured.first as EventHandler<_TestEvent>;

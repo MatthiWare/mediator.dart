@@ -7,23 +7,21 @@ import '../mocks.dart';
 
 void main() {
   group('EventSubscriptionBuilder', () {
-    late MockEventManager mockEventManager;
+    late MockEventHandlerStore mockEventHandlerStore;
 
     setUpAll(() {
       registerFallbackValue(MockEventHandler<int>());
     });
 
     setUp(() {
-      mockEventManager = MockEventManager();
-
-      when(() => mockEventManager.subscribe<int>(any()))
-          .thenReturn(MockEventSubscription());
+      mockEventHandlerStore = MockEventHandlerStore();
     });
 
     group('expand', () {
       test('it creates a expand instance', () {
-        final builder = EventSubscriptionBuilder<int>.create(mockEventManager)
-            .expand((i) => [i, i]);
+        final builder =
+            EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
+                .expand((i) => [i, i]);
 
         expect(builder, isNotNull);
       });
@@ -33,12 +31,12 @@ void main() {
         const expected = [1, 1, 2, 2];
         final outputs = <int>[];
 
-        EventSubscriptionBuilder<int>.create(mockEventManager)
+        EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
             .expand((input) => [input, input])
             .subscribeFunction((event) => outputs.add(event));
 
         final captureResult = verify(
-          () => mockEventManager.subscribe<int>(captureAny()),
+          () => mockEventHandlerStore.register<int>(captureAny()),
         );
         final handler = captureResult.captured.first as EventHandler<int>;
 
@@ -56,8 +54,9 @@ void main() {
 
     group('asyncExpand', () {
       test('it creates a expand instance', () {
-        final builder = EventSubscriptionBuilder<int>.create(mockEventManager)
-            .asyncExpand((i) async* {
+        final builder =
+            EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
+                .asyncExpand((i) async* {
           yield i;
           yield i;
         });
@@ -70,14 +69,14 @@ void main() {
         const expected = [1, 1, 2, 2];
         final outputs = <int>[];
 
-        EventSubscriptionBuilder<int>.create(mockEventManager)
+        EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
             .asyncExpand((input) async* {
           yield input;
           yield input;
         }).subscribeFunction((event) => outputs.add(event));
 
         final captureResult = verify(
-          () => mockEventManager.subscribe<int>(captureAny()),
+          () => mockEventHandlerStore.register<int>(captureAny()),
         );
         final handler = captureResult.captured.first as EventHandler<int>;
 

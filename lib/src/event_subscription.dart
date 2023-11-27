@@ -1,4 +1,4 @@
-import 'package:dart_event_manager/src/event_handler.dart';
+import 'package:dart_event_manager/src/event_handler/event_handler.dart';
 
 /// Can be used to [cancel] the given subscription of a [EventHandler].
 class EventSubscription {

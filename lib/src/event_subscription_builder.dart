@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dart_event_manager/event_manager.dart';
+import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
 
 part 'event_subscription_builder/distinct_builder.dart';
 part 'event_subscription_builder/expand_builder.dart';
@@ -20,7 +21,7 @@ abstract class EventSubscriptionBuilder<T> {
 
   /// Creates a new [EventSubscriptionBuilder] this can be used to mutate
   /// the events before they reach the [EventHandler] using the builder pattern.
-  factory EventSubscriptionBuilder.create(EventManager eventManager) =
+  factory EventSubscriptionBuilder.create(EventHandlerStore eventManager) =
       _EventSubscriptionBuilder;
 
   /// Transforms each event.
@@ -118,17 +119,17 @@ extension EventSubscriptionBuilderFunctionExtension<T>
 }
 
 class _EventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
-  final EventManager _eventManager;
+  final EventHandlerStore _store;
 
-  _EventSubscriptionBuilder(this._eventManager);
+  _EventSubscriptionBuilder(this._store);
 
   @override
   EventSubscription subscribe(EventHandler<T> handler) {
     final subscription = EventSubscription(
-      () => _eventManager.unsubscribe(handler),
+      () => _store.unregister(handler),
     );
 
-    _eventManager.subscribe(handler);
+    _store.register(handler);
 
     return subscription;
   }

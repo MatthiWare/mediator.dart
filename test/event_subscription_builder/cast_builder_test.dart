@@ -7,7 +7,7 @@ import '../mocks.dart';
 
 void main() {
   group('EventSubscriptionBuilder', () {
-    late MockEventManager mockEventManager;
+    late MockEventHandlerStore mockEventHandlerStore;
 
     setUpAll(() {
       registerFallbackValue(MockEventHandler<Object>());
@@ -15,19 +15,13 @@ void main() {
     });
 
     setUp(() {
-      mockEventManager = MockEventManager();
-
-      when(() => mockEventManager.subscribe<int>(any()))
-          .thenReturn(MockEventSubscription());
-
-      when(() => mockEventManager.subscribe<Object>(any()))
-          .thenReturn(MockEventSubscription());
+      mockEventHandlerStore = MockEventHandlerStore();
     });
 
     group('cast', () {
       test('it creates a mapped instance', () {
         final builder =
-            EventSubscriptionBuilder.create(mockEventManager).cast<int>();
+            EventSubscriptionBuilder.create(mockEventHandlerStore).cast<int>();
 
         expect(builder, isNotNull);
       });
@@ -36,12 +30,12 @@ void main() {
         Object input = 1234;
         late final int output;
 
-        EventSubscriptionBuilder<Object>.create(mockEventManager)
+        EventSubscriptionBuilder<Object>.create(mockEventHandlerStore)
             .cast<int>()
             .subscribeFunction((event) => output = event);
 
         final captureResult = verify(
-          () => mockEventManager.subscribe<Object>(captureAny()),
+          () => mockEventHandlerStore.register<Object>(captureAny()),
         );
         final handler = captureResult.captured.first as EventHandler<Object>;
 

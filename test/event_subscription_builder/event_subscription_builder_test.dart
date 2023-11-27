@@ -7,7 +7,7 @@ import '../mocks.dart';
 
 void main() {
   group('EventSubscriptionBuilder', () {
-    late MockEventManager mockEventManager;
+    late MockEventHandlerStore mockEventHandlerStore;
 
     setUpAll(() {
       registerFallbackValue(MockEventHandler<String>());
@@ -15,17 +15,12 @@ void main() {
     });
 
     setUp(() {
-      mockEventManager = MockEventManager();
-
-      when(() => mockEventManager.subscribe<int>(any()))
-          .thenReturn(MockEventSubscription());
-      when(() => mockEventManager.subscribe<String>(any()))
-          .thenReturn(MockEventSubscription());
+      mockEventHandlerStore = MockEventHandlerStore();
     });
 
     group('create', () {
       test('it creates an instance', () {
-        final builder = EventSubscriptionBuilder.create(mockEventManager);
+        final builder = EventSubscriptionBuilder.create(mockEventHandlerStore);
 
         expect(builder, isNotNull);
       });
@@ -34,7 +29,7 @@ void main() {
     group('subscribe', () {
       test('it return a subscription', () {
         final subscription =
-            EventSubscriptionBuilder<int>.create(mockEventManager)
+            EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
                 .subscribe(EventHandler.function((event) {}));
 
         expect(
@@ -48,7 +43,7 @@ void main() {
     group('subscribeFunction', () {
       test('it return a subscription', () {
         final subscription =
-            EventSubscriptionBuilder<int>.create(mockEventManager)
+            EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
                 .subscribeFunction((event) {});
 
         expect(

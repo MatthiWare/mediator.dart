@@ -7,7 +7,7 @@ import '../mocks.dart';
 
 void main() {
   group('EventSubscriptionBuilder', () {
-    late MockEventManager mockEventManager;
+    late MockEventHandlerStore mockEventHandlerStore;
 
     setUpAll(() {
       registerFallbackValue(MockEventHandler<String>());
@@ -15,17 +15,13 @@ void main() {
     });
 
     setUp(() {
-      mockEventManager = MockEventManager();
-
-      when(() => mockEventManager.subscribe<int>(any()))
-          .thenReturn(MockEventSubscription());
-      when(() => mockEventManager.subscribe<String>(any()))
-          .thenReturn(MockEventSubscription());
+      mockEventHandlerStore = MockEventHandlerStore();
     });
 
     group('map', () {
       test('it creates a mapped instance', () {
-        final builder = EventSubscriptionBuilder.create(mockEventManager).map(
+        final builder =
+            EventSubscriptionBuilder.create(mockEventHandlerStore).map(
           (event) => 123,
         );
 
@@ -36,12 +32,12 @@ void main() {
         const expected = 1234;
         late final int output;
 
-        EventSubscriptionBuilder<String>.create(mockEventManager)
+        EventSubscriptionBuilder<String>.create(mockEventHandlerStore)
             .map((event) => expected)
             .subscribeFunction((event) => output = event);
 
         final captureResult = verify(
-          () => mockEventManager.subscribe<String>(captureAny()),
+          () => mockEventHandlerStore.register<String>(captureAny()),
         );
         final handler = captureResult.captured.first as EventHandler<String>;
 
@@ -58,7 +54,7 @@ void main() {
     group('asyncMap', () {
       test('it creates a mapped instance', () {
         final builder =
-            EventSubscriptionBuilder.create(mockEventManager).asyncMap(
+            EventSubscriptionBuilder.create(mockEventHandlerStore).asyncMap(
           (event) async => 123,
         );
 
@@ -69,12 +65,12 @@ void main() {
         const expected = 1234;
         late final int output;
 
-        EventSubscriptionBuilder<String>.create(mockEventManager)
+        EventSubscriptionBuilder<String>.create(mockEventHandlerStore)
             .asyncMap((event) async => expected)
             .subscribeFunction((event) => output = event);
 
         final captureResult = verify(
-          () => mockEventManager.subscribe<String>(captureAny()),
+          () => mockEventHandlerStore.register<String>(captureAny()),
         );
         final handler = captureResult.captured.first as EventHandler<String>;
 
