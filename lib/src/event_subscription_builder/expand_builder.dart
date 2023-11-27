@@ -27,8 +27,43 @@ class _ExpandEventHandler<T> implements EventHandler<T> {
   });
 
   @override
-  FutureOr<void> handle(T event) async {
+  void handle(T event) async {
     for (final element in expand(event)) {
+      parent.handle(element);
+    }
+  }
+}
+
+class _AsyncExpandEventSubscriptionBuilder<T>
+    extends EventSubscriptionBuilder<T> {
+  final EventSubscriptionBuilder<T> parent;
+  final Stream<T> Function(T element) convert;
+
+  _AsyncExpandEventSubscriptionBuilder({
+    required this.parent,
+    required this.convert,
+  });
+
+  @override
+  EventSubscription subscribe(EventHandler<T> handler) {
+    return parent.subscribe(
+      _AsyncExpandEventHandler(parent: handler, expand: convert),
+    );
+  }
+}
+
+class _AsyncExpandEventHandler<T> implements EventHandler<T> {
+  final EventHandler<T> parent;
+  final Stream<T> Function(T element) expand;
+
+  _AsyncExpandEventHandler({
+    required this.parent,
+    required this.expand,
+  });
+
+  @override
+  FutureOr<void> handle(T event) async {
+    await for (final element in expand(event)) {
       await parent.handle(element);
     }
   }

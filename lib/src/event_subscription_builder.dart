@@ -39,6 +39,16 @@ abstract class EventSubscriptionBuilder<T> {
   /// input [T] using the provided [mapper] function into
   /// output [S]. Only events of type [S] will reach the
   /// [EventHandler].
+  EventSubscriptionBuilder<S> asyncMap<S>(Future<S> Function(T event) mapper) {
+    return _AsyncMapEventSubscriptionBuilder(parent: this, mapper: mapper);
+  }
+
+  /// Transforms each event.
+  ///
+  /// It extends the current builder by converting the
+  /// input [T] using the provided [mapper] function into
+  /// output [S]. Only events of type [S] will reach the
+  /// [EventHandler].
   EventSubscriptionBuilder<S> cast<S>() {
     return _MapEventSubscriptionBuilder(
       parent: this,
@@ -75,6 +85,16 @@ abstract class EventSubscriptionBuilder<T> {
     Iterable<T> Function(T element) convert,
   ) {
     return _ExpandEventSubscriptionBuilder(parent: this, convert: convert);
+  }
+
+  /// Transforms each element of this handler into a sequence of elements.
+  ///
+  /// It extends the current builder where each element of this [EventHandler]
+  /// is replaced by zero or more data events.
+  EventSubscriptionBuilder<T> asyncExpand(
+    Stream<T> Function(T element) convert,
+  ) {
+    return _AsyncExpandEventSubscriptionBuilder(parent: this, convert: convert);
   }
 
   /// Subscribes to the given [handler].

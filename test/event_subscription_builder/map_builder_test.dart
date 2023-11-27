@@ -54,5 +54,38 @@ void main() {
         );
       });
     });
+
+    group('asyncMap', () {
+      test('it creates a mapped instance', () {
+        final builder =
+            EventSubscriptionBuilder.create(mockEventManager).asyncMap(
+          (event) async => 123,
+        );
+
+        expect(builder, isNotNull);
+      });
+
+      test('it executes the mapped value', () async {
+        const expected = 1234;
+        late final int output;
+
+        EventSubscriptionBuilder<String>.create(mockEventManager)
+            .asyncMap((event) async => expected)
+            .subscribeFunction((event) => output = event);
+
+        final captureResult = verify(
+          () => mockEventManager.subscribe<String>(captureAny()),
+        );
+        final handler = captureResult.captured.first as EventHandler<String>;
+
+        await handler.handle('not 1234');
+
+        expect(
+          output,
+          expected,
+          reason: 'Output should have been mapped',
+        );
+      });
+    });
   });
 }
