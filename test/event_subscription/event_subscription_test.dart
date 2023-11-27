@@ -1,23 +1,22 @@
 import 'package:dart_event_manager/event_manager.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
+
+class _CallbackMock extends Mock {
+  void call();
+}
 
 void main() {
   group('EventSubscription', () {
     group('cancel', () {
       test('it cancels the event subscription using the callback', () {
-        bool cancelled = false;
+        final callbackMock = _CallbackMock();
 
-        final sub = EventSubscription(() {
-          cancelled = true;
-        });
+        final sub = EventSubscription(callbackMock.call);
 
         sub.cancel();
 
-        expect(
-          cancelled,
-          isTrue,
-          reason: 'Provided callback needs to be executed on cancel',
-        );
+        verify(() => callbackMock.call());
       });
     });
   });

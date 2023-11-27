@@ -1,6 +1,5 @@
 import 'package:dart_event_manager/src/event_handler.dart';
 import 'package:dart_event_manager/src/event_manager.dart';
-import 'package:dart_event_manager/src/event_subscription.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
@@ -16,15 +15,10 @@ void main() {
 
     group('subscribe', () {
       test('it subscribes to the event', () {
-        EventSubscription? sub;
-
         expect(
-          () => sub =
-              eventManager.subscribe(EventHandler<int>.function((event) {})),
+          () => eventManager.subscribe(EventHandler<int>.function((event) {})),
           returnsNormally,
         );
-
-        expect(sub, isNotNull);
       });
 
       test('it throws when registering the same handler multiple times', () {
@@ -123,10 +117,10 @@ void main() {
         when(() => handlerA.handle(any())).thenAnswer((_) => Future.value());
         when(() => handlerB.handle(any())).thenAnswer((_) => Future.value());
 
-        final sub = eventManager.subscribe(handlerA);
+        eventManager.subscribe(handlerA);
         eventManager.subscribe(handlerB);
 
-        sub.cancel();
+        eventManager.unsubscribe(handlerA);
 
         await eventManager.dispatch(123);
 

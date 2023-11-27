@@ -123,6 +123,13 @@ class _EventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
   _EventSubscriptionBuilder(this._eventManager);
 
   @override
-  EventSubscription subscribe(EventHandler<T> handler) =>
-      _eventManager.subscribe(handler);
+  EventSubscription subscribe(EventHandler<T> handler) {
+    final subscription = EventSubscription(
+      () => _eventManager.unsubscribe(handler),
+    );
+
+    _eventManager.subscribe(handler);
+
+    return subscription;
+  }
 }
