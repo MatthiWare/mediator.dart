@@ -33,6 +33,19 @@ abstract class EventSubscriptionBuilder<T> {
     return _MapEventSubscriptionBuilder(parent: this, mapper: mapper);
   }
 
+  /// Transforms each event.
+  ///
+  /// It extends the current builder by converting the
+  /// input [T] using the provided [mapper] function into
+  /// output [S]. Only events of type [S] will reach the
+  /// [EventHandler].
+  EventSubscriptionBuilder<S> cast<S>() {
+    return _MapEventSubscriptionBuilder(
+      parent: this,
+      mapper: (input) => input as S,
+    );
+  }
+
   /// Filters the events
   ///
   /// It extends the current builder so that only inputs
