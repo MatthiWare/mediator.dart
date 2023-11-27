@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:dart_event_manager/event_manager.dart';
 
 part 'event_subscription_builder/map_builder.dart';
-part 'event_subscription_builder/skip_builder.dart';
 part 'event_subscription_builder/where_builder.dart';
 
 /// Builder that is able to subscribe to the [EventManager].
@@ -38,14 +37,6 @@ abstract class EventSubscriptionBuilder<T> {
   /// that pass the [test] clause will be kept for the [EventHandler].
   EventSubscriptionBuilder<T> where(bool Function(T event) test) {
     return _WhereEventSubscriptionBuilder(parent: this, test: test);
-  }
-
-  /// Filters the events
-  ///
-  /// It extends the current builder so that only inputs
-  /// that pass the [test] clause will be kept for the [EventHandler].
-  EventSubscriptionBuilder<T> skip(int count) {
-    return _SkipEventSubscriptionBuilder(parent: this, skips: count);
   }
 
   /// Subscribes to the given [handler].
