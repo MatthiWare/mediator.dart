@@ -1,5 +1,6 @@
 import 'package:dart_event_manager/src/event_handler.dart';
 import 'package:dart_event_manager/src/event_manager.dart';
+import 'package:dart_event_manager/src/event_subscription_builder.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
@@ -11,6 +12,15 @@ void main() {
 
     setUp(() {
       eventManager = EventManager();
+    });
+
+    group('on{T}', () {
+      test('it returns a new builder instance', () {
+        expect(
+          eventManager.on<int>(),
+          TypeMatcher<EventSubscriptionBuilder<int>>(),
+        );
+      });
     });
 
     group('subscribe', () {

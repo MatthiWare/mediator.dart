@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dart_event_manager/src/event_handler.dart';
 import 'package:dart_event_manager/src/event_subscription_builder.dart';
 
@@ -5,6 +7,12 @@ class EventManager {
   final _handlers = <Type, Set<EventHandler>>{};
 
   EventManager();
+
+  /// The events
+  ///
+  /// Returns a [EventSubscriptionBuilder] that allows to build a specific
+  /// subscription for the given event.
+  EventSubscriptionBuilder<T> on<T>() => EventSubscriptionBuilder.create(this);
 
   /// Subscribes to a given [TEvent] using the [handler].
   void subscribe<TEvent>(EventHandler<TEvent> handler) {
