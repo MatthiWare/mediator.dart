@@ -2,7 +2,7 @@ import 'package:dart_event_manager/src/event_handler.dart';
 import 'package:dart_event_manager/src/event_subscription.dart';
 
 class EventManager {
-  final _handlers = <Type, List<EventHandler>>{};
+  final _handlers = <Type, Set<EventHandler>>{};
 
   EventManager();
 
@@ -48,11 +48,11 @@ class EventManager {
     }
   }
 
-  List<EventHandler<TEvent>> _getHandlersFor<TEvent>() {
+  Set<EventHandler<TEvent>> _getHandlersFor<TEvent>() {
     final handlers = _handlers.putIfAbsent(
       TEvent,
-      () => <EventHandler<TEvent>>[],
-    ) as List<EventHandler<TEvent>>;
+      () => <EventHandler<TEvent>>{},
+    ) as Set<EventHandler<TEvent>>;
 
     return handlers;
   }
