@@ -38,6 +38,18 @@ void main() {
           reason: 'it should return a subscription',
         );
       });
+
+      test('it can cancel the subscription', () {
+        final mockHandler = MockEventHandler<int>();
+
+        final subscription =
+            EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
+                .subscribe(mockHandler);
+
+        subscription.cancel();
+
+        verify(() => mockEventHandlerStore.unregister(mockHandler));
+      });
     });
 
     group('subscribeFunction', () {
