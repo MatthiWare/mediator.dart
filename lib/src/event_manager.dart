@@ -11,7 +11,7 @@ class EventManager {
     final handlers = _getHandlersFor<TEvent>();
 
     assert(
-      handlers.contains(handler),
+      !handlers.contains(handler),
       'subscribe<$TEvent> was called with an already registered handler',
     );
 
@@ -27,7 +27,7 @@ class EventManager {
     final handlers = _getHandlersFor<TEvent>();
 
     assert(
-      !handlers.contains(handler),
+      handlers.contains(handler),
       'unsubscribe<$TEvent> was called for a handler that was never subscribed to',
     );
 
