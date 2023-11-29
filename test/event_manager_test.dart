@@ -9,11 +9,13 @@ void main() {
   group('EventManager', () {
     late EventManager eventManager;
     late MockEventHandlerStore mockEventHandlerStore;
+    late MockDispatchStrategy mockDispatchStrategy;
 
     setUp(() {
       mockEventHandlerStore = MockEventHandlerStore();
+      mockDispatchStrategy = MockDispatchStrategy();
 
-      eventManager = EventManager(mockEventHandlerStore);
+      eventManager = EventManager(mockEventHandlerStore, mockDispatchStrategy);
     });
 
     group('on{T}', () {
@@ -36,33 +38,18 @@ void main() {
         );
       });
 
-      test('it invokes the handler', () async {
-        final handler = MockEventHandler<int>();
-
-        when(() => handler.handle(any())).thenAnswer((_) => Future.value());
+      test('it executes the dispatch strategy', () async {
+        final handlers = {MockEventHandler<int>()};
 
         when(() => mockEventHandlerStore.getHandlersFor<int>())
-            .thenReturn({handler});
+            .thenReturn(handlers);
+
+        when(() => mockDispatchStrategy.execute<int>(any(), any()))
+            .thenAnswer((_) => Future.value());
 
         await eventManager.dispatch(123);
 
-        verify(() => handler.handle(123));
-      });
-
-      test('it invokes multiple handlers', () async {
-        final handlerA = MockEventHandler<int>();
-        final handlerB = MockEventHandler<int>();
-
-        when(() => handlerA.handle(any())).thenAnswer((_) => Future.value());
-        when(() => handlerB.handle(any())).thenAnswer((_) => Future.value());
-
-        when(() => mockEventHandlerStore.getHandlersFor<int>())
-            .thenReturn({handlerA, handlerB});
-
-        await eventManager.dispatch(123);
-
-        verify(() => handlerA.handle(123));
-        verify(() => handlerB.handle(123));
+        verify(() => mockDispatchStrategy.execute(handlers, 123));
       });
     });
   });

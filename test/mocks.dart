@@ -5,6 +5,8 @@ import 'package:test/test.dart';
 
 class MockEventManager extends Mock implements EventManager {}
 
+class MockDispatchStrategy extends Mock implements DispatchStrategy {}
+
 class MockEventHandlerStore extends Mock implements EventHandlerStore {}
 
 class MockEventHandler<T> extends Mock implements EventHandler<T> {}
