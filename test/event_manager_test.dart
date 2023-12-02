@@ -9,13 +9,42 @@ void main() {
   group('EventManager', () {
     late EventManager eventManager;
     late MockEventHandlerStore mockEventHandlerStore;
+    late MockRequestHandlerStore mockRequestHandlerStore;
     late MockDispatchStrategy mockDispatchStrategy;
 
     setUp(() {
       mockEventHandlerStore = MockEventHandlerStore();
+      mockRequestHandlerStore = MockRequestHandlerStore();
       mockDispatchStrategy = MockDispatchStrategy();
 
-      eventManager = EventManager(mockEventHandlerStore, mockDispatchStrategy);
+      eventManager = EventManager(
+        mockEventHandlerStore,
+        mockRequestHandlerStore,
+        mockDispatchStrategy,
+      );
+    });
+
+    group('send{TResponse, TRequest}', () {
+      test('it handles the request', () async {
+        const input = 123;
+        const output = '123';
+        final mockRequestHandler = MockRequestHandler<String, int>();
+
+        when(() => mockRequestHandler.handle(input)).thenReturn(output);
+
+        when(() => mockRequestHandlerStore.getHandlerFor<String, int>())
+            .thenReturn(mockRequestHandler);
+
+        final result = await eventManager.send<String, int>(input);
+
+        verify(() => mockRequestHandler.handle(input));
+
+        expect(
+          result,
+          output,
+          reason: 'Should return the handler response',
+        );
+      });
     });
 
     group('on{T}', () {
