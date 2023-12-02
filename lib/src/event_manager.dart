@@ -5,22 +5,36 @@ import 'package:dart_event_manager/src/event_handler/event_handler.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
 import 'package:dart_event_manager/src/event_subscription_builder.dart';
 import 'package:dart_event_manager/src/request_handler/request_handler_store.dart';
+import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
+import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior_store.dart';
 
 class EventManager {
   final EventHandlerStore _eventHandlerStore;
   final RequestHandlerStore _requestHandlerStore;
   final DispatchStrategy _defaultDispatchStrategy;
+  final PipelineBehaviorStore _pipelineBehaviorStore;
 
   EventManager(
     this._eventHandlerStore,
     this._requestHandlerStore,
+    this._pipelineBehaviorStore,
     this._defaultDispatchStrategy,
   );
 
   Future<TResponse> send<TResponse, TRequest>(TRequest request) async {
     final handler = _requestHandlerStore.getHandlerFor<TResponse, TRequest>();
 
-    return await handler.handle(request);
+    final pipelines =
+        _pipelineBehaviorStore.getPipelines<TResponse, TRequest>();
+
+    FutureOr<TResponse> handle() => handler.handle(request);
+
+    final RequestHandlerDelegate executionPlan = pipelines.fold(
+      handle,
+      (next, pipeline) => () => pipeline.handle(request, next),
+    );
+
+    return await executionPlan();
   }
 
   /// Subscribe on the given [T] event.

@@ -1,5 +1,6 @@
 import 'package:dart_event_manager/src/event_manager.dart';
 import 'package:dart_event_manager/src/event_subscription_builder.dart';
+import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
@@ -10,16 +11,19 @@ void main() {
     late EventManager eventManager;
     late MockEventHandlerStore mockEventHandlerStore;
     late MockRequestHandlerStore mockRequestHandlerStore;
+    late MockPipelineBehaviorStore mockPipelineBehaviorStore;
     late MockDispatchStrategy mockDispatchStrategy;
 
     setUp(() {
       mockEventHandlerStore = MockEventHandlerStore();
       mockRequestHandlerStore = MockRequestHandlerStore();
+      mockPipelineBehaviorStore = MockPipelineBehaviorStore();
       mockDispatchStrategy = MockDispatchStrategy();
 
       eventManager = EventManager(
         mockEventHandlerStore,
         mockRequestHandlerStore,
+        mockPipelineBehaviorStore,
         mockDispatchStrategy,
       );
     });
@@ -35,6 +39,9 @@ void main() {
         when(() => mockRequestHandlerStore.getHandlerFor<String, int>())
             .thenReturn(mockRequestHandler);
 
+        when(() => mockPipelineBehaviorStore.getPipelines<String, int>())
+            .thenReturn([]);
+
         final result = await eventManager.send<String, int>(input);
 
         verify(() => mockRequestHandler.handle(input));
@@ -44,6 +51,45 @@ void main() {
           output,
           reason: 'Should return the handler response',
         );
+      });
+
+      test('it handles the request with behaviors', () async {
+        const input = 123;
+        const output = '123';
+        final mockRequestHandler = MockRequestHandler<String, int>();
+        final mockBehavior = MockPipelineBehavior<String, int>();
+
+        bool invoked = false;
+
+        when(() => mockRequestHandler.handle(input)).thenReturn(output);
+
+        when(() => mockRequestHandlerStore.getHandlerFor<String, int>())
+            .thenReturn(mockRequestHandler);
+
+        when(() => mockBehavior.handle(input, captureAny()))
+            .thenAnswer((invocation) async {
+          invoked = true;
+
+          final handler = invocation.positionalArguments[1]
+              as RequestHandlerDelegate<String>;
+
+          return handler();
+        });
+
+        when(() => mockPipelineBehaviorStore.getPipelines<String, int>())
+            .thenReturn([mockBehavior]);
+
+        final result = await eventManager.send<String, int>(input);
+
+        verify(() => mockRequestHandler.handle(input));
+
+        expect(
+          result,
+          output,
+          reason: 'Should return the handler response',
+        );
+
+        expect(invoked, isTrue);
       });
     });
 
