@@ -1,14 +1,17 @@
 import 'package:dart_event_manager/contracts.dart';
 import 'package:dart_event_manager/event_manager.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
-import 'package:dart_event_manager/src/request_handler/request_handler.dart';
-import 'package:dart_event_manager/src/request_handler/request_handler_store.dart';
-import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
-import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior_store.dart';
+import 'package:dart_event_manager/src/request/handler/request_handler.dart';
+import 'package:dart_event_manager/src/request/handler/request_handler_store.dart';
+import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior.dart';
+import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior_store.dart';
+import 'package:dart_event_manager/src/request/request_manager.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockEventManager extends Mock implements Mediator {}
+class MockMediator extends Mock implements Mediator {}
+
+class MockRequestManager extends Mock implements RequestManager {}
 
 class MockDispatchStrategy extends Mock implements DispatchStrategy {}
 

@@ -1,7 +1,7 @@
-import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior_store.dart';
+import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior_store.dart';
 import 'package:test/test.dart';
 
-import '../../mocks.dart';
+import '../../../mocks.dart';
 
 void main() {
   group('PipelineBehaviorStore', () {

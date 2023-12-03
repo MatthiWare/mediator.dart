@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:dart_event_manager/contracts.dart';
 import 'package:dart_event_manager/event_manager.dart';
 import 'package:dart_event_manager/src/event_subscription_builder.dart';
-import 'package:dart_event_manager/src/request_handler/request_handler.dart';
-import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
+import 'package:dart_event_manager/src/request/handler/request_handler.dart';
+import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior.dart';
 import 'package:test/test.dart';
 
 class Event implements DomainEvent {
@@ -40,9 +40,9 @@ class LoggingBehavior implements PipelineBehavior {
 Future<void> main() async {
   final Mediator mediator = Mediator();
 
-  mediator.pipeline.registerGeneric(LoggingBehavior());
+  mediator.requests.pipeline.registerGeneric(LoggingBehavior());
 
-  mediator.register(RequestEventHandler());
+  mediator.requests.register(RequestEventHandler());
 
   mediator
       .on<Event>()
@@ -50,7 +50,8 @@ Future<void> main() async {
       .distinct()
       .subscribeFunction((event) => prints('[$Event handler] received $event'));
 
-  final resp = await mediator.send<String, RequestEvent>(RequestEvent(123));
+  final resp =
+      await mediator.requests.send<String, RequestEvent>(RequestEvent(123));
 
   print('Got ${resp.runtimeType} -> $resp');
 

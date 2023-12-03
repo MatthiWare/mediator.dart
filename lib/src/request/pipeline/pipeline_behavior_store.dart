@@ -1,6 +1,6 @@
-import 'package:dart_event_manager/src/request.dart';
-import 'package:dart_event_manager/src/request_pipeline/pipeline_configurator.dart';
-import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
+import 'package:dart_event_manager/src/request/request.dart';
+import 'package:dart_event_manager/src/request/pipeline/pipeline_configurator.dart';
+import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior.dart';
 
 class PipelineBehaviorStore implements PipelineConfigurator {
   final _handlers = <PipelineBehavior<Object?, Object>>[];

@@ -1,6 +1,5 @@
 import 'package:dart_event_manager/src/mediator.dart';
 import 'package:dart_event_manager/src/event_subscription_builder.dart';
-import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
@@ -11,20 +10,17 @@ void main() {
   group('EventManager', () {
     late Mediator eventManager;
     late MockEventHandlerStore mockEventHandlerStore;
-    late MockRequestHandlerStore mockRequestHandlerStore;
-    late MockPipelineBehaviorStore mockPipelineBehaviorStore;
+    late MockRequestManager mockRequestManager;
     late MockDispatchStrategy mockDispatchStrategy;
 
     setUp(() {
       mockEventHandlerStore = MockEventHandlerStore();
-      mockRequestHandlerStore = MockRequestHandlerStore();
-      mockPipelineBehaviorStore = MockPipelineBehaviorStore();
+      mockRequestManager = MockRequestManager();
       mockDispatchStrategy = MockDispatchStrategy();
 
       eventManager = Mediator(
         eventHandlerStore: mockEventHandlerStore,
-        requestHandlerStore: mockRequestHandlerStore,
-        pipelineBehaviorStore: mockPipelineBehaviorStore,
+        requestManager: mockRequestManager,
         defaultEventDispatchStrategy: mockDispatchStrategy,
       );
     });
@@ -33,85 +29,12 @@ void main() {
       registerFallbackValue(const DomainIntEvent(123));
     });
 
-    group('pipeline', () {
-      test('it returns the PipelineConfigurator', () {
+    group('requests', () {
+      test('it returns the RequestManager', () {
         expect(
-          eventManager.pipeline,
-          mockPipelineBehaviorStore,
+          eventManager.requests,
+          mockRequestManager,
         );
-      });
-    });
-
-    group('send{TResponse, TRequest}', () {
-      const output = '123';
-      late MockRequest<String> mockRequest;
-      late MockRequestHandler<String, MockRequest<String>> mockRequestHandler;
-
-      setUp(() {
-        mockRequest = MockRequest<String>();
-        mockRequestHandler = MockRequestHandler<String, MockRequest<String>>();
-      });
-
-      test('it handles the request', () async {
-        when(() => mockRequestHandler.handle(mockRequest)).thenReturn(output);
-
-        when(() => mockRequestHandlerStore
-                .getHandlerFor<String, MockRequest<String>>())
-            .thenReturn(mockRequestHandler);
-
-        when(() => mockPipelineBehaviorStore
-            .getPipelines<String, MockRequest<String>>()).thenReturn([]);
-
-        final result =
-            await eventManager.send<String, MockRequest<String>>(mockRequest);
-
-        verify(() => mockRequestHandler.handle(mockRequest));
-
-        expect(
-          result,
-          output,
-          reason: 'Should return the handler response',
-        );
-      });
-
-      test('it handles the request with behaviors', () async {
-        final mockBehavior =
-            MockPipelineBehavior<String, MockRequest<String>>();
-
-        bool invoked = false;
-
-        when(() => mockRequestHandler.handle(mockRequest)).thenReturn(output);
-
-        when(() => mockRequestHandlerStore
-                .getHandlerFor<String, MockRequest<String>>())
-            .thenReturn(mockRequestHandler);
-
-        when(() => mockBehavior.handle(mockRequest, captureAny()))
-            .thenAnswer((invocation) async {
-          invoked = true;
-
-          final handler = invocation.positionalArguments[1]
-              as RequestHandlerDelegate<String>;
-
-          return handler();
-        });
-
-        when(() => mockPipelineBehaviorStore
-                .getPipelines<String, MockRequest<String>>())
-            .thenReturn([mockBehavior]);
-
-        final result =
-            await eventManager.send<String, MockRequest<String>>(mockRequest);
-
-        verify(() => mockRequestHandler.handle(mockRequest));
-
-        expect(
-          result,
-          output,
-          reason: 'Should return the handler response',
-        );
-
-        expect(invoked, isTrue);
       });
     });
 

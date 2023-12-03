@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dart_event_manager/src/request.dart';
+import 'package:dart_event_manager/src/request/request.dart';
 
 /// Handler for [TRequest].
 abstract interface class RequestHandler<TResponse,

@@ -1,4 +1,4 @@
-import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
+import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior.dart';
 
 abstract interface class PipelineConfigurator {
   /// Registers the [behavior].
