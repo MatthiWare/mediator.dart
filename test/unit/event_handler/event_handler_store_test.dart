@@ -2,7 +2,7 @@ import 'package:dart_event_manager/src/event_handler/event_handler.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
 import 'package:test/test.dart';
 
-import '../mocks.dart';
+import '../../mocks.dart';
 
 void main() {
   group('EventHandlerStore', () {

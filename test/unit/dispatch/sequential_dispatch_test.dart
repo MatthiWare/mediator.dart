@@ -2,7 +2,7 @@ import 'package:dart_event_manager/event_manager.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-import '../mocks.dart';
+import '../../mocks.dart';
 
 void main() {
   group('SequentialDispatchStrategy', () {

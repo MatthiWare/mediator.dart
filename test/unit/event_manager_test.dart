@@ -4,8 +4,8 @@ import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-import 'mocks.dart';
-import 'test_data.dart';
+import '../mocks.dart';
+import '../test_data.dart';
 
 void main() {
   group('EventManager', () {
