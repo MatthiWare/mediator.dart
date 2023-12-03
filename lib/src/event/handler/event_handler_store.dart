@@ -1,4 +1,4 @@
-import 'package:dart_event_manager/src/event_handler/event_handler.dart';
+import 'package:dart_event_manager/src/event/handler/event_handler.dart';
 
 class EventHandlerStore {
   final _handlers = <Type, Set<EventHandler>>{};

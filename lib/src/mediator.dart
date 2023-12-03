@@ -1,60 +1,32 @@
-import 'dart:async';
-
-import 'package:dart_event_manager/src/dispatch_strategy.dart';
-import 'package:dart_event_manager/src/event.dart';
-import 'package:dart_event_manager/src/event_handler/event_handler.dart';
-import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
-import 'package:dart_event_manager/src/event_subscription_builder.dart';
-import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior_store.dart';
+import 'package:dart_event_manager/src/event/dispatch/dispatch_strategy.dart';
+import 'package:dart_event_manager/src/event/event_manager.dart';
 import 'package:dart_event_manager/src/request/request_manager.dart';
 
 class Mediator {
-  final EventHandlerStore _eventHandlerStore;
   final RequestManager _requestsManager;
-  final DispatchStrategy _defaultDispatchStrategy;
+  final EventManager _eventManager;
 
   Mediator._(
-    this._eventHandlerStore,
+    this._eventManager,
     this._requestsManager,
-    this._defaultDispatchStrategy,
   );
 
   factory Mediator({
-    EventHandlerStore? eventHandlerStore,
     RequestManager? requestManager,
-    PipelineBehaviorStore? pipelineBehaviorStore,
+    EventManager? eventManager,
     DispatchStrategy defaultEventDispatchStrategy =
         const DispatchStrategy.concurrent(),
   }) {
     return Mediator._(
-      eventHandlerStore ?? EventHandlerStore(),
+      eventManager ??
+          EventManager(
+            defaultDispatchStrategy: defaultEventDispatchStrategy,
+          ),
       requestManager ?? RequestManager(),
-      defaultEventDispatchStrategy,
     );
   }
 
   RequestManager get requests => _requestsManager;
 
-  /// Subscribe on the given [T] event.
-  ///
-  /// Returns a [EventSubscriptionBuilder] that allows to build a specific
-  /// subscription.
-  EventSubscriptionBuilder<T> on<T extends DomainEvent>() =>
-      EventSubscriptionBuilder.create(_eventHandlerStore);
-
-  /// Dispatches the given [event] to the registered [EventHandler]'s.
-  Future<void> dispatch<TEvent extends DomainEvent>(
-    TEvent event, [
-    DispatchStrategy? dispatchStrategy,
-  ]) async {
-    final handlers = _eventHandlerStore.getHandlersFor<TEvent>();
-
-    assert(
-      handlers.isNotEmpty,
-      'dispatch<$TEvent> was invoked but no handlers are registered to handle this',
-    );
-
-    await (dispatchStrategy ?? _defaultDispatchStrategy)
-        .execute(handlers, event);
-  }
+  EventManager get events => _eventManager;
 }

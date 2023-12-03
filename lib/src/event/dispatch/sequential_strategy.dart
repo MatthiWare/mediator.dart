@@ -1,5 +1,5 @@
-import 'package:dart_event_manager/src/dispatch_strategy.dart';
-import 'package:dart_event_manager/src/event_handler/event_handler.dart';
+import 'package:dart_event_manager/src/event/dispatch/dispatch_strategy.dart';
+import 'package:dart_event_manager/src/event/handler/event_handler.dart';
 
 /// [DispatchStrategy] that handles events one by one.
 ///

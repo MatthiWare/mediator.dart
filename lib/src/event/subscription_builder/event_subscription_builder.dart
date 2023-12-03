@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:dart_event_manager/src/mediator.dart';
-import 'package:dart_event_manager/src/event_handler/event_handler.dart';
-import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
-import 'package:dart_event_manager/src/event_subscription.dart';
+import 'package:dart_event_manager/src/event/handler/event_handler.dart';
+import 'package:dart_event_manager/src/event/handler/event_handler_store.dart';
+import 'package:dart_event_manager/src/event/event_subscription.dart';
 
-part 'event_subscription_builder/distinct_builder.dart';
-part 'event_subscription_builder/expand_builder.dart';
-part 'event_subscription_builder/map_builder.dart';
-part 'event_subscription_builder/where_builder.dart';
+part 'distinct_builder.dart';
+part 'expand_builder.dart';
+part 'map_builder.dart';
+part 'where_builder.dart';
 
 /// Builder that is able to subscribe to the [Mediator].
 ///

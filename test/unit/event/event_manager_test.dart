@@ -1,41 +1,29 @@
-import 'package:dart_event_manager/src/mediator.dart';
-import 'package:dart_event_manager/src/event_subscription_builder.dart';
+import 'package:dart_event_manager/src/event/event_manager.dart';
+import 'package:dart_event_manager/src/event/subscription_builder/event_subscription_builder.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-import '../mocks.dart';
-import '../test_data.dart';
+import '../../mocks.dart';
+import '../../test_data.dart';
 
 void main() {
   group('EventManager', () {
-    late Mediator eventManager;
+    late EventManager eventManager;
     late MockEventHandlerStore mockEventHandlerStore;
-    late MockRequestManager mockRequestManager;
     late MockDispatchStrategy mockDispatchStrategy;
 
     setUp(() {
       mockEventHandlerStore = MockEventHandlerStore();
-      mockRequestManager = MockRequestManager();
       mockDispatchStrategy = MockDispatchStrategy();
 
-      eventManager = Mediator(
+      eventManager = EventManager(
         eventHandlerStore: mockEventHandlerStore,
-        requestManager: mockRequestManager,
-        defaultEventDispatchStrategy: mockDispatchStrategy,
+        defaultDispatchStrategy: mockDispatchStrategy,
       );
     });
 
     setUpAll(() {
       registerFallbackValue(const DomainIntEvent(123));
-    });
-
-    group('requests', () {
-      test('it returns the RequestManager', () {
-        expect(
-          eventManager.requests,
-          mockRequestManager,
-        );
-      });
     });
 
     group('on{T}', () {

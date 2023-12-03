@@ -1,4 +1,4 @@
-part of '../event_subscription_builder.dart';
+part of 'event_subscription_builder.dart';
 
 class _WhereEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
   final EventSubscriptionBuilder<T> parent;

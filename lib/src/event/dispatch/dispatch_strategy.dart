@@ -1,6 +1,6 @@
-import 'package:dart_event_manager/src/event_handler/event_handler.dart';
-import 'package:dart_event_manager/src/dispatch/concurrent_strategy.dart';
-import 'package:dart_event_manager/src/dispatch/sequential_strategy.dart';
+import 'package:dart_event_manager/src/event/handler/event_handler.dart';
+import 'package:dart_event_manager/src/event/dispatch/concurrent_strategy.dart';
+import 'package:dart_event_manager/src/event/dispatch/sequential_strategy.dart';
 
 /// Strategy to use for dispatching events to the handlers
 abstract interface class DispatchStrategy {

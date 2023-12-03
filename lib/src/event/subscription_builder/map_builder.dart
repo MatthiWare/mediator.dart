@@ -1,4 +1,4 @@
-part of '../event_subscription_builder.dart';
+part of 'event_subscription_builder.dart';
 
 class _MapEventSubscriptionBuilder<T, S> extends EventSubscriptionBuilder<S> {
   final EventSubscriptionBuilder<T> parent;

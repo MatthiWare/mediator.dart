@@ -2,6 +2,6 @@
 library dart_event_manager;
 
 export 'src/mediator.dart';
-export 'src/event_handler/event_handler.dart';
-export 'src/event_subscription.dart';
-export 'src/dispatch_strategy.dart';
+export 'src/event/handler/event_handler.dart';
+export 'src/event/event_subscription.dart';
+export 'src/event/dispatch/dispatch_strategy.dart';

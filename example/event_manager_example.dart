@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:dart_event_manager/contracts.dart';
 import 'package:dart_event_manager/event_manager.dart';
-import 'package:dart_event_manager/src/event_subscription_builder.dart';
+import 'package:dart_event_manager/src/event/subscription_builder/event_subscription_builder.dart';
 import 'package:dart_event_manager/src/request/handler/request_handler.dart';
 import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior.dart';
 import 'package:test/test.dart';
@@ -44,7 +44,7 @@ Future<void> main() async {
 
   mediator.requests.register(RequestEventHandler());
 
-  mediator
+  mediator.events
       .on<Event>()
       .map((event) => event.data)
       .distinct()
@@ -55,7 +55,7 @@ Future<void> main() async {
 
   print('Got ${resp.runtimeType} -> $resp');
 
-  await mediator.dispatch(Event(123));
+  await mediator.events.dispatch(Event(123));
 
   print('done');
 }

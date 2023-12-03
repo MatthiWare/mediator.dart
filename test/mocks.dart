@@ -1,6 +1,6 @@
 import 'package:dart_event_manager/contracts.dart';
 import 'package:dart_event_manager/event_manager.dart';
-import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
+import 'package:dart_event_manager/src/event/handler/event_handler_store.dart';
 import 'package:dart_event_manager/src/request/handler/request_handler.dart';
 import 'package:dart_event_manager/src/request/handler/request_handler_store.dart';
 import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior.dart';
