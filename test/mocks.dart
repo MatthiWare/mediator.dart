@@ -1,3 +1,4 @@
+import 'package:dart_event_manager/contracts.dart';
 import 'package:dart_event_manager/event_manager.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
 import 'package:dart_event_manager/src/request_handler/request_handler.dart';
@@ -19,7 +20,9 @@ class MockPipelineBehaviorStore extends Mock implements PipelineBehaviorStore {}
 
 class MockEventHandler<T> extends Mock implements EventHandler<T> {}
 
-class MockRequestHandler<Res, Req> extends Mock
+class MockRequest<T> extends Mock implements Request<T> {}
+
+class MockRequestHandler<Res, Req extends Request<Res>> extends Mock
     implements RequestHandler<Res, Req> {}
 
 class MockPipelineBehavior<Res, Req> extends Mock

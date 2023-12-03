@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
+import 'test_data.dart';
 
 void main() {
   group('EventManager', () {
@@ -21,11 +22,15 @@ void main() {
       mockDispatchStrategy = MockDispatchStrategy();
 
       eventManager = EventManager(
-        mockEventHandlerStore,
-        mockRequestHandlerStore,
-        mockPipelineBehaviorStore,
-        mockDispatchStrategy,
+        eventHandlerStore: mockEventHandlerStore,
+        requestHandlerStore: mockRequestHandlerStore,
+        pipelineBehaviorStore: mockPipelineBehaviorStore,
+        defaultEventDispatchStrategy: mockDispatchStrategy,
       );
+    });
+
+    setUpAll(() {
+      registerFallbackValue(const DomainIntEvent(123));
     });
 
     group('pipeline', () {
@@ -38,24 +43,29 @@ void main() {
     });
 
     group('send{TResponse, TRequest}', () {
+      const output = '123';
+      late MockRequest<String> mockRequest;
+      late MockRequestHandler<String, MockRequest<String>> mockRequestHandler;
+
+      setUp(() {
+        mockRequest = MockRequest<String>();
+        mockRequestHandler = MockRequestHandler<String, MockRequest<String>>();
+      });
+
       test('it handles the request', () async {
-        const input = 123;
-        const output = '123';
-        final mockRequestHandler = MockRequestHandler<String, int>();
+        when(() => mockRequestHandler.handle(mockRequest)).thenReturn(output);
 
-        when(() => mockRequestHandler.handle(input)).thenReturn(output);
-
-        when(() => mockRequestHandlerStore.getHandlerFor<String, int>())
+        when(() => mockRequestHandlerStore
+                .getHandlerFor<String, MockRequest<String>>())
             .thenReturn(mockRequestHandler);
 
-        when(() => mockPipelineBehaviorStore.getPipelines<String, int>())
-            .thenReturn([]);
+        when(() => mockPipelineBehaviorStore
+            .getPipelines<String, MockRequest<String>>()).thenReturn([]);
 
-        final result = await eventManager.send<String, int>(input);
+        final result =
+            await eventManager.send<String, MockRequest<String>>(mockRequest);
 
-        // final x = await eventManager.send(123);
-
-        verify(() => mockRequestHandler.handle(input));
+        verify(() => mockRequestHandler.handle(mockRequest));
 
         expect(
           result,
@@ -65,19 +75,18 @@ void main() {
       });
 
       test('it handles the request with behaviors', () async {
-        const input = 123;
-        const output = '123';
-        final mockRequestHandler = MockRequestHandler<String, int>();
-        final mockBehavior = MockPipelineBehavior<String, int>();
+        final mockBehavior =
+            MockPipelineBehavior<String, MockRequest<String>>();
 
         bool invoked = false;
 
-        when(() => mockRequestHandler.handle(input)).thenReturn(output);
+        when(() => mockRequestHandler.handle(mockRequest)).thenReturn(output);
 
-        when(() => mockRequestHandlerStore.getHandlerFor<String, int>())
+        when(() => mockRequestHandlerStore
+                .getHandlerFor<String, MockRequest<String>>())
             .thenReturn(mockRequestHandler);
 
-        when(() => mockBehavior.handle(input, captureAny()))
+        when(() => mockBehavior.handle(mockRequest, captureAny()))
             .thenAnswer((invocation) async {
           invoked = true;
 
@@ -87,12 +96,14 @@ void main() {
           return handler();
         });
 
-        when(() => mockPipelineBehaviorStore.getPipelines<String, int>())
+        when(() => mockPipelineBehaviorStore
+                .getPipelines<String, MockRequest<String>>())
             .thenReturn([mockBehavior]);
 
-        final result = await eventManager.send<String, int>(input);
+        final result =
+            await eventManager.send<String, MockRequest<String>>(mockRequest);
 
-        verify(() => mockRequestHandler.handle(input));
+        verify(() => mockRequestHandler.handle(mockRequest));
 
         expect(
           result,
@@ -107,35 +118,36 @@ void main() {
     group('on{T}', () {
       test('it returns a new builder instance', () {
         expect(
-          eventManager.on<int>(),
-          TypeMatcher<EventSubscriptionBuilder<int>>(),
+          eventManager.on<DomainIntEvent>(),
+          TypeMatcher<EventSubscriptionBuilder<DomainIntEvent>>(),
         );
       });
     });
 
     group('dispatch', () {
+      const event = DomainIntEvent(123);
       test('it throws when no subscribers for the event', () async {
-        when(() => mockEventHandlerStore.getHandlersFor<int>())
+        when(() => mockEventHandlerStore.getHandlersFor<DomainIntEvent>())
             .thenReturn(const {});
 
         expect(
-          () => eventManager.dispatch(123),
+          () => eventManager.dispatch(event),
           throwsAssertionError,
         );
       });
 
       test('it executes the dispatch strategy', () async {
-        final handlers = {MockEventHandler<int>()};
+        final handlers = {MockEventHandler<DomainIntEvent>()};
 
-        when(() => mockEventHandlerStore.getHandlersFor<int>())
+        when(() => mockEventHandlerStore.getHandlersFor<DomainIntEvent>())
             .thenReturn(handlers);
 
-        when(() => mockDispatchStrategy.execute<int>(any(), any()))
+        when(() => mockDispatchStrategy.execute<DomainIntEvent>(any(), any()))
             .thenAnswer((_) => Future.value());
 
-        await eventManager.dispatch(123);
+        await eventManager.dispatch(event);
 
-        verify(() => mockDispatchStrategy.execute(handlers, 123));
+        verify(() => mockDispatchStrategy.execute(handlers, event));
       });
     });
   });

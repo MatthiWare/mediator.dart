@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:dart_event_manager/src/event.dart';
+
 /// Handler for [TEvent].
 abstract interface class EventHandler<TEvent> {
   /// Function based event handler

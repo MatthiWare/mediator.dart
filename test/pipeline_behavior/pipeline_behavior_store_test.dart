@@ -12,7 +12,7 @@ void main() {
     });
 
     group('register', () {
-      final mockBehavior = MockPipelineBehavior<int, String>();
+      final mockBehavior = MockPipelineBehavior<int, MockRequest<int>>();
 
       test('it registers the handler', () {
         expect(
@@ -21,7 +21,7 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, String>(),
+          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
           [mockBehavior],
         );
       });
@@ -37,15 +37,15 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, String>(),
+          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
           [mockBehavior],
         );
       });
     });
 
     group('unregister', () {
-      final mockBehavior = MockPipelineBehavior<int, String>();
-      final mockGenericBehavior = MockPipelineBehavior<int, String>();
+      final mockBehavior = MockPipelineBehavior<int, MockRequest<int>>();
+      final mockGenericBehavior = MockPipelineBehavior<int, MockRequest<int>>();
 
       test('it unregisters the behavior', () {
         pipelineBehaviorStore.register(mockBehavior);
@@ -56,7 +56,7 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, String>(),
+          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
           [],
         );
       });
@@ -70,7 +70,7 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, String>(),
+          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
           [],
         );
       });
@@ -78,8 +78,9 @@ void main() {
 
     group('getPipelines{TResponse, TRequest}', () {
       test('it returns the request handler', () {
-        final correctBehavior = MockPipelineBehavior<int, String>();
-        final incorrectBehavior = MockPipelineBehavior<int, int>();
+        final correctBehavior = MockPipelineBehavior<int, MockRequest<int>>();
+        final incorrectBehavior =
+            MockPipelineBehavior<int, MockRequest<String>>();
         final logBehavior = MockPipelineBehavior();
 
         pipelineBehaviorStore.register(correctBehavior);
@@ -87,7 +88,7 @@ void main() {
         pipelineBehaviorStore.register(incorrectBehavior);
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, String>(),
+          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
           [correctBehavior, logBehavior],
         );
       });

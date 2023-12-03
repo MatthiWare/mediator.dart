@@ -1,7 +1,10 @@
 import 'dart:async';
 
-import 'package:dart_event_manager/event_manager.dart';
+import 'package:dart_event_manager/src/event.dart';
+import 'package:dart_event_manager/src/event_manager.dart';
+import 'package:dart_event_manager/src/event_handler/event_handler.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
+import 'package:dart_event_manager/src/event_subscription.dart';
 
 part 'event_subscription_builder/distinct_builder.dart';
 part 'event_subscription_builder/expand_builder.dart';

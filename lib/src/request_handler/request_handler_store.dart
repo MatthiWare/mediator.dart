@@ -1,10 +1,11 @@
+import 'package:dart_event_manager/src/request.dart';
 import 'package:dart_event_manager/src/request_handler/request_handler.dart';
 
 class RequestHandlerStore {
   final _handlers = <Type, RequestHandler>{};
 
   /// Registers the [handler] to a given [TEvent].
-  void register<TResponse, TRequest>(
+  void register<TResponse, TRequest extends Request<TResponse>>(
     RequestHandler<TResponse, TRequest> handler,
   ) {
     assert(
@@ -16,7 +17,7 @@ class RequestHandlerStore {
   }
 
   /// Unregisters the given [handler].
-  void unregister<TResponse, TRequest>(
+  void unregister<TResponse, TRequest extends Request<TResponse>>(
     RequestHandler<TResponse, TRequest> handler,
   ) {
     assert(
@@ -28,7 +29,8 @@ class RequestHandlerStore {
   }
 
   /// Returns the registered [RequestHandler]'s for [TRequest].
-  RequestHandler<TResponse, TRequest> getHandlerFor<TResponse, TRequest>() {
+  RequestHandler<TResponse, TRequest>
+      getHandlerFor<TResponse, TRequest extends Request<TResponse>>() {
     final handler = _handlers[TRequest];
 
     assert(

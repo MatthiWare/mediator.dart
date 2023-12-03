@@ -1,3 +1,4 @@
+import 'package:dart_event_manager/src/request.dart';
 import 'package:dart_event_manager/src/request_pipeline/pipeline_configurator.dart';
 import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
 
@@ -26,8 +27,8 @@ class PipelineBehaviorStore implements PipelineConfigurator {
   }
 
   /// Returns all [PipelineBehavior]'s that match.
-  List<PipelineBehavior>
-      getPipelines<TResponse extends Object?, TRequest extends Object>() {
+  List<PipelineBehavior> getPipelines<TResponse extends Object?,
+      TRequest extends Request<TResponse>>() {
     return [
       ..._handlers.whereType<PipelineBehavior<TResponse, TRequest>>(),
       ..._genericHandlers

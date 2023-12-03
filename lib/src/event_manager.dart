@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:dart_event_manager/src/dispatch_strategy.dart';
+import 'package:dart_event_manager/src/event.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler.dart';
+import 'package:dart_event_manager/src/request.dart';
 import 'package:dart_event_manager/src/request_handler/request_handler.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
 import 'package:dart_event_manager/src/event_subscription_builder.dart';
@@ -13,27 +15,43 @@ import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior_store.
 class EventManager {
   final EventHandlerStore _eventHandlerStore;
   final RequestHandlerStore _requestHandlerStore;
-  final DispatchStrategy _defaultDispatchStrategy;
   final PipelineBehaviorStore _pipelineBehaviorStore;
+  final DispatchStrategy _defaultDispatchStrategy;
 
   /// Configures the request pipeline.
   ///
   /// See [PipelineConfigurator] on how to configure them using [PipelineBehavior].
   PipelineConfigurator get pipeline => _pipelineBehaviorStore;
 
-  EventManager(
+  EventManager._(
     this._eventHandlerStore,
     this._requestHandlerStore,
     this._pipelineBehaviorStore,
     this._defaultDispatchStrategy,
   );
 
+  factory EventManager({
+    EventHandlerStore? eventHandlerStore,
+    RequestHandlerStore? requestHandlerStore,
+    PipelineBehaviorStore? pipelineBehaviorStore,
+    DispatchStrategy defaultEventDispatchStrategy =
+        const DispatchStrategy.concurrent(),
+  }) {
+    return EventManager._(
+      eventHandlerStore ?? EventHandlerStore(),
+      requestHandlerStore ?? RequestHandlerStore(),
+      pipelineBehaviorStore ?? PipelineBehaviorStore(),
+      defaultEventDispatchStrategy,
+    );
+  }
+
   /// Sends a [request] to a single [RequestHandler].
   ///
   /// This request can be wrapped by [PipelineBehavior]'s see [pipeline].
   ///
   /// This will return [TResponse].
-  Future<TResponse> send<TResponse extends Object?, TRequest extends Object>(
+  Future<TResponse>
+      send<TResponse extends Object?, TRequest extends Request<TResponse>>(
     TRequest request,
   ) async {
     final handler = _requestHandlerStore.getHandlerFor<TResponse, TRequest>();
@@ -55,11 +73,11 @@ class EventManager {
   ///
   /// Returns a [EventSubscriptionBuilder] that allows to build a specific
   /// subscription.
-  EventSubscriptionBuilder<T> on<T>() =>
+  EventSubscriptionBuilder<T> on<T extends DomainEvent>() =>
       EventSubscriptionBuilder.create(_eventHandlerStore);
 
   /// Dispatches the given [event] to the registered [EventHandler]'s.
-  Future<void> dispatch<TEvent>(
+  Future<void> dispatch<TEvent extends DomainEvent>(
     TEvent event, [
     DispatchStrategy? dispatchStrategy,
   ]) async {

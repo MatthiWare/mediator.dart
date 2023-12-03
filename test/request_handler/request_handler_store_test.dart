@@ -12,7 +12,7 @@ void main() {
     });
 
     group('register', () {
-      final mockRequestHandler = MockRequestHandler<int, String>();
+      final mockRequestHandler = MockRequestHandler<int, MockRequest<int>>();
 
       test('it registers the handler', () {
         expect(
@@ -31,7 +31,7 @@ void main() {
     });
 
     group('unregister', () {
-      final mockRequestHandler = MockRequestHandler<int, String>();
+      final mockRequestHandler = MockRequestHandler<int, MockRequest<int>>();
 
       test('it unsubscribes to the event', () {
         requestHandlerStore.register(mockRequestHandler);
@@ -56,29 +56,30 @@ void main() {
     group('getHandlerFor{TResponse, TRequest}', () {
       test('it throws when the handler does not exist', () {
         expect(
-          () => requestHandlerStore.getHandlerFor<int, String>(),
+          () => requestHandlerStore.getHandlerFor<int, MockRequest<int>>(),
           throwsAssertionError,
         );
       });
 
       test('it throws when the handler does not match the types', () {
-        final handlerWithWrongTypes = MockRequestHandler<String, String>();
+        final handlerWithWrongTypes =
+            MockRequestHandler<String, MockRequest<String>>();
 
         requestHandlerStore.register(handlerWithWrongTypes);
 
         expect(
-          () => requestHandlerStore.getHandlerFor<int, String>(),
+          () => requestHandlerStore.getHandlerFor<int, MockRequest<int>>(),
           throwsAssertionError,
         );
       });
 
       test('it returns the request handler', () {
-        final correctHandler = MockRequestHandler<int, String>();
+        final correctHandler = MockRequestHandler<int, MockRequest<int>>();
 
         requestHandlerStore.register(correctHandler);
 
         expect(
-          requestHandlerStore.getHandlerFor<int, String>(),
+          requestHandlerStore.getHandlerFor<int, MockRequest<int>>(),
           correctHandler,
         );
       });
