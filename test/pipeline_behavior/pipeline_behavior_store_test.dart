@@ -19,36 +19,59 @@ void main() {
           () => pipelineBehaviorStore.register(mockBehavior),
           returnsNormally,
         );
-      });
 
-      test('it throws when registering the same handler multiple times', () {
-        pipelineBehaviorStore.register(mockBehavior);
         expect(
-          () => pipelineBehaviorStore.register(mockBehavior),
-          throwsAssertionError,
+          pipelineBehaviorStore.getPipelines<int, String>(),
+          [mockBehavior],
+        );
+      });
+    });
+
+    group('registerGeneric', () {
+      final mockBehavior = MockPipelineBehavior();
+
+      test('it registers the handler', () {
+        expect(
+          () => pipelineBehaviorStore.registerGeneric(mockBehavior),
+          returnsNormally,
+        );
+
+        expect(
+          pipelineBehaviorStore.getPipelines<int, String>(),
+          [mockBehavior],
         );
       });
     });
 
     group('unregister', () {
       final mockBehavior = MockPipelineBehavior<int, String>();
+      final mockGenericBehavior = MockPipelineBehavior<int, String>();
 
-      test('it unsubscribes to the event', () {
+      test('it unregisters the behavior', () {
         pipelineBehaviorStore.register(mockBehavior);
 
         expect(
           () => pipelineBehaviorStore.unregister(mockBehavior),
           returnsNormally,
         );
-      });
-
-      test('it throws when unsubscribing the same handler multiple times', () {
-        pipelineBehaviorStore.register(mockBehavior);
-        pipelineBehaviorStore.unregister(mockBehavior);
 
         expect(
-          () => pipelineBehaviorStore.unregister(mockBehavior),
-          throwsAssertionError,
+          pipelineBehaviorStore.getPipelines<int, String>(),
+          [],
+        );
+      });
+
+      test('it unregisters the generic behavior', () {
+        pipelineBehaviorStore.register(mockGenericBehavior);
+
+        expect(
+          () => pipelineBehaviorStore.unregister(mockGenericBehavior),
+          returnsNormally,
+        );
+
+        expect(
+          pipelineBehaviorStore.getPipelines<int, String>(),
+          [],
         );
       });
     });

@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:dart_event_manager/src/dispatch_strategy.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler.dart';
+import 'package:dart_event_manager/src/request_handler/request_handler.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
 import 'package:dart_event_manager/src/event_subscription_builder.dart';
 import 'package:dart_event_manager/src/request_handler/request_handler_store.dart';
+import 'package:dart_event_manager/src/request_pipeline/pipeline_configurator.dart';
 import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
 import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior_store.dart';
 
@@ -14,6 +16,11 @@ class EventManager {
   final DispatchStrategy _defaultDispatchStrategy;
   final PipelineBehaviorStore _pipelineBehaviorStore;
 
+  /// Configures the request pipeline.
+  ///
+  /// See [PipelineConfigurator] on how to configure them using [PipelineBehavior].
+  PipelineConfigurator get pipeline => _pipelineBehaviorStore;
+
   EventManager(
     this._eventHandlerStore,
     this._requestHandlerStore,
@@ -21,7 +28,14 @@ class EventManager {
     this._defaultDispatchStrategy,
   );
 
-  Future<TResponse> send<TResponse, TRequest>(TRequest request) async {
+  /// Sends a [request] to a single [RequestHandler].
+  ///
+  /// This request can be wrapped by [PipelineBehavior]'s see [pipeline].
+  ///
+  /// This will return [TResponse].
+  Future<TResponse> send<TResponse extends Object?, TRequest extends Object>(
+    TRequest request,
+  ) async {
     final handler = _requestHandlerStore.getHandlerFor<TResponse, TRequest>();
 
     final pipelines =

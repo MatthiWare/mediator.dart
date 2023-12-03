@@ -28,6 +28,15 @@ void main() {
       );
     });
 
+    group('pipeline', () {
+      test('it returns the PipelineConfigurator', () {
+        expect(
+          eventManager.pipeline,
+          mockPipelineBehaviorStore,
+        );
+      });
+    });
+
     group('send{TResponse, TRequest}', () {
       test('it handles the request', () async {
         const input = 123;
@@ -43,6 +52,8 @@ void main() {
             .thenReturn([]);
 
         final result = await eventManager.send<String, int>(input);
+
+        // final x = await eventManager.send(123);
 
         verify(() => mockRequestHandler.handle(input));
 

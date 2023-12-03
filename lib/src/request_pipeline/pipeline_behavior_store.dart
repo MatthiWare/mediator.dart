@@ -1,36 +1,33 @@
+import 'package:dart_event_manager/src/request_pipeline/pipeline_configurator.dart';
 import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
 
-class PipelineBehaviorStore {
-  final _handlers = <PipelineBehavior<Object, Object>>[];
+class PipelineBehaviorStore implements PipelineConfigurator {
+  final _handlers = <PipelineBehavior<Object?, Object>>[];
   final _genericHandlers = <PipelineBehavior>[];
 
-  /// Registers the [behavior].
-  ///
-  /// When using a generic [PipelineBehavior] the [registerGeneric] should be
-  /// used instead.
-  void register<TResponse extends Object, TRequest extends Object>(
+  @override
+  void register<TResponse extends Object?, TRequest extends Object>(
     PipelineBehavior<TResponse, TRequest> behavior,
   ) {
     _handlers.add(behavior);
   }
 
-  /// Registers the generic [behavior].
-  ///
-  /// Note, this should only be used when [register] is not possible.
+  @override
   void registerGeneric(
     PipelineBehavior behavior,
   ) {
     _genericHandlers.add(behavior);
   }
 
-  /// Unregisters the given [behavior].
+  @override
   void unregister(PipelineBehavior behavior) {
     _handlers.remove(behavior);
     _genericHandlers.remove(behavior);
   }
 
   /// Returns all [PipelineBehavior]'s that match.
-  List<PipelineBehavior> getPipelines<TResponse, TRequest>() {
+  List<PipelineBehavior>
+      getPipelines<TResponse extends Object?, TRequest extends Object>() {
     return [
       ..._handlers.whereType<PipelineBehavior<TResponse, TRequest>>(),
       ..._genericHandlers
