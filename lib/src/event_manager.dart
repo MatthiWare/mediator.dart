@@ -45,7 +45,16 @@ class EventManager {
     );
   }
 
+  /// Registers the request [handler] for the given [TRequest].
+  void register<TResponse, TRequest extends Request<TResponse>>(
+    RequestHandler<TResponse, TRequest> handler,
+  ) {
+    _requestHandlerStore.register(handler);
+  }
+
   /// Sends a [request] to a single [RequestHandler].
+  ///
+  /// Make sure the [RequestHandler] is [register]ed before calling this method.
   ///
   /// This request can be wrapped by [PipelineBehavior]'s see [pipeline].
   ///

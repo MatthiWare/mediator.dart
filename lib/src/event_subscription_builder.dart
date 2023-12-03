@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:dart_event_manager/src/event.dart';
 import 'package:dart_event_manager/src/event_manager.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
