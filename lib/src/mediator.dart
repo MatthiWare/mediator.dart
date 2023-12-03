@@ -12,7 +12,7 @@ import 'package:dart_event_manager/src/request_pipeline/pipeline_configurator.da
 import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
 import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior_store.dart';
 
-class EventManager {
+class Mediator {
   final EventHandlerStore _eventHandlerStore;
   final RequestHandlerStore _requestHandlerStore;
   final PipelineBehaviorStore _pipelineBehaviorStore;
@@ -23,21 +23,21 @@ class EventManager {
   /// See [PipelineConfigurator] on how to configure them using [PipelineBehavior].
   PipelineConfigurator get pipeline => _pipelineBehaviorStore;
 
-  EventManager._(
+  Mediator._(
     this._eventHandlerStore,
     this._requestHandlerStore,
     this._pipelineBehaviorStore,
     this._defaultDispatchStrategy,
   );
 
-  factory EventManager({
+  factory Mediator({
     EventHandlerStore? eventHandlerStore,
     RequestHandlerStore? requestHandlerStore,
     PipelineBehaviorStore? pipelineBehaviorStore,
     DispatchStrategy defaultEventDispatchStrategy =
         const DispatchStrategy.concurrent(),
   }) {
-    return EventManager._(
+    return Mediator._(
       eventHandlerStore ?? EventHandlerStore(),
       requestHandlerStore ?? RequestHandlerStore(),
       pipelineBehaviorStore ?? PipelineBehaviorStore(),

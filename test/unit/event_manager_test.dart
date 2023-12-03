@@ -1,4 +1,4 @@
-import 'package:dart_event_manager/src/event_manager.dart';
+import 'package:dart_event_manager/src/mediator.dart';
 import 'package:dart_event_manager/src/event_subscription_builder.dart';
 import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior.dart';
 import 'package:mocktail/mocktail.dart';
@@ -9,7 +9,7 @@ import '../test_data.dart';
 
 void main() {
   group('EventManager', () {
-    late EventManager eventManager;
+    late Mediator eventManager;
     late MockEventHandlerStore mockEventHandlerStore;
     late MockRequestHandlerStore mockRequestHandlerStore;
     late MockPipelineBehaviorStore mockPipelineBehaviorStore;
@@ -21,7 +21,7 @@ void main() {
       mockPipelineBehaviorStore = MockPipelineBehaviorStore();
       mockDispatchStrategy = MockDispatchStrategy();
 
-      eventManager = EventManager(
+      eventManager = Mediator(
         eventHandlerStore: mockEventHandlerStore,
         requestHandlerStore: mockRequestHandlerStore,
         pipelineBehaviorStore: mockPipelineBehaviorStore,

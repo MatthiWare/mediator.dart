@@ -38,7 +38,7 @@ class LoggingBehavior implements PipelineBehavior {
 }
 
 Future<void> main() async {
-  final EventManager mediator = EventManager();
+  final Mediator mediator = Mediator();
 
   mediator.pipeline.registerGeneric(LoggingBehavior());
 

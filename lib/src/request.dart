@@ -1,4 +1,4 @@
-import 'package:dart_event_manager/src/event_manager.dart';
+import 'package:dart_event_manager/src/mediator.dart';
 
 /// Base request that can be used to send requests to their handlers.
 ///
@@ -6,7 +6,7 @@ import 'package:dart_event_manager/src/event_manager.dart';
 ///
 /// Use [Command] if you don't have return data.
 ///
-/// See [EventManager.send]
+/// See [Mediator.send]
 abstract interface class Request<TResponse extends Object?> {}
 
 /// A query [Request] that will return [TResponse].

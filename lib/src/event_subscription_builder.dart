@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:dart_event_manager/src/event_manager.dart';
+import 'package:dart_event_manager/src/mediator.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler.dart';
 import 'package:dart_event_manager/src/event_handler/event_handler_store.dart';
 import 'package:dart_event_manager/src/event_subscription.dart';
@@ -9,7 +9,7 @@ part 'event_subscription_builder/expand_builder.dart';
 part 'event_subscription_builder/map_builder.dart';
 part 'event_subscription_builder/where_builder.dart';
 
-/// Builder that is able to subscribe to the [EventManager].
+/// Builder that is able to subscribe to the [Mediator].
 ///
 /// This is a builder pattern that allows you to manipulate the [T] event
 /// before it reaches the handler defined in either [subscribe] or [subscribeFunction].

@@ -8,7 +8,7 @@ import 'package:dart_event_manager/src/request_pipeline/pipeline_behavior_store.
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockEventManager extends Mock implements EventManager {}
+class MockEventManager extends Mock implements Mediator {}
 
 class MockDispatchStrategy extends Mock implements DispatchStrategy {}
 
