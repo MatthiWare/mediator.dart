@@ -25,8 +25,8 @@ class _MapEventHandler<T, S> implements EventHandler<T> {
   });
 
   @override
-  void handle(T event) {
-    parent.handle(mapper(event));
+  FutureOr<void> handle(T event) {
+    return parent.handle(mapper(event));
   }
 }
 
@@ -59,6 +59,6 @@ class _AsyncMapEventHandler<T, S> implements EventHandler<T> {
 
   @override
   Future<void> handle(T event) async {
-    return parent.handle(await mapper(event));
+    return await parent.handle(await mapper(event));
   }
 }

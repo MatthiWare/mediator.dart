@@ -27,9 +27,9 @@ class _ExpandEventHandler<T> implements EventHandler<T> {
   });
 
   @override
-  void handle(T event) async {
+  Future<void> handle(T event) async {
     for (final element in expand(event)) {
-      parent.handle(element);
+      await parent.handle(element);
     }
   }
 }
