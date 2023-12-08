@@ -13,6 +13,14 @@ class _MapEventSubscriptionBuilder<T, S> extends EventSubscriptionBuilder<S> {
   EventSubscription subscribe(EventHandler<S> handler) {
     return parent.subscribe(_MapEventHandler(parent: handler, mapper: mapper));
   }
+
+  @override
+  EventSubscription subscribeFactory(EventHandlerFactory<S> factory) {
+    return parent.subscribeFactory(() {
+      final handler = factory();
+      return _MapEventHandler(parent: handler, mapper: mapper);
+    });
+  }
 }
 
 class _MapEventHandler<T, S> implements EventHandler<T> {
@@ -45,6 +53,14 @@ class _AsyncMapEventSubscriptionBuilder<T, S>
     return parent.subscribe(
       _AsyncMapEventHandler(parent: handler, mapper: mapper),
     );
+  }
+
+  @override
+  EventSubscription subscribeFactory(EventHandlerFactory<S> factory) {
+    return parent.subscribeFactory(() {
+      final handler = factory();
+      return _AsyncMapEventHandler(parent: handler, mapper: mapper);
+    });
   }
 }
 

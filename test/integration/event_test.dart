@@ -94,6 +94,20 @@ void main() {
           handler2.add(event);
         });
 
+        final handler3 = <int>[];
+        factory() => EventHandler<int>.function(
+              (event) async {
+                await Future.delayed(const Duration(milliseconds: 10));
+                handler3.add(event);
+              },
+            );
+
+        mediator.events
+            .on<DomainIntEvent>()
+            .map((event) => event.count)
+            .where((event) => event > 10)
+            .subscribeFactory(factory);
+
         final events = Iterable.generate(20, (index) => index);
 
         for (final event in events.skip(10)) {
@@ -104,6 +118,7 @@ void main() {
 
         expect(handler1, expected);
         expect(handler2, expected);
+        expect(handler3, expected);
       });
     });
   });

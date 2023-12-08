@@ -15,6 +15,14 @@ class _ExpandEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
       _ExpandEventHandler(parent: handler, expand: convert),
     );
   }
+
+  @override
+  EventSubscription subscribeFactory(EventHandlerFactory<T> factory) {
+    return parent.subscribeFactory(() {
+      final handler = factory();
+      return _ExpandEventHandler(parent: handler, expand: convert);
+    });
+  }
 }
 
 class _ExpandEventHandler<T> implements EventHandler<T> {
@@ -49,6 +57,14 @@ class _AsyncExpandEventSubscriptionBuilder<T>
     return parent.subscribe(
       _AsyncExpandEventHandler(parent: handler, expand: convert),
     );
+  }
+
+  @override
+  EventSubscription subscribeFactory(EventHandlerFactory<T> factory) {
+    return parent.subscribeFactory(() {
+      final handler = factory();
+      return _AsyncExpandEventHandler(parent: handler, expand: convert);
+    });
   }
 }
 

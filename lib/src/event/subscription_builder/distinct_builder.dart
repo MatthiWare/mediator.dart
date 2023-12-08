@@ -14,6 +14,14 @@ class _DistinctEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
     return parent
         .subscribe(_DistinctEventHandler(parent: handler, equals: equals));
   }
+
+  @override
+  EventSubscription subscribeFactory(EventHandlerFactory<T> factory) {
+    return parent.subscribeFactory(() {
+      final handler = factory();
+      return _DistinctEventHandler(parent: handler, equals: equals);
+    });
+  }
 }
 
 class _DistinctEventHandler<T> implements EventHandler<T> {

@@ -15,6 +15,14 @@ class _WhereEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
       _WhereEventHandler(parent: handler, where: test),
     );
   }
+
+  @override
+  EventSubscription subscribeFactory(EventHandlerFactory<T> factory) {
+    return parent.subscribeFactory(() {
+      final handler = factory();
+      return _WhereEventHandler(parent: handler, where: test);
+    });
+  }
 }
 
 class _WhereEventHandler<T> implements EventHandler<T> {

@@ -1,5 +1,8 @@
 import 'dart:async';
 
+/// Factory to create a [EventHandler].
+typedef EventHandlerFactory<TEvent> = EventHandler<TEvent> Function();
+
 /// Handler for [TEvent].
 abstract interface class EventHandler<TEvent> {
   /// Function based event handler

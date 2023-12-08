@@ -104,6 +104,12 @@ abstract class EventSubscriptionBuilder<T> {
   /// This finalizes the builder and applies all the steps
   /// before subscribing.
   EventSubscription subscribe(EventHandler<T> handler);
+
+  /// Subscribes to the given [factory].
+  ///
+  /// This finalizes the builder and applies all the steps
+  /// before subscribing.
+  EventSubscription subscribeFactory(EventHandlerFactory<T> factory);
 }
 
 extension EventSubscriptionBuilderFunctionExtension<T>
@@ -131,6 +137,17 @@ class _EventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
     );
 
     _store.register(handler);
+
+    return subscription;
+  }
+
+  @override
+  EventSubscription subscribeFactory(EventHandlerFactory<T> factory) {
+    final subscription = EventSubscription(
+      () => _store.unregisterFactory(factory),
+    );
+
+    _store.registerFactory(factory);
 
     return subscription;
   }
