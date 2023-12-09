@@ -1,27 +1,17 @@
 part of 'event_subscription_builder.dart';
 
-class _WhereEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
-  final EventSubscriptionBuilder<T> parent;
+class _WhereEventSubscriptionBuilder<T>
+    extends BaseEventSubscriptionBuilder<T, T> {
   final bool Function(T event) test;
 
   _WhereEventSubscriptionBuilder({
-    required this.parent,
+    required super.parent,
     required this.test,
   });
 
   @override
-  EventSubscription subscribe(EventHandler<T> handler) {
-    return parent.subscribe(
-      _WhereEventHandler(parent: handler, where: test),
-    );
-  }
-
-  @override
-  EventSubscription subscribeFactory(EventHandlerFactory<T> factory) {
-    return parent.subscribeFactory(() {
-      final handler = factory();
-      return _WhereEventHandler(parent: handler, where: test);
-    });
+  EventHandler<T> createHandler(EventHandler<T> handler) {
+    return _WhereEventHandler(parent: handler, where: test);
   }
 }
 

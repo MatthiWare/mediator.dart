@@ -1,25 +1,17 @@
 part of 'event_subscription_builder.dart';
 
-class _MapEventSubscriptionBuilder<T, S> extends EventSubscriptionBuilder<S> {
-  final EventSubscriptionBuilder<T> parent;
+class _MapEventSubscriptionBuilder<T, S>
+    extends BaseEventSubscriptionBuilder<T, S> {
   final S Function(T event) mapper;
 
   _MapEventSubscriptionBuilder({
-    required this.parent,
+    required super.parent,
     required this.mapper,
   });
 
   @override
-  EventSubscription subscribe(EventHandler<S> handler) {
-    return parent.subscribe(_MapEventHandler(parent: handler, mapper: mapper));
-  }
-
-  @override
-  EventSubscription subscribeFactory(EventHandlerFactory<S> factory) {
-    return parent.subscribeFactory(() {
-      final handler = factory();
-      return _MapEventHandler(parent: handler, mapper: mapper);
-    });
+  EventHandler<T> createHandler(EventHandler<S> handler) {
+    return _MapEventHandler(parent: handler, mapper: mapper);
   }
 }
 
@@ -39,28 +31,17 @@ class _MapEventHandler<T, S> implements EventHandler<T> {
 }
 
 class _AsyncMapEventSubscriptionBuilder<T, S>
-    extends EventSubscriptionBuilder<S> {
-  final EventSubscriptionBuilder<T> parent;
+    extends BaseEventSubscriptionBuilder<T, S> {
   final Future<S> Function(T event) mapper;
 
   _AsyncMapEventSubscriptionBuilder({
-    required this.parent,
+    required super.parent,
     required this.mapper,
   });
 
   @override
-  EventSubscription subscribe(EventHandler<S> handler) {
-    return parent.subscribe(
-      _AsyncMapEventHandler(parent: handler, mapper: mapper),
-    );
-  }
-
-  @override
-  EventSubscription subscribeFactory(EventHandlerFactory<S> factory) {
-    return parent.subscribeFactory(() {
-      final handler = factory();
-      return _AsyncMapEventHandler(parent: handler, mapper: mapper);
-    });
+  EventHandler<T> createHandler(EventHandler<S> handler) {
+    return _AsyncMapEventHandler(parent: handler, mapper: mapper);
   }
 }
 
@@ -75,6 +56,6 @@ class _AsyncMapEventHandler<T, S> implements EventHandler<T> {
 
   @override
   Future<void> handle(T event) async {
-    return await parent.handle(await mapper(event));
+    await parent.handle(await mapper(event));
   }
 }

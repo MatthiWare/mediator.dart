@@ -1,27 +1,17 @@
 part of 'event_subscription_builder.dart';
 
-class _ExpandEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
-  final EventSubscriptionBuilder<T> parent;
+class _ExpandEventSubscriptionBuilder<T>
+    extends BaseEventSubscriptionBuilder<T, T> {
   final Iterable<T> Function(T element) convert;
 
   _ExpandEventSubscriptionBuilder({
-    required this.parent,
+    required super.parent,
     required this.convert,
   });
 
   @override
-  EventSubscription subscribe(EventHandler<T> handler) {
-    return parent.subscribe(
-      _ExpandEventHandler(parent: handler, expand: convert),
-    );
-  }
-
-  @override
-  EventSubscription subscribeFactory(EventHandlerFactory<T> factory) {
-    return parent.subscribeFactory(() {
-      final handler = factory();
-      return _ExpandEventHandler(parent: handler, expand: convert);
-    });
+  EventHandler<T> createHandler(EventHandler<T> handler) {
+    return _ExpandEventHandler(parent: handler, expand: convert);
   }
 }
 
@@ -43,28 +33,17 @@ class _ExpandEventHandler<T> implements EventHandler<T> {
 }
 
 class _AsyncExpandEventSubscriptionBuilder<T>
-    extends EventSubscriptionBuilder<T> {
-  final EventSubscriptionBuilder<T> parent;
+    extends BaseEventSubscriptionBuilder<T, T> {
   final Stream<T> Function(T element) convert;
 
   _AsyncExpandEventSubscriptionBuilder({
-    required this.parent,
+    required super.parent,
     required this.convert,
   });
 
   @override
-  EventSubscription subscribe(EventHandler<T> handler) {
-    return parent.subscribe(
-      _AsyncExpandEventHandler(parent: handler, expand: convert),
-    );
-  }
-
-  @override
-  EventSubscription subscribeFactory(EventHandlerFactory<T> factory) {
-    return parent.subscribeFactory(() {
-      final handler = factory();
-      return _AsyncExpandEventHandler(parent: handler, expand: convert);
-    });
+  EventHandler<T> createHandler(EventHandler<T> handler) {
+    return _AsyncExpandEventHandler(parent: handler, expand: convert);
   }
 }
 

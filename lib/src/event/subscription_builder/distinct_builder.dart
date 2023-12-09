@@ -1,26 +1,17 @@
 part of 'event_subscription_builder.dart';
 
-class _DistinctEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
-  final EventSubscriptionBuilder<T> parent;
+class _DistinctEventSubscriptionBuilder<T>
+    extends BaseEventSubscriptionBuilder<T, T> {
   final bool Function(T previous, T next) equals;
 
   _DistinctEventSubscriptionBuilder({
-    required this.parent,
+    required super.parent,
     required this.equals,
   });
 
   @override
-  EventSubscription subscribe(EventHandler<T> handler) {
-    return parent
-        .subscribe(_DistinctEventHandler(parent: handler, equals: equals));
-  }
-
-  @override
-  EventSubscription subscribeFactory(EventHandlerFactory<T> factory) {
-    return parent.subscribeFactory(() {
-      final handler = factory();
-      return _DistinctEventHandler(parent: handler, equals: equals);
-    });
+  EventHandler<T> createHandler(EventHandler<T> handler) {
+    return _DistinctEventHandler(parent: handler, equals: equals);
   }
 }
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:meta/meta.dart';
 import 'package:dart_event_manager/src/mediator.dart';
 import 'package:dart_event_manager/src/event/handler/event_handler.dart';
 import 'package:dart_event_manager/src/event/handler/event_handler_store.dart';
@@ -150,5 +151,37 @@ class _EventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
     _store.registerFactory(factory);
 
     return subscription;
+  }
+}
+
+/// Base for implementing custom [EventSubscriptionBuilder].
+///
+/// [TInput] is the input received by the handler
+/// [TOutput] is the output being send to the next handler
+abstract class BaseEventSubscriptionBuilder<TInput, TOutput>
+    extends EventSubscriptionBuilder<TOutput> {
+  /// The parent [EventSubscriptionBuilder] that this builder is wrapping.
+  final EventSubscriptionBuilder<TInput> parent;
+
+  BaseEventSubscriptionBuilder({
+    required this.parent,
+  });
+
+  /// Creates the [EventHandler] for this builder based on the parent [handler].
+  @protected
+  @mustBeOverridden
+  EventHandler<TInput> createHandler(EventHandler<TOutput> handler);
+
+  @override
+  EventSubscription subscribe(EventHandler<TOutput> handler) {
+    return parent.subscribe(createHandler(handler));
+  }
+
+  @override
+  EventSubscription subscribeFactory(EventHandlerFactory<TOutput> factory) {
+    return parent.subscribeFactory(() {
+      final handler = factory();
+      return createHandler(handler);
+    });
   }
 }
