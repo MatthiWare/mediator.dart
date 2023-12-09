@@ -1,5 +1,7 @@
 import 'package:dart_event_manager/src/event/dispatch/dispatch_strategy.dart';
+import 'package:dart_event_manager/src/event/event.dart';
 import 'package:dart_event_manager/src/event/handler/event_handler.dart';
+import 'package:dart_event_manager/src/event/observer/event_observer.dart';
 
 /// [DispatchStrategy] that handles events one by one.
 ///
@@ -12,12 +14,23 @@ class SequentialDispatchStrategy implements DispatchStrategy {
   const SequentialDispatchStrategy();
 
   @override
-  Future<void> execute<TEvent>(
+  Future<void> execute<TEvent extends DomainEvent>(
     Set<EventHandler<TEvent>> handlers,
     TEvent event,
+    List<EventObserver> observers,
   ) async {
     for (final handler in handlers) {
-      await handler.handle(event);
+      try {
+        await handler.handle(event);
+        for (final observer in observers) {
+          observer.onHandled<TEvent>(event, handler);
+        }
+      } catch (e, stackTrace) {
+        for (final observer in observers) {
+          observer.onError(event, handler, e, stackTrace);
+        }
+        rethrow;
+      }
     }
   }
 }

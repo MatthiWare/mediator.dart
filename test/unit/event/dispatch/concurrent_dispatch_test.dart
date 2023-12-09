@@ -3,44 +3,82 @@ import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import '../../../mocks.dart';
+import '../../../test_data.dart';
 
 void main() {
   group('ConcurrentDispatchStrategy', () {
     const strategy = DispatchStrategy.concurrent();
 
+    setUpAll(() {
+      registerFallbackValue(StackTrace.empty);
+    });
+
     group('execute', () {
       test('it executes all handlers', () async {
-        final handlerA = MockEventHandler<int>();
-        final handlerB = MockEventHandler<int>();
+        final handlerA = MockEventHandler<DomainIntEvent>();
+        final handlerB = MockEventHandler<DomainIntEvent>();
         final handlers = {handlerA, handlerB};
-        const event = 123;
+        const event = DomainIntEvent(123);
 
         when(() => handlerA.handle(event)).thenAnswer((_) => Future.value());
         when(() => handlerA.handle(event)).thenAnswer((_) => Future.value());
 
-        await strategy.execute(handlers, event);
+        await strategy.execute(handlers, event, []);
 
         verify(() => handlerA.handle(event));
         verify(() => handlerB.handle(event));
       });
 
+      test('it calls onHandled on observers', () async {
+        final handler = MockEventHandler<DomainIntEvent>();
+        final observer = MockEventObserver();
+        final handlers = {handler};
+        const event = DomainIntEvent(123);
+
+        when(() => handler.handle(event)).thenAnswer((_) => Future.value());
+
+        await strategy.execute(handlers, event, [observer]);
+
+        verify(() => observer.onHandled(event, handler));
+      });
+
+      test('it calls onError on observer', () async {
+        final handler = MockEventHandler<DomainIntEvent>();
+        final observer = MockEventObserver();
+        final handlers = {handler};
+        const event = DomainIntEvent(123);
+
+        when(() => handler.handle(event))
+            .thenAnswer((_) async => throw StateError('oops'));
+
+        await expectLater(
+          () => strategy.execute(handlers, event, [observer]),
+          throwsStateError,
+        );
+
+        verify(
+          () =>
+              observer.onError(event, handler, isStateError, any<StackTrace>()),
+        );
+      });
+
       test('it executes all handlers concurrently', () async {
         var count = 0;
 
-        Future<void> handle(int event) async {
-          final newCount = count + event;
+        Future<void> handle(DomainIntEvent event) async {
+          final newCount = count + event.count;
           await Future.delayed(const Duration(milliseconds: 0));
           count = newCount;
         }
 
-        final handlerA = EventHandler<int>.function(handle);
-        final handlerB = EventHandler<int>.function(handle);
-        final handlerC = EventHandler<int>.function(handle);
+        final handlerA = EventHandler<DomainIntEvent>.function(handle);
+        final handlerB = EventHandler<DomainIntEvent>.function(handle);
+        final handlerC = EventHandler<DomainIntEvent>.function(handle);
 
         final handlers = {handlerA, handlerB, handlerC};
-        const event = 1;
+        const event = DomainIntEvent(1);
 
-        await strategy.execute(handlers, event);
+        await strategy.execute(handlers, event, []);
 
         expect(
           count,

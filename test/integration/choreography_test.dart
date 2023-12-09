@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dart_event_manager/contracts.dart';
 import 'package:dart_event_manager/event_manager.dart';
+import 'package:dart_event_manager/src/event/observer/event_observer.dart';
 import 'package:dart_event_manager/src/request/handler/request_handler.dart';
 import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior.dart';
 import 'package:test/test.dart';
@@ -13,7 +14,9 @@ late List<String> events;
 void main() {
   group('Mediator', () {
     setUp(() {
-      mediator = Mediator();
+      mediator = Mediator(eventObservers: [
+        LoggingEventObserver(),
+      ]);
       inventory = Inventory({
         'mouse': 10,
         'keyboard': 10,
@@ -158,5 +161,32 @@ class InventoryAdjustedEventHandler
     final after = event.after;
 
     print('Item $itemId adjusted by $adjustment new stock $after');
+  }
+}
+
+class LoggingEventObserver implements EventObserver {
+  @override
+  void onDispatch<TEvent extends DomainEvent>(
+    TEvent event,
+    Set<EventHandler<TEvent>> handlers,
+  ) {
+    print(
+        '$LoggingEventObserver: onDispatch $event with ${handlers.length} handlers');
+  }
+
+  @override
+  void onError<TEvent extends DomainEvent>(
+    TEvent event,
+    EventHandler<TEvent> handler,
+    Object error,
+    StackTrace stackTrace,
+  ) {
+    print('$LoggingEventObserver: onError $event -> $handler ($error)');
+  }
+
+  @override
+  void onHandled<TEvent extends DomainEvent>(
+      TEvent event, EventHandler<TEvent> handler) {
+    print('$LoggingEventObserver: onHandled $event -> $handler');
   }
 }

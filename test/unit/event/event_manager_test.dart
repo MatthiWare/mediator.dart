@@ -11,13 +11,16 @@ void main() {
     late EventManager eventManager;
     late MockEventHandlerStore mockEventHandlerStore;
     late MockDispatchStrategy mockDispatchStrategy;
+    late MockEventObserver mockEventObserver;
 
     setUp(() {
       mockEventHandlerStore = MockEventHandlerStore();
       mockDispatchStrategy = MockDispatchStrategy();
+      mockEventObserver = MockEventObserver();
 
       eventManager = EventManager(
         eventHandlerStore: mockEventHandlerStore,
+        observers: [mockEventObserver],
         defaultDispatchStrategy: mockDispatchStrategy,
       );
     });
@@ -53,12 +56,27 @@ void main() {
         when(() => mockEventHandlerStore.getHandlersFor<DomainIntEvent>())
             .thenReturn(handlers);
 
-        when(() => mockDispatchStrategy.execute<DomainIntEvent>(any(), any()))
-            .thenAnswer((_) => Future.value());
+        when(() => mockDispatchStrategy.execute<DomainIntEvent>(
+            any(), any(), any())).thenAnswer((_) => Future.value());
 
         await eventManager.dispatch(event);
 
-        verify(() => mockDispatchStrategy.execute(handlers, event));
+        verify(() =>
+            mockDispatchStrategy.execute(handlers, event, [mockEventObserver]));
+      });
+
+      test('it calls onDispatch', () async {
+        final handlers = {MockEventHandler<DomainIntEvent>()};
+
+        when(() => mockEventHandlerStore.getHandlersFor<DomainIntEvent>())
+            .thenReturn(handlers);
+
+        when(() => mockDispatchStrategy.execute<DomainIntEvent>(
+            any(), any(), any())).thenAnswer((_) => Future.value());
+
+        await eventManager.dispatch(event);
+
+        verify(() => mockEventObserver.onDispatch(event, handlers));
       });
     });
   });

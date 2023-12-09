@@ -1,23 +1,28 @@
 import 'package:dart_event_manager/src/event/dispatch/dispatch_strategy.dart';
 import 'package:dart_event_manager/src/event/event.dart';
 import 'package:dart_event_manager/src/event/handler/event_handler_store.dart';
+import 'package:dart_event_manager/src/event/observer/event_observer.dart';
 import 'package:dart_event_manager/src/event/subscription_builder/event_subscription_builder.dart';
 
 class EventManager {
   final EventHandlerStore _eventHandlerStore;
+  final List<EventObserver> _observers;
   final DispatchStrategy _defaultDispatchStrategy;
 
   EventManager._(
     this._eventHandlerStore,
+    this._observers,
     this._defaultDispatchStrategy,
   );
 
   factory EventManager({
     EventHandlerStore? eventHandlerStore,
+    List<EventObserver>? observers,
     required DispatchStrategy defaultDispatchStrategy,
   }) {
     return EventManager._(
       eventHandlerStore ?? EventHandlerStore(),
+      observers ?? [],
       defaultDispatchStrategy,
     );
   }
@@ -41,7 +46,11 @@ class EventManager {
       'dispatch<$TEvent> was invoked but no handlers are registered to handle this',
     );
 
+    for (final observer in _observers) {
+      observer.onDispatch(event, handlers);
+    }
+
     await (dispatchStrategy ?? _defaultDispatchStrategy)
-        .execute(handlers, event);
+        .execute(handlers, event, _observers);
   }
 }
