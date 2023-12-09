@@ -2,18 +2,9 @@ import 'dart:async';
 
 import 'package:dart_event_manager/event_manager.dart';
 import 'package:dart_event_manager/src/event/subscription_builder/event_subscription_builder.dart';
-import 'package:dart_event_manager/src/request/handler/request_handler.dart';
 import 'package:test/test.dart';
 
 import '../test_data.dart';
-
-class GetDataQueryHandler implements RequestHandler<String, GetDataQuery> {
-  @override
-  Future<String> handle(GetDataQuery request) async {
-    await Future.delayed(const Duration(milliseconds: 10));
-    return request.id.toString();
-  }
-}
 
 void main() {
   group('Mediator', () {
