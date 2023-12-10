@@ -1,6 +1,6 @@
-import 'package:dart_event_manager/src/event/event.dart';
-import 'package:dart_event_manager/src/event/handler/event_handler.dart';
-import 'package:dart_event_manager/src/event/dispatch/dispatch_strategy.dart';
+import 'package:dart_mediator/src/event/event.dart';
+import 'package:dart_mediator/src/event/handler/event_handler.dart';
+import 'package:dart_mediator/src/event/dispatch/dispatch_strategy.dart';
 
 /// Observer for [DomainEvent]'s.
 abstract interface class EventObserver {

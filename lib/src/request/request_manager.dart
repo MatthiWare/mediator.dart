@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:dart_event_manager/src/request/handler/request_handler.dart';
-import 'package:dart_event_manager/src/request/handler/request_handler_store.dart';
-import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior.dart';
-import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior_store.dart';
-import 'package:dart_event_manager/src/request/pipeline/pipeline_configurator.dart';
-import 'package:dart_event_manager/src/request/request.dart';
+import 'package:dart_mediator/src/request/handler/request_handler.dart';
+import 'package:dart_mediator/src/request/handler/request_handler_store.dart';
+import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
+import 'package:dart_mediator/src/request/pipeline/pipeline_behavior_store.dart';
+import 'package:dart_mediator/src/request/pipeline/pipeline_configurator.dart';
+import 'package:dart_mediator/src/request/request.dart';
 
 class RequestManager {
   final RequestHandlerStore _requestHandlerStore;

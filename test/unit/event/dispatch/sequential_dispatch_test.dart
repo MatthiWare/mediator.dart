@@ -1,4 +1,4 @@
-import 'package:dart_event_manager/event_manager.dart';
+import 'package:dart_mediator/event_manager.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 

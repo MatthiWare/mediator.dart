@@ -1,5 +1,5 @@
-import 'package:dart_event_manager/src/event/event_manager.dart';
-import 'package:dart_event_manager/src/event/subscription_builder/event_subscription_builder.dart';
+import 'package:dart_mediator/src/event/event_manager.dart';
+import 'package:dart_mediator/src/event/subscription_builder/event_subscription_builder.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 

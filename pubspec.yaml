@@ -1,5 +1,7 @@
-name: dart_event_manager
-description: A starting point for Dart libraries or applications.
+name: dart_mediator
+description: >
+  A simple yet highly configurable Mediator implementation
+  that allows sending requests and publishing events.
 version: 0.1.0
 repository: https://github.com/MatthiWare/event_manager.dart
 

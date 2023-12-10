@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:dart_event_manager/contracts.dart';
-import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior.dart';
+import 'package:dart_mediator/contracts.dart';
+import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
 
 class DomainIntEvent implements DomainEvent {
   final int count;

@@ -1,4 +1,4 @@
-import 'package:dart_event_manager/src/mediator.dart';
+import 'package:dart_mediator/src/mediator.dart';
 
 /// Base request that can be used to send requests to their handlers.
 ///

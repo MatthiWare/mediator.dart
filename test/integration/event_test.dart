@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:dart_event_manager/event_manager.dart';
-import 'package:dart_event_manager/src/event/subscription_builder/event_subscription_builder.dart';
+import 'package:dart_mediator/event_manager.dart';
+import 'package:dart_mediator/src/event/subscription_builder/event_subscription_builder.dart';
 import 'package:test/test.dart';
 
 import '../test_data.dart';

@@ -1,4 +1,4 @@
-import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior_store.dart';
+import 'package:dart_mediator/src/request/pipeline/pipeline_behavior_store.dart';
 import 'package:test/test.dart';
 
 import '../../../mocks.dart';

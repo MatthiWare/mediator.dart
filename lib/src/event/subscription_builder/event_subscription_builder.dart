@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:meta/meta.dart';
-import 'package:dart_event_manager/src/mediator.dart';
-import 'package:dart_event_manager/src/event/handler/event_handler.dart';
-import 'package:dart_event_manager/src/event/handler/event_handler_store.dart';
-import 'package:dart_event_manager/src/event/event_subscription.dart';
+import 'package:dart_mediator/src/mediator.dart';
+import 'package:dart_mediator/src/event/handler/event_handler.dart';
+import 'package:dart_mediator/src/event/handler/event_handler_store.dart';
+import 'package:dart_mediator/src/event/event_subscription.dart';
 
 part 'distinct_builder.dart';
 part 'expand_builder.dart';

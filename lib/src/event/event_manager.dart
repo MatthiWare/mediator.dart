@@ -1,8 +1,8 @@
-import 'package:dart_event_manager/src/event/dispatch/dispatch_strategy.dart';
-import 'package:dart_event_manager/src/event/event.dart';
-import 'package:dart_event_manager/src/event/handler/event_handler_store.dart';
-import 'package:dart_event_manager/src/event/observer/event_observer.dart';
-import 'package:dart_event_manager/src/event/subscription_builder/event_subscription_builder.dart';
+import 'package:dart_mediator/src/event/dispatch/dispatch_strategy.dart';
+import 'package:dart_mediator/src/event/event.dart';
+import 'package:dart_mediator/src/event/handler/event_handler_store.dart';
+import 'package:dart_mediator/src/event/observer/event_observer.dart';
+import 'package:dart_mediator/src/event/subscription_builder/event_subscription_builder.dart';
 
 class EventManager {
   final EventHandlerStore _eventHandlerStore;

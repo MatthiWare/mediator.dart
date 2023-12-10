@@ -1,4 +1,4 @@
-import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior.dart';
+import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
 
 /// Factory to create a [PipelineBehavior].
 typedef PipelineBehaviorFactory<TRequest, TResponse>

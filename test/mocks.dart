@@ -1,12 +1,12 @@
-import 'package:dart_event_manager/contracts.dart';
-import 'package:dart_event_manager/event_manager.dart';
-import 'package:dart_event_manager/src/event/handler/event_handler_store.dart';
-import 'package:dart_event_manager/src/event/observer/event_observer.dart';
-import 'package:dart_event_manager/src/request/handler/request_handler.dart';
-import 'package:dart_event_manager/src/request/handler/request_handler_store.dart';
-import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior.dart';
-import 'package:dart_event_manager/src/request/pipeline/pipeline_behavior_store.dart';
-import 'package:dart_event_manager/src/request/request_manager.dart';
+import 'package:dart_mediator/contracts.dart';
+import 'package:dart_mediator/event_manager.dart';
+import 'package:dart_mediator/src/event/handler/event_handler_store.dart';
+import 'package:dart_mediator/src/event/observer/event_observer.dart';
+import 'package:dart_mediator/src/request/handler/request_handler.dart';
+import 'package:dart_mediator/src/request/handler/request_handler_store.dart';
+import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
+import 'package:dart_mediator/src/request/pipeline/pipeline_behavior_store.dart';
+import 'package:dart_mediator/src/request/request_manager.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 

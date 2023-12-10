@@ -1,8 +1,8 @@
-import 'package:dart_event_manager/src/event/event.dart';
-import 'package:dart_event_manager/src/event/handler/event_handler.dart';
-import 'package:dart_event_manager/src/event/dispatch/concurrent_strategy.dart';
-import 'package:dart_event_manager/src/event/dispatch/sequential_strategy.dart';
-import 'package:dart_event_manager/src/event/observer/event_observer.dart';
+import 'package:dart_mediator/src/event/event.dart';
+import 'package:dart_mediator/src/event/handler/event_handler.dart';
+import 'package:dart_mediator/src/event/dispatch/concurrent_strategy.dart';
+import 'package:dart_mediator/src/event/dispatch/sequential_strategy.dart';
+import 'package:dart_mediator/src/event/observer/event_observer.dart';
 
 /// Strategy to use for dispatching events to the handlers
 abstract interface class DispatchStrategy {

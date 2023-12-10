@@ -1,5 +1,5 @@
-import 'package:dart_event_manager/src/request/request.dart';
-import 'package:dart_event_manager/src/request/handler/request_handler.dart';
+import 'package:dart_mediator/src/request/request.dart';
+import 'package:dart_mediator/src/request/handler/request_handler.dart';
 
 class RequestHandlerStore {
   final _handlers = <Type, RequestHandler>{};
