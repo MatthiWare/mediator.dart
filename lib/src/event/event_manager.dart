@@ -18,7 +18,8 @@ class EventManager {
   factory EventManager({
     EventHandlerStore? eventHandlerStore,
     List<EventObserver>? observers,
-    required DispatchStrategy defaultDispatchStrategy,
+    DispatchStrategy defaultDispatchStrategy =
+        const DispatchStrategy.concurrent(),
   }) {
     return EventManager._(
       eventHandlerStore ?? EventHandlerStore(),

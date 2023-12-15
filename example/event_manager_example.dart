@@ -1,10 +1,6 @@
 import 'dart:async';
 
-import 'package:dart_mediator/contracts.dart';
-import 'package:dart_mediator/event_manager.dart';
-import 'package:dart_mediator/src/event/subscription_builder/event_subscription_builder.dart';
-import 'package:dart_mediator/src/request/handler/request_handler.dart';
-import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
+import 'package:dart_mediator/mediator.dart';
 import 'package:test/test.dart';
 
 class Event implements DomainEvent {
@@ -20,7 +16,6 @@ class RequestEvent implements Query<String> {
 class RequestEventHandler implements RequestHandler<String, RequestEvent> {
   @override
   FutureOr<String> handle(RequestEvent request) {
-    // throw UnimplementedError("oops");
     return request.data.toString();
   }
 }

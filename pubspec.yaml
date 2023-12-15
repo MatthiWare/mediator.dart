@@ -10,7 +10,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  meta: ^1.11.0
+  meta: any
 
 dev_dependencies:
   lints: ^3.0.0

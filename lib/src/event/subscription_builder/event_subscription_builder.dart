@@ -23,7 +23,7 @@ abstract class EventSubscriptionBuilder<T> {
 
   /// Creates a new [EventSubscriptionBuilder] this can be used to mutate
   /// the events before they reach the [EventHandler] using the builder pattern.
-  factory EventSubscriptionBuilder.create(EventHandlerStore eventManager) =
+  factory EventSubscriptionBuilder.create(EventHandlerStore store) =
       _EventSubscriptionBuilder;
 
   /// Transforms each event.
