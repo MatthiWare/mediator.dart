@@ -15,7 +15,7 @@ class DomainIntEvent implements DomainEvent {
   }
 }
 
-class GetDataQuery implements Request<String> {
+class GetDataQuery implements Query<String> {
   final int id;
 
   const GetDataQuery(this.id);

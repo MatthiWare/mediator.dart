@@ -24,6 +24,7 @@ void main() {
       test('it places the order', () async {
         // Requests
         mediator.requests.register(PlaceOrderCommandHandler());
+        mediator.requests.register(GetInventoryQueryHandler());
         mediator.requests.pipeline.register(PlaceOrderValidationBehavior());
         mediator.requests.pipeline.registerGeneric(LoggingBehavior());
 
@@ -43,7 +44,10 @@ void main() {
           ),
         );
 
-        expect(inventory.inventory, {
+        final stock = await mediator.requests
+            .send<Map<String, int>, GetInventoryQuery>(GetInventoryQuery());
+
+        expect(stock, {
           'mouse': 8,
           'keyboard': 9,
         });
@@ -74,9 +78,12 @@ class Inventory {
 class LoggingBehavior implements PipelineBehavior {
   @override
   FutureOr handle(request, RequestHandlerDelegate next) async {
-    print('$LoggingBehavior: Handeling ${request.runtimeType}');
-    await next();
-    print('$LoggingBehavior: ${request.runtimeType} completed');
+    try {
+      print('$LoggingBehavior: Handeling $request');
+      return await next();
+    } finally {
+      print('$LoggingBehavior: $request completed');
+    }
   }
 }
 
@@ -97,15 +104,32 @@ class PlaceOrderValidationBehavior
   }
 }
 
+class GetInventoryQuery implements Query<Map<String, int>> {
+  GetInventoryQuery();
+
+  @override
+  String toString() => '$GetInventoryQuery';
+}
+
+class GetInventoryQueryHandler
+    implements QueryHandler<Map<String, int>, GetInventoryQuery> {
+  @override
+  Future<Map<String, int>> handle(GetInventoryQuery query) async {
+    return inventory.inventory;
+  }
+}
+
 class PlaceOrderCommand implements Command {
   final String orderId;
   final Map<String, int> items;
 
   const PlaceOrderCommand(this.orderId, this.items);
+
+  @override
+  String toString() => '$PlaceOrderCommand(orderId: $orderId, items: $items)';
 }
 
-class PlaceOrderCommandHandler
-    implements RequestHandler<void, PlaceOrderCommand> {
+class PlaceOrderCommandHandler implements CommandHandler<PlaceOrderCommand> {
   @override
   Future<void> handle(PlaceOrderCommand request) async {
     await mediator.events.dispatch(
@@ -119,6 +143,9 @@ class OrderPlacedEvent implements DomainEvent {
   final Map<String, int> items;
 
   const OrderPlacedEvent(this.orderId, this.items);
+
+  @override
+  String toString() => '$OrderPlacedEvent(orderId: $orderId, items: $items)';
 }
 
 class OrderPlacedEventHandler implements EventHandler<OrderPlacedEvent> {
@@ -146,6 +173,10 @@ class InventoryAdjustedEvent implements DomainEvent {
     this.adjustment,
     this.after,
   );
+
+  @override
+  String toString() =>
+      '$InventoryAdjustedEvent(itemId: $itemId, adjustment: $adjustment, after: $after)';
 }
 
 class InventoryAdjustedEventHandler
@@ -156,7 +187,8 @@ class InventoryAdjustedEventHandler
     final adjustment = event.adjustment;
     final after = event.after;
 
-    print('Item $itemId adjusted by $adjustment new stock $after');
+    print(
+        '$InventoryAdjustedEventHandler: Item $itemId adjusted by $adjustment new stock $after');
   }
 }
 
@@ -167,7 +199,8 @@ class LoggingEventObserver implements EventObserver {
     Set<EventHandler<TEvent>> handlers,
   ) {
     print(
-        '$LoggingEventObserver: onDispatch $event with ${handlers.length} handlers');
+      '$LoggingEventObserver: onDispatch $event with ${handlers.length} handlers',
+    );
   }
 
   @override
@@ -177,12 +210,15 @@ class LoggingEventObserver implements EventObserver {
     Object error,
     StackTrace stackTrace,
   ) {
-    print('$LoggingEventObserver: onError $event -> $handler ($error)');
+    print(
+        '$LoggingEventObserver: onError $event -> ${handler.runtimeType} ($error)');
   }
 
   @override
   void onHandled<TEvent extends DomainEvent>(
-      TEvent event, EventHandler<TEvent> handler) {
-    print('$LoggingEventObserver: onHandled $event -> $handler');
+    TEvent event,
+    EventHandler<TEvent> handler,
+  ) {
+    print('$LoggingEventObserver: onHandled $event -> ${handler.runtimeType}');
   }
 }

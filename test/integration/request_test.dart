@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 import '../test_data.dart';
 
-class GetDataQueryHandler implements RequestHandler<String, GetDataQuery> {
+class GetDataQueryHandler implements QueryHandler<String, GetDataQuery> {
   @override
   Future<String> handle(GetDataQuery request) async {
     await Future.delayed(const Duration(milliseconds: 10));

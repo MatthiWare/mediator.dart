@@ -61,6 +61,16 @@ class RequestManager {
       (next, pipeline) => () => pipeline.handle(request, next),
     );
 
-    return await executionPlan();
+    final response = await executionPlan();
+
+    assert(
+      response is TResponse,
+      '$TRequest expected a return type of $TResponse but '
+      'got one of type ${response.runtimeType}. '
+      'One of the registered pipelines is not correctly returning the '
+      '`next()` call. Pipelines used: $pipelines',
+    );
+
+    return response;
   }
 }

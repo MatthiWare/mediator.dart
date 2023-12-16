@@ -1,4 +1,5 @@
 import 'package:dart_mediator/mediator.dart';
+import 'package:dart_mediator/src/request/handler/request_handler.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 

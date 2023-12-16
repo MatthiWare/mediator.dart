@@ -106,6 +106,33 @@ void main() {
 
         expect(invoked, isTrue);
       });
+
+      test('it throws when pipeline is misconfigured', () async {
+        final mockWrongBehavior = MockPipelineBehavior();
+
+        when(() => mockRequestHandler.handle(mockRequest)).thenReturn(output);
+
+        when(() => mockRequestHandlerStore
+                .getHandlerFor<String, MockRequest<String>>())
+            .thenReturn(mockRequestHandler);
+
+        when(() => mockWrongBehavior.handle(mockRequest, captureAny()))
+            .thenAnswer((invocation) async {
+          final handler = invocation.positionalArguments[1]
+              as RequestHandlerDelegate<String>;
+
+          await handler(); // don't return on purpose
+        });
+
+        when(() => mockPipelineBehaviorStore
+                .getPipelines<String, MockRequest<String>>())
+            .thenReturn([mockWrongBehavior]);
+
+        await expectLater(
+          () => requestsManager.send<String, MockRequest<String>>(mockRequest),
+          throwsAssertionError,
+        );
+      });
     });
   });
 }
