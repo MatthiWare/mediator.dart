@@ -6,7 +6,7 @@ import 'package:dart_mediator/src/mediator.dart';
 ///
 /// Use [Command] if you don't have return data.
 ///
-/// See [Mediator.send]
+/// See [Mediator.requests]
 abstract interface class Request<TResponse extends Object?> {}
 
 /// A query [Request] that will return [TResponse].

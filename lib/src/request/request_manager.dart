@@ -7,6 +7,7 @@ import 'package:dart_mediator/src/request/pipeline/pipeline_behavior_store.dart'
 import 'package:dart_mediator/src/request/pipeline/pipeline_configurator.dart';
 import 'package:dart_mediator/src/request/request.dart';
 
+/// Send requests through the mediator to be handled by a single handler.
 class RequestManager {
   final RequestHandlerStore _requestHandlerStore;
   final PipelineBehaviorStore _pipelineBehaviorStore;
@@ -16,6 +17,7 @@ class RequestManager {
     this._pipelineBehaviorStore,
   );
 
+  /// Creates a new [RequestManager].
   factory RequestManager({
     RequestHandlerStore? requestHandlerStore,
     PipelineBehaviorStore? pipelineBehaviorStore,

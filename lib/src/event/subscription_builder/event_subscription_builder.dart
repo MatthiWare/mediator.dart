@@ -163,6 +163,7 @@ abstract class BaseEventSubscriptionBuilder<TInput, TOutput>
   /// The parent [EventSubscriptionBuilder] that this builder is wrapping.
   final EventSubscriptionBuilder<TInput> parent;
 
+  /// Creates a new [EventSubscriptionBuilder].
   BaseEventSubscriptionBuilder({
     required this.parent,
   });

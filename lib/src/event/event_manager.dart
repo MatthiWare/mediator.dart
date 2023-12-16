@@ -4,6 +4,7 @@ import 'package:dart_mediator/src/event/handler/event_handler_store.dart';
 import 'package:dart_mediator/src/event/observer/event_observer.dart';
 import 'package:dart_mediator/src/event/subscription_builder/event_subscription_builder.dart';
 
+/// Publish events through the mediator to be handled by multiple handlers.
 class EventManager {
   final EventHandlerStore _eventHandlerStore;
   final List<EventObserver> _observers;
@@ -15,6 +16,12 @@ class EventManager {
     this._defaultDispatchStrategy,
   );
 
+  /// Creates a new [EventManager].
+  ///
+  /// [observers] can be provided to observe events dispatched.
+  ///
+  /// [defaultDispatchStrategy] defines the strategy used when dispatching
+  /// events. By default [DispatchStrategy.concurrent] is used.
   factory EventManager({
     EventHandlerStore? eventHandlerStore,
     List<EventObserver>? observers,
