@@ -21,7 +21,7 @@ An event can have multiple handlers. All handlers will be executed in parallel (
 ```dart
 import 'package:dart_mediator/mediator.dart';
 
-class MyEvent extends DomainEvent {}
+class MyEvent implements DomainEvent {}
 
 Future<void> main() async {
   final mediator = Mediator.create();
