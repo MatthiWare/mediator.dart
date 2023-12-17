@@ -1,5 +1,6 @@
 import 'package:dart_mediator/src/event/dispatch/dispatch_strategy.dart';
 import 'package:dart_mediator/src/event/event.dart';
+import 'package:dart_mediator/src/event/handler/event_handler.dart';
 import 'package:dart_mediator/src/event/handler/event_handler_store.dart';
 import 'package:dart_mediator/src/event/observer/event_observer.dart';
 import 'package:dart_mediator/src/event/subscription_builder/event_subscription_builder.dart';
@@ -10,28 +11,37 @@ class EventManager {
   final List<EventObserver> _observers;
   final DispatchStrategy _defaultDispatchStrategy;
 
-  EventManager._(
-    this._eventHandlerStore,
-    this._observers,
-    this._defaultDispatchStrategy,
-  );
-
   /// Creates a new [EventManager].
+  ///
+  /// [eventHandlerStore] is used to store the subscribed [EventHandler]'s.
+  /// These handlers are created by the [on] method.
   ///
   /// [observers] can be provided to observe events dispatched.
   ///
   /// [defaultDispatchStrategy] defines the strategy used when dispatching
   /// events. By default [DispatchStrategy.concurrent] is used.
-  factory EventManager({
-    EventHandlerStore? eventHandlerStore,
-    List<EventObserver>? observers,
+  EventManager({
+    required EventHandlerStore eventHandlerStore,
+    required List<EventObserver> observers,
+    required DispatchStrategy defaultDispatchStrategy,
+  })  : _eventHandlerStore = eventHandlerStore,
+        _observers = observers,
+        _defaultDispatchStrategy = defaultDispatchStrategy;
+
+  /// Creates a default [EventManager].
+  ///
+  /// [observers] can be provided to observe events dispatched.
+  ///
+  /// [defaultDispatchStrategy] defines the strategy used when dispatching events.
+  factory EventManager.create({
+    List<EventObserver> observers = const [],
     DispatchStrategy defaultDispatchStrategy =
         const DispatchStrategy.concurrent(),
   }) {
-    return EventManager._(
-      eventHandlerStore ?? EventHandlerStore(),
-      observers ?? [],
-      defaultDispatchStrategy,
+    return EventManager(
+      eventHandlerStore: EventHandlerStore(),
+      observers: observers,
+      defaultDispatchStrategy: defaultDispatchStrategy,
     );
   }
 

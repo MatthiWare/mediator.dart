@@ -3,41 +3,40 @@ import 'package:dart_mediator/src/event/event_manager.dart';
 import 'package:dart_mediator/src/event/observer/event_observer.dart';
 import 'package:dart_mediator/src/request/request_manager.dart';
 
-/// Mediator that encapsulates both request/response and publishing events
+/// The [Mediator] is the central point of communication.
 ///
-/// See [requests] for request response.
-///
-/// See [events] for publishing events.
+/// It is a wrapper around [EventManager] and [RequestManager].
 class Mediator {
   final RequestManager _requestsManager;
   final EventManager _eventManager;
 
-  Mediator._(
-    this._eventManager,
-    this._requestsManager,
-  );
-
   /// Creates a new [Mediator]
   ///
-  /// [eventObservers] can be provided to observe events dispatched
-  /// in [EventManager].
+  /// [eventManager] can be provided to manage event publishing.
   ///
-  /// [defaultEventDispatchStrategy] defines the strategy used when dispatching
-  /// events. By default [DispatchStrategy.concurrent] is used.
-  factory Mediator({
-    RequestManager? requestManager,
-    EventManager? eventManager,
-    List<EventObserver> eventObservers = const [],
-    DispatchStrategy defaultEventDispatchStrategy =
+  /// [requestManager] can be provided to manage request/response communication.
+  Mediator({
+    required EventManager eventManager,
+    required RequestManager requestManager,
+  })  : _eventManager = eventManager,
+        _requestsManager = requestManager;
+
+  /// Creates a default [Mediator].
+  ///
+  /// [observers] can be provided to observe events dispatched.
+  ///
+  /// [defaultDispatchStrategy] defines the strategy used when dispatching events.
+  factory Mediator.create({
+    List<EventObserver> observers = const [],
+    DispatchStrategy defaultDispatchStrategy =
         const DispatchStrategy.concurrent(),
   }) {
-    return Mediator._(
-      eventManager ??
-          EventManager(
-            observers: eventObservers,
-            defaultDispatchStrategy: defaultEventDispatchStrategy,
-          ),
-      requestManager ?? RequestManager(),
+    return Mediator(
+      eventManager: EventManager.create(
+        defaultDispatchStrategy: defaultDispatchStrategy,
+        observers: observers,
+      ),
+      requestManager: RequestManager.create(),
     );
   }
 

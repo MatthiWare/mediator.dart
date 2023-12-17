@@ -10,9 +10,9 @@ late List<String> events;
 void main() {
   group('Mediator', () {
     setUp(() {
-      mediator = Mediator(eventObservers: [
-        LoggingEventObserver(),
-      ]);
+      mediator = Mediator.create(
+        observers: [LoggingEventObserver()],
+      );
       inventory = Inventory({
         'mouse': 10,
         'keyboard': 10,

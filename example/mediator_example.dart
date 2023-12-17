@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:dart_mediator/mediator.dart';
 
 Future<void> main() async {
-  final mediator = Mediator(
-    eventObservers: [LoggingEventObserver()],
+  final mediator = Mediator.create(
+    observers: [LoggingEventObserver()],
   );
 
   // Add a request logging behavior.

@@ -12,19 +12,22 @@ class RequestManager {
   final RequestHandlerStore _requestHandlerStore;
   final PipelineBehaviorStore _pipelineBehaviorStore;
 
-  RequestManager._(
-    this._requestHandlerStore,
-    this._pipelineBehaviorStore,
-  );
-
   /// Creates a new [RequestManager].
-  factory RequestManager({
-    RequestHandlerStore? requestHandlerStore,
-    PipelineBehaviorStore? pipelineBehaviorStore,
-  }) {
-    return RequestManager._(
-      requestHandlerStore ?? RequestHandlerStore(),
-      pipelineBehaviorStore ?? PipelineBehaviorStore(),
+  ///
+  /// [requestHandlerStore] is used to store the registered [RequestHandler]'s.
+  ///
+  /// [pipelineBehaviorStore] is used to store the registered [PipelineBehavior]'s.
+  RequestManager({
+    required RequestHandlerStore requestHandlerStore,
+    required PipelineBehaviorStore pipelineBehaviorStore,
+  })  : _requestHandlerStore = requestHandlerStore,
+        _pipelineBehaviorStore = pipelineBehaviorStore;
+
+  /// Creates a default [RequestManager].
+  factory RequestManager.create() {
+    return RequestManager(
+      pipelineBehaviorStore: PipelineBehaviorStore(),
+      requestHandlerStore: RequestHandlerStore(),
     );
   }
 

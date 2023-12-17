@@ -18,7 +18,7 @@ void main() {
     late Mediator mediator;
 
     setUp(() {
-      mediator = Mediator();
+      mediator = Mediator.create();
     });
 
     group('requests', () {
