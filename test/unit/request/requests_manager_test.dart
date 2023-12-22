@@ -48,6 +48,22 @@ void main() {
       });
     });
 
+    group('registerFactory', () {
+      test('it registers the handler', () {
+        mockRequestHandlerFactory() =>
+            MockRequestHandler<String, MockRequest<String>>();
+
+        requestsManager.registerFactory<String, MockRequest<String>>(
+          mockRequestHandlerFactory,
+        );
+
+        verify(
+          () => mockRequestHandlerStore
+              .registerFactory(mockRequestHandlerFactory),
+        );
+      });
+    });
+
     group('registerFunction', () {
       test('it registers the handler', () {
         requestsManager.registerFunction<String, MockRequest<String>>(

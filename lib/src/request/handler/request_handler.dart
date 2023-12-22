@@ -3,6 +3,10 @@ import 'dart:async';
 import 'package:dart_mediator/src/request/request.dart';
 import 'package:meta/meta.dart';
 
+/// Factory to create a [RequestHandler].
+typedef RequestHandlerFactory<TResponse, TRequest extends Request<TResponse>>
+    = RequestHandler<TResponse, TRequest> Function();
+
 /// Handler for [TRequest].
 @internal
 abstract interface class RequestHandler<TResponse,

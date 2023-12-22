@@ -30,6 +30,17 @@ void main() {
       });
     });
 
+    group('registerFactory', () {
+      test('it registers the handler', () {
+        expect(
+          () => requestHandlerStore.registerFactory<int, MockRequest<int>>(
+            () => MockRequestHandler<int, MockRequest<int>>(),
+          ),
+          returnsNormally,
+        );
+      });
+    });
+
     group('unregister', () {
       final mockRequestHandler = MockRequestHandler<int, MockRequest<int>>();
 
@@ -81,6 +92,18 @@ void main() {
         expect(
           requestHandlerStore.getHandlerFor<int, MockRequest<int>>(),
           correctHandler,
+        );
+      });
+
+      test('it returns the request handler factory', () {
+        final mockHandler = MockRequestHandler<int, MockRequest<int>>();
+        correctHandlerFactory() => mockHandler;
+
+        requestHandlerStore.registerFactory(correctHandlerFactory);
+
+        expect(
+          requestHandlerStore.getHandlerFor<int, MockRequest<int>>(),
+          mockHandler,
         );
       });
     });
