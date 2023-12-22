@@ -79,3 +79,11 @@ class RequestManager {
     return response;
   }
 }
+
+extension RequestManagerExtensions on RequestManager {
+  void registerFunction<TResponse, TRequest extends Request<TResponse>>(
+    FutureOr<TResponse> Function(TRequest) handler,
+  ) {
+    register(RequestHandler.function(handler));
+  }
+}

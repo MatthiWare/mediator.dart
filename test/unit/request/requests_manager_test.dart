@@ -24,6 +24,7 @@ void main() {
 
     setUpAll(() {
       registerFallbackValue(const DomainIntEvent(123));
+      registerFallbackValue(MockRequestHandler<String, MockRequest<String>>());
     });
 
     group('pipeline', () {
@@ -32,6 +33,29 @@ void main() {
           requestsManager.pipeline,
           mockPipelineBehaviorStore,
         );
+      });
+    });
+
+    group('register', () {
+      test('it registers the handler', () {
+        final mockRequestHandler =
+            MockRequestHandler<String, MockRequest<String>>();
+
+        requestsManager
+            .register<String, MockRequest<String>>(mockRequestHandler);
+
+        verify(() => mockRequestHandlerStore.register(mockRequestHandler));
+      });
+    });
+
+    group('registerFunction', () {
+      test('it registers the handler', () {
+        requestsManager.registerFunction<String, MockRequest<String>>(
+          (request) async => '123',
+        );
+
+        verify(() => mockRequestHandlerStore
+            .register<String, MockRequest<String>>(any()));
       });
     });
 
