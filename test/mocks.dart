@@ -7,6 +7,8 @@ class MockMediator extends Mock implements Mediator {}
 
 class MockRequestManager extends Mock implements RequestManager {}
 
+class MockEventManager extends Mock implements EventManager {}
+
 class MockDispatchStrategy extends Mock implements DispatchStrategy {}
 
 class MockEventHandlerStore extends Mock implements EventHandlerStore {}
@@ -28,5 +30,8 @@ class MockPipelineBehavior<Res, Req> extends Mock
     implements PipelineBehavior<Res, Req> {}
 
 class MockEventSubscription extends Mock implements EventSubscription {}
+
+class MockEventSubscriptionBuilder<T> extends Mock
+    implements EventSubscriptionBuilder<T> {}
 
 final throwsAssertionError = throwsA(TypeMatcher<AssertionError>());
