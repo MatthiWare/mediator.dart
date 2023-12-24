@@ -25,9 +25,7 @@ void main() {
       test('it handles the request', () async {
         mediator.requests.register(GetDataQueryHandler());
 
-        final data = await mediator.requests.send<String, GetDataQuery>(
-          GetDataQuery(123),
-        );
+        final data = await mediator.requests.send(GetDataQuery(123));
 
         expect(data, '123');
       });

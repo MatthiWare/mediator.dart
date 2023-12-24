@@ -3,23 +3,34 @@ import 'package:dart_mediator/src/request/pipeline/pipeline_configurator.dart';
 import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
 
 class PipelineBehaviorStore implements PipelineConfigurator {
-  final _handlers = <PipelineBehavior<Object?, Object>>{};
-  final _handlerFactories = <PipelineBehaviorFactory<Object?, Object>>{};
+  final _handlers = <Type, List<PipelineBehavior>>{};
+  final _handlerFactories = <Type, List<PipelineBehaviorFactory>>{};
   final _genericHandlers = <PipelineBehavior>{};
   final _genericHandlerFactories = <PipelineBehaviorFactory>{};
 
   @override
-  void register<TResponse extends Object?, TRequest extends Object>(
+  void register<TResponse extends Object?, TRequest extends Request<TResponse>>(
     PipelineBehavior<TResponse, TRequest> behavior,
   ) {
-    _handlers.add(behavior);
+    final handlers = _handlers.putIfAbsent(
+      TRequest,
+      () => <PipelineBehavior>[],
+    );
+
+    handlers.add(behavior);
   }
 
   @override
-  void registerFactory<TResponse extends Object?, TRequest extends Object>(
+  void registerFactory<TResponse extends Object?,
+      TRequest extends Request<TResponse>>(
     PipelineBehaviorFactory<TResponse, TRequest> factory,
   ) {
-    _handlerFactories.add(factory);
+    final handlers = _handlerFactories.putIfAbsent(
+      TRequest,
+      () => <PipelineBehaviorFactory>[],
+    );
+
+    handlers.add(factory);
   }
 
   @override
@@ -38,29 +49,37 @@ class PipelineBehaviorStore implements PipelineConfigurator {
 
   @override
   void unregister(PipelineBehavior behavior) {
-    _handlers.remove(behavior);
+    for (final handlers in _handlers.values) {
+      handlers.remove(behavior);
+    }
     _genericHandlers.remove(behavior);
   }
 
   @override
   void unregisterFactory(PipelineBehaviorFactory factory) {
-    _handlerFactories.remove(factory);
+    for (final handlers in _handlerFactories.values) {
+      handlers.remove(factory);
+    }
     _genericHandlerFactories.remove(factory);
   }
 
   /// Returns all [PipelineBehavior]'s that match.
-  List<PipelineBehavior> getPipelines<TResponse extends Object?,
-      TRequest extends Request<TResponse>>() {
-    final handlerFactories = _handlerFactories
-        .whereType<PipelineBehaviorFactory<TResponse, TRequest>>()
-        .map((factory) => factory());
+  List<PipelineBehavior> getPipelines(
+    Request request,
+  ) {
+    final requestType = request.runtimeType;
+
+    final handlerFactories =
+        _handlerFactories[requestType]?.map((factory) => factory());
 
     final genericFactories =
         _genericHandlerFactories.map((factory) => factory());
 
+    final handlers = _handlers[requestType];
+
     return [
-      ..._handlers.whereType<PipelineBehavior<TResponse, TRequest>>(),
-      ...handlerFactories,
+      if (handlers != null) ...handlers,
+      if (handlerFactories != null) ...handlerFactories,
       ..._genericHandlers,
       ...genericFactories,
     ];

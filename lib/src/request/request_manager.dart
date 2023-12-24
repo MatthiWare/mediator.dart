@@ -57,14 +57,13 @@ class RequestManager {
   /// This request can be wrapped by [PipelineBehavior]'s see [pipeline].
   ///
   /// This will return [TResponse].
-  Future<TResponse>
-      send<TResponse extends Object?, TRequest extends Request<TResponse>>(
-    TRequest request,
+  Future<TResponse> send<TResponse extends Object?>(
+    Request<TResponse> request,
   ) async {
-    final handler = _requestHandlerStore.getHandlerFor<TResponse, TRequest>();
+    final handler = _requestHandlerStore.getHandlerFor(request)
+        as RequestHandler<TResponse, Request<TResponse>>;
 
-    final pipelines =
-        _pipelineBehaviorStore.getPipelines<TResponse, TRequest>();
+    final pipelines = _pipelineBehaviorStore.getPipelines(request);
 
     FutureOr<TResponse> handle() => handler.handle(request);
 
@@ -73,11 +72,13 @@ class RequestManager {
       (next, pipeline) => () => pipeline.handle(request, next),
     );
 
-    final response = await executionPlan();
+    final futureOrResult = executionPlan();
+    final response =
+        futureOrResult is Future ? await futureOrResult : futureOrResult;
 
     assert(
       response is TResponse,
-      '$TRequest expected a return type of $TResponse but '
+      '$request expected a return type of $TResponse but '
       'got one of type ${response.runtimeType}. '
       'One of the registered pipelines is not correctly returning the '
       '`next()` call. Pipelines used: $pipelines',

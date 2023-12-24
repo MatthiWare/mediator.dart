@@ -1,4 +1,5 @@
 import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
+import 'package:dart_mediator/src/request/request.dart';
 
 /// Factory to create a [PipelineBehavior].
 typedef PipelineBehaviorFactory<TRequest, TResponse>
@@ -9,7 +10,7 @@ abstract interface class PipelineConfigurator {
   ///
   /// When using a generic [PipelineBehavior] the [registerGeneric] should be
   /// used instead.
-  void register<TResponse extends Object?, TRequest extends Object>(
+  void register<TResponse extends Object?, TRequest extends Request<TResponse>>(
     PipelineBehavior<TResponse, TRequest> behavior,
   );
 
@@ -17,7 +18,8 @@ abstract interface class PipelineConfigurator {
   ///
   /// When using a generic [PipelineBehavior] the [registerGenericFactory] should
   /// be used instead.
-  void registerFactory<TResponse extends Object?, TRequest extends Object>(
+  void registerFactory<TResponse extends Object?,
+      TRequest extends Request<TResponse>>(
     PipelineBehaviorFactory<TResponse, TRequest> factory,
   );
 

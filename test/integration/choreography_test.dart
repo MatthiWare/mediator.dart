@@ -44,8 +44,7 @@ void main() {
           ),
         );
 
-        final stock = await mediator.requests
-            .send<Map<String, int>, GetInventoryQuery>(GetInventoryQuery());
+        final stock = await mediator.requests.send(GetInventoryQuery());
 
         expect(stock, {
           'mouse': 8,

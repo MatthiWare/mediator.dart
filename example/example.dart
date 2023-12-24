@@ -27,8 +27,7 @@ Future<void> main() async {
 
   print('Sending $getUserQuery request');
 
-  final resp =
-      await mediator.requests.send<User, GetUserByIdQuery>(getUserQuery);
+  final resp = await mediator.requests.send(getUserQuery);
 
   print('Got $GetUserByIdQuery response: $resp');
 
@@ -38,7 +37,7 @@ Future<void> main() async {
 
   print('Sending command $order66Command');
 
-  await mediator.requests.send<void, MyCommand>(order66Command);
+  await mediator.requests.send(order66Command);
 
   print('Command $order66Command completed');
 
