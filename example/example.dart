@@ -23,6 +23,10 @@ Future<void> main() async {
         (count) => print('[CountEvent handler] received count: $count'),
       );
 
+  mediator.events.on<CountEvent>().subscribeFunction(
+        (count) => print('[Other Event Handler] received: $count'),
+      );
+
   const getUserQuery = GetUserByIdQuery(123);
 
   print('Sending $getUserQuery request');
