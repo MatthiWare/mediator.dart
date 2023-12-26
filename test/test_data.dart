@@ -35,9 +35,12 @@ class WrappingBehavior implements PipelineBehavior {
 class DelayBehavior implements PipelineBehavior {
   @override
   Future handle(request, RequestHandlerDelegate next) async {
-    print('$DelayBehavior: Before');
-    await Future.delayed(const Duration(milliseconds: 10));
-    await next();
-    print('$DelayBehavior: After');
+    try {
+      print('$DelayBehavior: Before');
+      await Future.delayed(const Duration(milliseconds: 10));
+      return await next();
+    } finally {
+      print('$DelayBehavior: After');
+    }
   }
 }

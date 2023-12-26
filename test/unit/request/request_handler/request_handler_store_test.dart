@@ -67,7 +67,7 @@ void main() {
     group('getHandlerFor{TResponse, TRequest}', () {
       test('it throws when the handler does not exist', () {
         expect(
-          () => requestHandlerStore.getHandlerFor<int, MockRequest<int>>(),
+          () => requestHandlerStore.getHandlerFor(MockRequest()),
           throwsAssertionError,
         );
       });
@@ -79,7 +79,7 @@ void main() {
         requestHandlerStore.register(handlerWithWrongTypes);
 
         expect(
-          () => requestHandlerStore.getHandlerFor<int, MockRequest<int>>(),
+          () => requestHandlerStore.getHandlerFor(MockRequest<int>()),
           throwsAssertionError,
         );
       });
@@ -89,8 +89,10 @@ void main() {
 
         requestHandlerStore.register(correctHandler);
 
+        final result = requestHandlerStore.getHandlerFor(MockRequest<int>());
+
         expect(
-          requestHandlerStore.getHandlerFor<int, MockRequest<int>>(),
+          result,
           correctHandler,
         );
       });
@@ -102,7 +104,7 @@ void main() {
         requestHandlerStore.registerFactory(correctHandlerFactory);
 
         expect(
-          requestHandlerStore.getHandlerFor<int, MockRequest<int>>(),
+          requestHandlerStore.getHandlerFor(MockRequest<int>()),
           mockHandler,
         );
       });

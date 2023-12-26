@@ -20,17 +20,20 @@ Future<void> main() async {
       .map((event) => event.count)
       .distinct()
       .subscribeFunction(
-        (count) => print('[$CountEvent handler] received count: $count'),
+        (count) => print('[CountEvent handler] received count: $count'),
+      );
+
+  mediator.events.on<CountEvent>().subscribeFunction(
+        (count) => print('[Other Event Handler] received: $count'),
       );
 
   const getUserQuery = GetUserByIdQuery(123);
 
   print('Sending $getUserQuery request');
 
-  final resp =
-      await mediator.requests.send<User, GetUserByIdQuery>(getUserQuery);
+  final resp = await mediator.requests.send(getUserQuery);
 
-  print('Got $GetUserByIdQuery response: $resp');
+  print('Got $getUserQuery response: $resp');
 
   print('---');
 
@@ -38,7 +41,7 @@ Future<void> main() async {
 
   print('Sending command $order66Command');
 
-  await mediator.requests.send<void, MyCommand>(order66Command);
+  await mediator.requests.send(order66Command);
 
   print('Command $order66Command completed');
 
@@ -58,7 +61,7 @@ class CountEvent implements DomainEvent {
   const CountEvent(this.count);
 
   @override
-  String toString() => '$CountEvent(count: $count)';
+  String toString() => 'CountEvent(count: $count)';
 }
 
 class MyCommand implements Command {
@@ -66,15 +69,15 @@ class MyCommand implements Command {
   const MyCommand(this.command);
 
   @override
-  String toString() => '$MyCommand(command: $command)';
+  String toString() => 'MyCommand(command: $command)';
 }
 
 class MyCommandHandler implements CommandHandler<MyCommand> {
   @override
   Future<void> handle(MyCommand request) async {
-    print('[$MyCommandHandler] Executing "$request"');
+    print('[MyCommandHandler] Executing "$request"');
     await Future.delayed(const Duration(milliseconds: 500));
-    print('[$MyCommandHandler] "$request" completed');
+    print('[MyCommandHandler] "$request" completed');
   }
 }
 
@@ -83,15 +86,15 @@ class GetUserByIdQuery implements Query<User> {
   const GetUserByIdQuery(this.userId);
 
   @override
-  String toString() => '$GetUserByIdQuery(userId: $userId)';
+  String toString() => 'GetUserByIdQuery(userId: $userId)';
 }
 
 class GetUserByIdQueryHandler implements QueryHandler<User, GetUserByIdQuery> {
   @override
   Future<User> handle(GetUserByIdQuery request) async {
-    print('[$GetUserByIdQueryHandler] handeling $request');
+    print('[GetUserByIdQueryHandler] handeling $request');
     final user = await getUserByIdAsync(request.userId);
-    print('[$GetUserByIdQueryHandler] got $user');
+    print('[GetUserByIdQueryHandler] got $user');
     return user;
   }
 }
@@ -100,10 +103,10 @@ class LoggingBehavior implements PipelineBehavior {
   @override
   Future handle(request, RequestHandlerDelegate next) async {
     try {
-      print('[$LoggingBehavior] [${request.runtimeType}] Before');
+      print('[LoggingBehavior] [$request] Before');
       return await next();
     } finally {
-      print('[$LoggingBehavior] [${request.runtimeType}] After');
+      print('[LoggingBehavior] [$request] After');
     }
   }
 }
@@ -115,7 +118,7 @@ class LoggingEventObserver implements EventObserver {
     Set<EventHandler<TEvent>> handlers,
   ) {
     print(
-      '[$LoggingEventObserver] onDispatch "$event" with ${handlers.length} handlers',
+      '[LoggingEventObserver] onDispatch "$event" with ${handlers.length} handlers',
     );
   }
 
@@ -126,7 +129,7 @@ class LoggingEventObserver implements EventObserver {
     Object error,
     StackTrace stackTrace,
   ) {
-    print('[$LoggingEventObserver] onError $event -> $handler ($error)');
+    print('[LoggingEventObserver] onError $event -> $handler ($error)');
   }
 
   @override
@@ -143,7 +146,7 @@ class User {
   const User(this.id, this.name);
 
   @override
-  String toString() => '$User(id: $id, name: $name)';
+  String toString() => 'User(id: $id, name: $name)';
 }
 
 Future<User> getUserByIdAsync(int id) async {

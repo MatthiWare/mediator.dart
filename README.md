@@ -60,8 +60,7 @@ Future<void> main() async {
 
   mediator.requests.register(MyQueryHandler());
 
-  final response = await mediator.requests
-    .send<Something, MyQuery>(MyQuery());
+  final Something response = await mediator.requests.send(MyQuery());
 
   print(response);
 }

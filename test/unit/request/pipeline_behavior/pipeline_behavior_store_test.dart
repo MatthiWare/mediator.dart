@@ -6,9 +6,11 @@ import '../../../mocks.dart';
 void main() {
   group('PipelineBehaviorStore', () {
     late PipelineBehaviorStore pipelineBehaviorStore;
+    late MockRequest<int> mockRequest;
 
     setUp(() {
       pipelineBehaviorStore = PipelineBehaviorStore();
+      mockRequest = MockRequest();
     });
 
     group('register', () {
@@ -21,7 +23,7 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
+          pipelineBehaviorStore.getPipelines(mockRequest),
           [mockBehavior],
         );
       });
@@ -37,7 +39,7 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
+          pipelineBehaviorStore.getPipelines(mockRequest),
           [mockBehavior],
         );
       });
@@ -53,7 +55,7 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
+          pipelineBehaviorStore.getPipelines(mockRequest),
           [mockBehavior],
         );
       });
@@ -70,7 +72,7 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
+          pipelineBehaviorStore.getPipelines(mockRequest),
           [mockBehavior],
         );
       });
@@ -89,7 +91,7 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
+          pipelineBehaviorStore.getPipelines(mockRequest),
           [],
         );
       });
@@ -102,7 +104,7 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
+          pipelineBehaviorStore.getPipelines(mockRequest),
           [],
         );
       });
@@ -122,7 +124,7 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
+          pipelineBehaviorStore.getPipelines(mockRequest),
           [],
         );
       });
@@ -137,17 +139,17 @@ void main() {
         );
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
+          pipelineBehaviorStore.getPipelines(mockRequest),
           [],
         );
       });
     });
 
-    group('getPipelines{TResponse, TRequest}', () {
-      test('it returns the request handler', () {
+    group('getPipelines', () {
+      test('it returns the correct pipelines for the given request', () {
         final correctBehavior = MockPipelineBehavior<int, MockRequest<int>>();
         final incorrectBehavior =
-            MockPipelineBehavior<int, MockRequest<String>>();
+            MockPipelineBehavior<String, MockRequest<String>>();
         final logBehavior = MockPipelineBehavior();
 
         correctFactory() => correctBehavior;
@@ -162,7 +164,7 @@ void main() {
         pipelineBehaviorStore.registerFactory(incorrectFactory);
 
         expect(
-          pipelineBehaviorStore.getPipelines<int, MockRequest<int>>(),
+          pipelineBehaviorStore.getPipelines(mockRequest),
           [correctBehavior, correctBehavior, logBehavior, logBehavior],
         );
       });

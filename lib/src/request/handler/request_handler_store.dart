@@ -51,23 +51,26 @@ class RequestHandlerStore {
     _handlers.remove(TRequest);
   }
 
-  /// Returns the registered [RequestHandler]'s for [TRequest].
-  RequestHandler<TResponse, TRequest>
-      getHandlerFor<TResponse, TRequest extends Request<TResponse>>() {
-    final handler = _handlers[TRequest] ?? _handlerFactories[TRequest]?.call();
+  /// Returns the registered [RequestHandler]'s for [request].
+  RequestHandler getHandlerFor<TResponse extends Object?>(
+    Request<TResponse> request,
+  ) {
+    final requestType = request.runtimeType;
+    final handler =
+        _handlers[requestType] ?? _handlerFactories[requestType]?.call();
 
     assert(
       handler != null,
-      'getHandlerFor<$TResponse, $TRequest> did not have a registered handler. '
+      'getHandlerFor<$TResponse, $requestType> did not have a registered handler. '
       'Make sure to register the request handler first.',
     );
 
     assert(
-      handler is RequestHandler<TResponse, TRequest>,
+      handler is RequestHandler<TResponse, Request<TResponse>>,
       'The registered handler is of the wrong type got $handler but was '
-      'expecting a type of RequestHandler<$TResponse, $TRequest>',
+      'expecting a type of RequestHandler<$TResponse, $requestType>',
     );
 
-    return handler as RequestHandler<TResponse, TRequest>;
+    return handler!;
   }
 }

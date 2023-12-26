@@ -88,15 +88,13 @@ void main() {
       test('it handles the request', () async {
         when(() => mockRequestHandler.handle(mockRequest)).thenReturn(output);
 
-        when(() => mockRequestHandlerStore
-                .getHandlerFor<String, MockRequest<String>>())
+        when(() => mockRequestHandlerStore.getHandlerFor(mockRequest))
             .thenReturn(mockRequestHandler);
 
-        when(() => mockPipelineBehaviorStore
-            .getPipelines<String, MockRequest<String>>()).thenReturn([]);
+        when(() => mockPipelineBehaviorStore.getPipelines(mockRequest))
+            .thenReturn([]);
 
-        final result = await requestsManager
-            .send<String, MockRequest<String>>(mockRequest);
+        final result = await requestsManager.send(mockRequest);
 
         verify(() => mockRequestHandler.handle(mockRequest));
 
@@ -115,8 +113,7 @@ void main() {
 
         when(() => mockRequestHandler.handle(mockRequest)).thenReturn(output);
 
-        when(() => mockRequestHandlerStore
-                .getHandlerFor<String, MockRequest<String>>())
+        when(() => mockRequestHandlerStore.getHandlerFor(mockRequest))
             .thenReturn(mockRequestHandler);
 
         when(() => mockBehavior.handle(mockRequest, captureAny()))
@@ -129,12 +126,10 @@ void main() {
           return handler();
         });
 
-        when(() => mockPipelineBehaviorStore
-                .getPipelines<String, MockRequest<String>>())
+        when(() => mockPipelineBehaviorStore.getPipelines(mockRequest))
             .thenReturn([mockBehavior]);
 
-        final result = await requestsManager
-            .send<String, MockRequest<String>>(mockRequest);
+        final result = await requestsManager.send(mockRequest);
 
         verify(() => mockRequestHandler.handle(mockRequest));
 
@@ -152,8 +147,7 @@ void main() {
 
         when(() => mockRequestHandler.handle(mockRequest)).thenReturn(output);
 
-        when(() => mockRequestHandlerStore
-                .getHandlerFor<String, MockRequest<String>>())
+        when(() => mockRequestHandlerStore.getHandlerFor(mockRequest))
             .thenReturn(mockRequestHandler);
 
         when(() => mockWrongBehavior.handle(mockRequest, captureAny()))
@@ -164,12 +158,11 @@ void main() {
           await handler(); // don't return on purpose
         });
 
-        when(() => mockPipelineBehaviorStore
-                .getPipelines<String, MockRequest<String>>())
+        when(() => mockPipelineBehaviorStore.getPipelines(mockRequest))
             .thenReturn([mockWrongBehavior]);
 
         await expectLater(
-          () => requestsManager.send<String, MockRequest<String>>(mockRequest),
+          () => requestsManager.send(mockRequest),
           throwsAssertionError,
         );
       });
