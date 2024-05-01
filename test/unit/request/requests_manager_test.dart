@@ -50,8 +50,9 @@ void main() {
 
     group('registerFactory', () {
       test('it registers the handler', () {
-        mockRequestHandlerFactory() =>
-            MockRequestHandler<String, MockRequest<String>>();
+        MockRequestHandler<String, MockRequest<String>>
+            mockRequestHandlerFactory() =>
+                MockRequestHandler<String, MockRequest<String>>();
 
         requestsManager.registerFactory<String, MockRequest<String>>(
           mockRequestHandlerFactory,

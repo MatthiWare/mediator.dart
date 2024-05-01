@@ -33,7 +33,7 @@ void main() {
       test('it returns a new builder instance', () {
         expect(
           eventManager.on<DomainIntEvent>(),
-          TypeMatcher<EventSubscriptionBuilder<DomainIntEvent>>(),
+          const TypeMatcher<EventSubscriptionBuilder<DomainIntEvent>>(),
         );
       });
     });

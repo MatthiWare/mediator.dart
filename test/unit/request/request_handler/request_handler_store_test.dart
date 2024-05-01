@@ -99,7 +99,8 @@ void main() {
 
       test('it returns the request handler factory', () {
         final mockHandler = MockRequestHandler<int, MockRequest<int>>();
-        correctHandlerFactory() => mockHandler;
+        MockRequestHandler<int, MockRequest<int>> correctHandlerFactory() =>
+            mockHandler;
 
         requestHandlerStore.registerFactory(correctHandlerFactory);
 

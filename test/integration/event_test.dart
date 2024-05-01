@@ -26,7 +26,7 @@ void main() {
 
         sub.cancel();
 
-        await mediator.events.dispatch(DomainIntEvent(1));
+        await mediator.events.dispatch(const DomainIntEvent(1));
 
         expect(
           results,
@@ -85,7 +85,7 @@ void main() {
         });
 
         final handler3 = <int>[];
-        factory() => EventHandler<int>.function(
+        EventHandler<int> factory() => EventHandler<int>.function(
               (event) async {
                 await Future.delayed(const Duration(milliseconds: 10));
                 handler3.add(event);

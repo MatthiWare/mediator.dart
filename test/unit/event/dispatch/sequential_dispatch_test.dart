@@ -67,7 +67,7 @@ void main() {
 
         Future<void> handle(DomainIntEvent event) async {
           final newCount = count + event.count;
-          await Future.delayed(const Duration(milliseconds: 0));
+          await Future.delayed(Duration.zero);
           count = newCount;
         }
 
