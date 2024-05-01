@@ -15,10 +15,58 @@ include: package:lints/recommended.yaml
 
 # Uncomment the following section to specify additional rules.
 
-# linter:
-#   rules:
-#     - camel_case_types
-
+linter:
+  rules:
+    - camel_case_types
+    - always_declare_return_types
+    - always_put_control_body_on_new_line
+    - avoid_bool_literals_in_conditional_expressions
+    - avoid_dynamic_calls
+    - avoid_empty_else
+    - avoid_equals_and_hash_code_on_mutable_classes
+    - avoid_escaping_inner_quotes
+    - avoid_field_initializers_in_const_classes
+    - avoid_init_to_null
+    - avoid_type_to_string
+    - avoid_shadowing_type_parameters
+    - cancel_subscriptions
+    - empty_constructor_bodies
+    - empty_catches
+    - hash_and_equals
+    - exhaustive_cases
+    - no_duplicate_case_values
+    - non_constant_identifier_names
+    - null_check_on_nullable_type_parameter
+    - prefer_collection_literals
+    - prefer_conditional_assignment
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_const_declarations
+    - prefer_const_literals_to_create_immutables
+    - prefer_final_fields
+    - prefer_final_in_for_each
+    - prefer_final_locals
+    - prefer_for_elements_to_map_fromIterable
+    - prefer_foreach
+    - prefer_function_declarations_over_variables
+    - prefer_generic_function_type_aliases
+    - unnecessary_await_in_return
+    - unnecessary_brace_in_string_interps
+    - unnecessary_const
+    - unnecessary_new
+    - unnecessary_null_aware_assignments
+    - unnecessary_null_checks
+    - unnecessary_null_in_if_null_operators
+    - unnecessary_nullable_for_final_variable_declarations
+    - unnecessary_overrides
+    - unnecessary_parenthesis
+    - prefer_single_quotes
+    - prefer_spread_collections
+    - use_late_for_private_fields_and_variables
+    - use_named_constants
+    - use_rethrow_when_possible
+    - library_names
+    - library_prefixes
 # analyzer:
 #   exclude:
 #     - path/to/excluded/files/**

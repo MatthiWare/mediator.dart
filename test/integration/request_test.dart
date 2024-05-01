@@ -25,7 +25,7 @@ void main() {
       test('it handles the request', () async {
         mediator.requests.register(GetDataQueryHandler());
 
-        final data = await mediator.requests.send(GetDataQuery(123));
+        final data = await mediator.requests.send(const GetDataQuery(123));
 
         expect(data, '123');
       });
@@ -43,7 +43,7 @@ void main() {
         mediator.requests.pipeline.registerGeneric(behavior);
         mediator.requests.pipeline.registerGeneric(DelayBehavior());
 
-        await mediator.requests.send(GetDataQuery(123));
+        await mediator.requests.send(const GetDataQuery(123));
 
         expect(pipeline, isTrue);
       });

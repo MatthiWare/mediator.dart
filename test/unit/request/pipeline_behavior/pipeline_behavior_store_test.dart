@@ -111,9 +111,11 @@ void main() {
     });
 
     group('unregisterFactory', () {
-      mockBehaviorFactory() => MockPipelineBehavior<int, MockRequest<int>>();
-      mockGenericBehaviorFactory() =>
+      MockPipelineBehavior<int, MockRequest<int>> mockBehaviorFactory() =>
           MockPipelineBehavior<int, MockRequest<int>>();
+      MockPipelineBehavior<int, MockRequest<int>>
+          mockGenericBehaviorFactory() =>
+              MockPipelineBehavior<int, MockRequest<int>>();
 
       test('it unregisters the behavior', () {
         pipelineBehaviorStore.registerFactory(mockBehaviorFactory);
@@ -152,9 +154,11 @@ void main() {
             MockPipelineBehavior<String, MockRequest<String>>();
         final logBehavior = MockPipelineBehavior();
 
-        correctFactory() => correctBehavior;
-        incorrectFactory() => incorrectBehavior;
-        logBehaviorFactory() => logBehavior;
+        MockPipelineBehavior<int, MockRequest<int>> correctFactory() =>
+            correctBehavior;
+        MockPipelineBehavior<String, MockRequest<String>> incorrectFactory() =>
+            incorrectBehavior;
+        MockPipelineBehavior logBehaviorFactory() => logBehavior;
 
         pipelineBehaviorStore.register(correctBehavior);
         pipelineBehaviorStore.registerFactory(correctFactory);

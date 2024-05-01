@@ -38,7 +38,7 @@ void main() {
 
         // Start flow
         await mediator.requests.send(
-          PlaceOrderCommand(
+          const PlaceOrderCommand(
             '123',
             {'mouse': 2, 'keyboard': 1},
           ),
@@ -58,7 +58,7 @@ void main() {
 class Inventory {
   final Map<String, int> inventory;
 
-  const Inventory(this.inventory);
+  Inventory(this.inventory);
 
   bool hasEnough(String item, int amount) {
     final stock = inventory[item]!;

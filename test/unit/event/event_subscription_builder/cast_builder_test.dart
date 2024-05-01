@@ -26,7 +26,7 @@ void main() {
       });
 
       test('it returns the casted value', () {
-        Object input = 1234;
+        const Object input = 1234;
         late final int output;
 
         EventSubscriptionBuilder<Object>.create(mockEventHandlerStore)

@@ -125,7 +125,7 @@ class ExternalClass {
   }
 
   Future<void> doSomeWorkAsync() async {
-    final result = await mediator.requests.send(DoSomethingQuery(1));
+    final result = await mediator.requests.send(const DoSomethingQuery(1));
     mediator.events.dispatch(WorkCompletedEvent(result));
   }
 }

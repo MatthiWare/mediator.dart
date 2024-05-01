@@ -1,13 +1,15 @@
 import 'package:dart_mediator/event_manager.dart';
+import 'package:meta/meta.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import '../../../mocks.dart';
 
+@immutable
 class _TestEvent {
   final int _hashCode;
 
-  _TestEvent(this._hashCode);
+  const _TestEvent(this._hashCode);
 
   @override
   int get hashCode => _hashCode;
@@ -55,9 +57,7 @@ void main() {
         );
         final handler = captureResult.captured.first as EventHandler<int>;
 
-        for (final input in inputs) {
-          handler.handle(input);
-        }
+        inputs.forEach(handler.handle);
 
         expect(
           outputs,
@@ -67,9 +67,9 @@ void main() {
       });
 
       test('it overrides equals', () {
-        final a = _TestEvent(1);
-        final b = _TestEvent(2);
-        final inputs = [a, a, b, b];
+        const a = _TestEvent(1);
+        const b = _TestEvent(2);
+        const inputs = [a, a, b, b];
         final outputs = <_TestEvent>[];
 
         EventSubscriptionBuilder<_TestEvent>.create(mockEventHandlerStore)
@@ -82,9 +82,7 @@ void main() {
         final handler =
             captureResult.captured.first as EventHandler<_TestEvent>;
 
-        for (final input in inputs) {
-          handler.handle(input);
-        }
+        inputs.forEach(handler.handle);
 
         expect(
           outputs.length,

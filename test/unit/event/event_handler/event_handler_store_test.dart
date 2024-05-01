@@ -40,7 +40,7 @@ void main() {
       });
 
       test('it throws when registering the same handler multiple times', () {
-        factory() => MockEventHandler<int>();
+        MockEventHandler<int> factory() => MockEventHandler<int>();
 
         eventHandlerStore.registerFactory(factory);
         expect(
@@ -77,7 +77,7 @@ void main() {
 
     group('unregisterFactory', () {
       test('it unregisters the factory', () {
-        factory() => MockEventHandler<int>();
+        MockEventHandler<int> factory() => MockEventHandler<int>();
 
         eventHandlerStore.registerFactory(factory);
 
@@ -88,7 +88,7 @@ void main() {
       });
 
       test('it throws when unregistering the same factory multiple times', () {
-        factory() => MockEventHandler<int>();
+        MockEventHandler<int> factory() => MockEventHandler<int>();
 
         eventHandlerStore.registerFactory(factory);
         eventHandlerStore.unregisterFactory(factory);
@@ -104,7 +104,7 @@ void main() {
       test('it returns the registered handlers', () {
         final handler = MockEventHandler<int>();
         final factoryHandler = MockEventHandler<int>();
-        factory() => factoryHandler;
+        MockEventHandler<int> factory() => factoryHandler;
 
         eventHandlerStore.register(handler);
         eventHandlerStore.registerFactory(factory);
