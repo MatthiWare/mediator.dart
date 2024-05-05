@@ -89,6 +89,11 @@ class RequestManager {
 }
 
 extension RequestManagerExtensions on RequestManager {
+  /// Registers the given [handler].
+  ///
+  /// This will create a function based request handler.
+  ///
+  /// See [RequestHandler.function].
   void registerFunction<TResponse, TRequest extends Request<TResponse>>(
     FutureOr<TResponse> Function(TRequest) handler,
   ) {

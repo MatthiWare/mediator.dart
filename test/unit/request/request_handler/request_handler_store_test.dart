@@ -1,3 +1,4 @@
+import 'package:dart_mediator/src/request/handler/request_handler.dart';
 import 'package:dart_mediator/src/request/handler/request_handler_store.dart';
 import 'package:test/test.dart';
 
@@ -7,13 +8,16 @@ void main() {
   group('RequestHandlerStore', () {
     late RequestHandlerStore requestHandlerStore;
 
+    RequestHandler<int, MockRequest<int>> handlerFactory() =>
+        MockRequestHandler<int, MockRequest<int>>();
+
+    final mockRequestHandler = MockRequestHandler<int, MockRequest<int>>();
+
     setUp(() {
       requestHandlerStore = RequestHandlerStore();
     });
 
     group('register', () {
-      final mockRequestHandler = MockRequestHandler<int, MockRequest<int>>();
-
       test('it registers the handler', () {
         expect(
           () => requestHandlerStore.register(mockRequestHandler),
@@ -28,15 +32,40 @@ void main() {
           throwsAssertionError,
         );
       });
+
+      test('it throws when a factory for this type was already registered', () {
+        requestHandlerStore.registerFactory(handlerFactory);
+
+        expect(
+          () => requestHandlerStore.register(mockRequestHandler),
+          throwsAssertionError,
+        );
+      });
     });
 
     group('registerFactory', () {
       test('it registers the handler', () {
         expect(
-          () => requestHandlerStore.registerFactory<int, MockRequest<int>>(
-            () => MockRequestHandler<int, MockRequest<int>>(),
-          ),
+          () => requestHandlerStore.registerFactory(handlerFactory),
           returnsNormally,
+        );
+      });
+
+      test('it throws when registering the same factory multiple times', () {
+        requestHandlerStore.registerFactory(handlerFactory);
+
+        expect(
+          () => requestHandlerStore.registerFactory(handlerFactory),
+          throwsAssertionError,
+        );
+      });
+
+      test('it throws when a handler for this type was already registered', () {
+        requestHandlerStore.register(mockRequestHandler);
+
+        expect(
+          () => requestHandlerStore.registerFactory(handlerFactory),
+          throwsAssertionError,
         );
       });
     });
