@@ -26,6 +26,15 @@ void main() {
     });
 
     group('subscribe', () {
+      test('it subscribes the handler', () {
+        final handler = EventHandler<int>.function((event) {});
+
+        EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
+            .subscribe(handler);
+
+        verify(() => mockEventHandlerStore.register(handler));
+      });
+
       test('it return a subscription', () {
         final subscription =
             EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
@@ -52,6 +61,13 @@ void main() {
     });
 
     group('subscribeFunction', () {
+      test('it subscribes the handler', () {
+        EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
+            .subscribeFunction((event) {});
+
+        verify(() => mockEventHandlerStore.register(any<EventHandler<int>>()));
+      });
+
       test('it return a subscription', () {
         final subscription =
             EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
@@ -61,6 +77,18 @@ void main() {
           subscription,
           isA<EventSubscription>(),
           reason: 'it should return a subscription',
+        );
+      });
+
+      test('it can cancel the subscription', () {
+        final subscription =
+            EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
+                .subscribeFunction((event) {});
+
+        subscription.cancel();
+
+        verify(
+          () => mockEventHandlerStore.unregister(any<EventHandler<int>>()),
         );
       });
     });
