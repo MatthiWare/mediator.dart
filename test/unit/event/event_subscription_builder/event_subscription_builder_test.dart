@@ -92,5 +92,39 @@ void main() {
         );
       });
     });
+
+    group('subscribeFactory', () {
+      EventHandler<int> handlerFactory() =>
+          EventHandler<int>.function((event) {});
+
+      test('it subscribes the handler', () {
+        EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
+            .subscribeFactory(handlerFactory);
+
+        verify(() => mockEventHandlerStore.registerFactory(handlerFactory));
+      });
+
+      test('it return a subscription', () {
+        final subscription =
+            EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
+                .subscribeFactory(handlerFactory);
+
+        expect(
+          subscription,
+          isA<EventSubscription>(),
+          reason: 'it should return a subscription',
+        );
+      });
+
+      test('it can cancel the subscription', () {
+        final subscription =
+            EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
+                .subscribeFactory(handlerFactory);
+
+        subscription.cancel();
+
+        verify(() => mockEventHandlerStore.unregisterFactory(handlerFactory));
+      });
+    });
   });
 }
