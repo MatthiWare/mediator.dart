@@ -2,6 +2,7 @@
 
 [![Dart](https://github.com/MatthiWare/mediator.dart/actions/workflows/dart.yml/badge.svg?branch=master)](https://github.com/MatthiWare/mediator.dart/actions/workflows/dart.yml)
 [![pub package](https://img.shields.io/pub/v/dart_mediator.svg?label=dart_mediator&color=blue)](https://pub.dartlang.org/packages/dart_mediator)
+[![codecov](https://codecov.io/gh/MatthiWare/mediator.dart/graph/badge.svg?token=W1WQDQEZIJ)](https://codecov.io/gh/MatthiWare/mediator.dart)
 
 # Description
 
