@@ -94,15 +94,15 @@ void main() {
     });
 
     group('subscribeFactory', () {
-      final mockHandler = MockEventHandler<int>();
+      EventHandler<int> handlerFactory() => MockEventHandler();
 
-      EventHandler<int> handlerFactory() => mockHandler;
+      final factoryHandler = EventHandler.factory(handlerFactory);
 
       test('it subscribes the handler', () {
         EventSubscriptionBuilder<int>.create(mockEventHandlerStore)
             .subscribeFactory(handlerFactory);
 
-        verify(() => mockEventHandlerStore.register(mockHandler));
+        verify(() => mockEventHandlerStore.register(factoryHandler));
       });
 
       test('it return a subscription', () {
@@ -124,7 +124,7 @@ void main() {
 
         subscription.cancel();
 
-        verify(() => mockEventHandlerStore.unregister(mockHandler));
+        verify(() => mockEventHandlerStore.unregister(factoryHandler));
       });
     });
   });

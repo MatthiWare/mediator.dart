@@ -71,9 +71,12 @@ void main() {
           count = newCount;
         }
 
-        final handlerA = EventHandler<DomainIntEvent>.function(handle);
-        final handlerB = EventHandler<DomainIntEvent>.function(handle);
-        final handlerC = EventHandler<DomainIntEvent>.function(handle);
+        final handlerA =
+            EventHandler<DomainIntEvent>.function((e) => handle(e));
+        final handlerB =
+            EventHandler<DomainIntEvent>.function((e) => handle(e));
+        final handlerC =
+            EventHandler<DomainIntEvent>.function((e) => handle(e));
 
         final handlers = {handlerA, handlerB, handlerC};
         const event = DomainIntEvent(1);
