@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dart_mediator/mediator.dart';
+import 'package:meta/meta.dart';
 
 Future<void> main() async {
   final mediator = Mediator.create(
@@ -15,17 +16,21 @@ Future<void> main() async {
   mediator.requests.register(MyCommandHandler());
 
   // Subscribe to the count event.
+  mediator.events.on<CountEvent>().subscribeFactory(createCountEventHandler);
+
   mediator.events
       .on<CountEvent>()
-      .map((event) => event.count)
       .distinct()
+      .map((event) => event.count)
       .subscribeFunction(
-        (count) => print('[CountEvent handler] received count: $count'),
-      );
+    (count) {
+      // Only distinct count events will get to this point.
+      // LoggingEventObserver will still see the event.
+      print('[CountEvent Handler] received distinct count: $count');
+    },
+  );
 
-  mediator.events.on<CountEvent>().subscribeFunction(
-        (count) => print('[Other Event Handler] received: $count'),
-      );
+  print('--- Query Example ---');
 
   const getUserQuery = GetUserByIdQuery(123);
 
@@ -35,34 +40,58 @@ Future<void> main() async {
 
   print('Got $getUserQuery response: $resp');
 
-  print('---');
+  print('\n--- Command Example ---');
 
   const order66Command = MyCommand('Order 66');
 
-  print('Sending command $order66Command');
+  print('Sending $order66Command');
 
   await mediator.requests.send(order66Command);
 
-  print('Command $order66Command completed');
+  print('$order66Command completed');
 
-  print('---');
+  print('\n--- Events Example ---');
 
   const countEvent = CountEvent(123);
 
+  // Event will be handled by 2 event handlers.
   await mediator.events.dispatch(countEvent);
 
+  // Event will only be handled by 1 event handler (distinct).
   await mediator.events.dispatch(countEvent);
 
   print('done');
 }
 
+@immutable
 class CountEvent implements DomainEvent {
   final int count;
   const CountEvent(this.count);
 
   @override
   String toString() => 'CountEvent(count: $count)';
+
+  @override
+  int get hashCode => Object.hash(runtimeType, count);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is CountEvent &&
+            other.count == count);
+  }
 }
+
+class CountEventHandler implements EventHandler<CountEvent> {
+  @override
+  FutureOr<void> handle(CountEvent event) {
+    final count = event.count;
+    print('[CountEvent Handler] received count: $count');
+  }
+}
+
+CountEventHandler createCountEventHandler() => CountEventHandler();
 
 class MyCommand implements Command {
   final String command;
@@ -75,9 +104,16 @@ class MyCommand implements Command {
 class MyCommandHandler implements CommandHandler<MyCommand> {
   @override
   Future<void> handle(MyCommand request) async {
-    print('[MyCommandHandler] Executing "$request"');
-    await Future.delayed(const Duration(milliseconds: 500));
-    print('[MyCommandHandler] "$request" completed');
+    final command = request.command;
+    print('[MyCommandHandler] Execute $command');
+    {
+      await Future.delayed(const Duration(milliseconds: 300));
+      for (var i = 0; i < 3; i++) {
+        print('[MyCommandHandler] pew');
+        await Future.delayed(const Duration(milliseconds: 300));
+      }
+    }
+    print('[MyCommandHandler] $request executed!');
   }
 }
 
@@ -92,7 +128,7 @@ class GetUserByIdQuery implements Query<User> {
 class GetUserByIdQueryHandler implements QueryHandler<User, GetUserByIdQuery> {
   @override
   Future<User> handle(GetUserByIdQuery request) async {
-    print('[GetUserByIdQueryHandler] handeling $request');
+    print('[GetUserByIdQueryHandler] handling $request');
     final user = await getUserByIdAsync(request.userId);
     print('[GetUserByIdQueryHandler] got $user');
     return user;
@@ -136,7 +172,9 @@ class LoggingEventObserver implements EventObserver {
   void onHandled<TEvent extends DomainEvent>(
     TEvent event,
     EventHandler<TEvent> handler,
-  ) {}
+  ) {
+    print('[LoggingEventObserver] onHandled $event handled by $handler');
+  }
 }
 
 class User {
