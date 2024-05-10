@@ -43,13 +43,6 @@ class RequestManager {
     _requestHandlerStore.register(handler);
   }
 
-  /// Registers the request [factory] for the given [TRequest].
-  void registerFactory<TResponse, TRequest extends Request<TResponse>>(
-    RequestHandlerFactory<TResponse, TRequest> factory,
-  ) {
-    _requestHandlerStore.registerFactory(factory);
-  }
-
   /// Sends a [request] to a single [RequestHandler].
   ///
   /// Make sure the [RequestHandler] is [register]ed before calling this method.
@@ -98,5 +91,17 @@ extension RequestManagerExtensions on RequestManager {
     FutureOr<TResponse> Function(TRequest) handler,
   ) {
     register(RequestHandler.function(handler));
+  }
+
+  /// Registers the given [factory].
+  ///
+  /// This will create a factory based request handler. This factory will be
+  /// resolved into an actual [RequestHandler] at request time.
+  ///
+  /// See [RequestHandler.factory].
+  void registerFactory<TResponse, TRequest extends Request<TResponse>>(
+    RequestHandlerFactory<TResponse, TRequest> factory,
+  ) {
+    register(RequestHandler.factory(factory));
   }
 }
