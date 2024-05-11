@@ -35,7 +35,7 @@ void main() {
         final behavior = WrappingBehavior(
           () {
             print('pipeline callback');
-            return pipeline = true;
+            pipeline = true;
           },
         );
 
