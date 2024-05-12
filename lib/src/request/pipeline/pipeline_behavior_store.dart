@@ -61,16 +61,16 @@ class PipelineBehaviorStore implements PipelineConfigurator {
   }
 
   /// Returns all [PipelineBehavior]'s that match.
-  List<PipelineBehavior> getPipelines(
+  Set<PipelineBehavior> getPipelines(
     Request request,
   ) {
     final requestType = request.runtimeType;
 
     final behaviors = _typedBehaviors[requestType];
 
-    return [
+    return {
       if (behaviors != null) ...behaviors,
       ..._genericBehaviors,
-    ];
+    };
   }
 }

@@ -252,14 +252,14 @@ void main() {
 
         expect(
           pipelineBehaviorStore.getPipelines(mockRequest),
-          [
+          {
             correctBehavior,
             PipelineBehavior.function(correctBehavior.handle),
             PipelineBehavior.factory(correctFactory),
             logBehavior,
             PipelineBehavior.function(logBehavior.handle),
             PipelineBehavior.factory(logBehaviorFactory),
-          ],
+          },
         );
       });
     });
