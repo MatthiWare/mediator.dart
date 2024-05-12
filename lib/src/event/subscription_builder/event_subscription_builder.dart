@@ -118,10 +118,12 @@ extension EventSubscriptionBuilderExtensions<T> on EventSubscriptionBuilder<T> {
     return subscribe(EventHandler.function(handler));
   }
 
-  /// Subscribes to the given [handler].
+  /// Subscribes to the given [factory].
   ///
   /// This finalizes the builder and applies all the steps
   /// before subscribing.
+  ///
+  /// This factory will be resolved into an actual [EventHandler] at request time.
   EventSubscription subscribeFactory(
     EventHandlerFactory<T> factory,
   ) {
