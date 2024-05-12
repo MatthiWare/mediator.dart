@@ -105,16 +105,9 @@ abstract class EventSubscriptionBuilder<T> {
   /// This finalizes the builder and applies all the steps
   /// before subscribing.
   EventSubscription subscribe(EventHandler<T> handler);
-
-  /// Subscribes to the given [factory].
-  ///
-  /// This finalizes the builder and applies all the steps
-  /// before subscribing.
-  EventSubscription subscribeFactory(EventHandlerFactory<T> factory);
 }
 
-extension EventSubscriptionBuilderFunctionExtension<T>
-    on EventSubscriptionBuilder<T> {
+extension EventSubscriptionBuilderExtensions<T> on EventSubscriptionBuilder<T> {
   /// Subscribes to the given [handler].
   ///
   /// This finalizes the builder and applies all the steps
@@ -123,6 +116,18 @@ extension EventSubscriptionBuilderFunctionExtension<T>
     FutureOr<void> Function(T event) handler,
   ) {
     return subscribe(EventHandler.function(handler));
+  }
+
+  /// Subscribes to the given [factory].
+  ///
+  /// This finalizes the builder and applies all the steps
+  /// before subscribing.
+  ///
+  /// This factory will be resolved into an actual [EventHandler] at request time.
+  EventSubscription subscribeFactory(
+    EventHandlerFactory<T> factory,
+  ) {
+    return subscribe(EventHandler.factory(factory));
   }
 }
 
@@ -138,17 +143,6 @@ class _EventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
     );
 
     _store.register(handler);
-
-    return subscription;
-  }
-
-  @override
-  EventSubscription subscribeFactory(EventHandlerFactory<T> factory) {
-    final subscription = EventSubscription(
-      () => _store.unregisterFactory(factory),
-    );
-
-    _store.registerFactory(factory);
 
     return subscription;
   }
@@ -176,13 +170,5 @@ abstract class BaseEventSubscriptionBuilder<TInput, TOutput>
   @override
   EventSubscription subscribe(EventHandler<TOutput> handler) {
     return parent.subscribe(createHandler(handler));
-  }
-
-  @override
-  EventSubscription subscribeFactory(EventHandlerFactory<TOutput> factory) {
-    return parent.subscribeFactory(() {
-      final handler = factory();
-      return createHandler(handler);
-    });
   }
 }

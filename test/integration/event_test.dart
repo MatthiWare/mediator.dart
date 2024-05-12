@@ -98,6 +98,13 @@ void main() {
             .where((event) => event > 10)
             .subscribeFactory(factory);
 
+        final eventHandler = _CollectingEventSubscriber();
+
+        mediator.events
+            .on<DomainIntEvent>()
+            .where((event) => event.count > 10)
+            .subscribe(eventHandler);
+
         final events = Iterable.generate(20, (index) => index);
 
         for (final event in events.skip(10)) {
@@ -109,7 +116,19 @@ void main() {
         expect(handler1, expected);
         expect(handler2, expected);
         expect(handler3, expected);
+        expect(eventHandler.events, expected);
       });
     });
   });
+}
+
+class _CollectingEventSubscriber implements EventHandler<DomainIntEvent> {
+  final events = <int>[];
+
+  @override
+  void handle(DomainIntEvent event) {
+    if (event.count > 10) {
+      events.add(event.count);
+    }
+  }
 }

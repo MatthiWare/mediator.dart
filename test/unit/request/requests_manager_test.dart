@@ -1,3 +1,4 @@
+import 'package:dart_mediator/src/request/handler/request_handler.dart';
 import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
 import 'package:dart_mediator/src/request/request_manager.dart';
 import 'package:mocktail/mocktail.dart';
@@ -50,29 +51,34 @@ void main() {
 
     group('registerFactory', () {
       test('it registers the handler', () {
-        MockRequestHandler<String, MockRequest<String>>
-            mockRequestHandlerFactory() =>
-                MockRequestHandler<String, MockRequest<String>>();
+        MockRequestHandler<String, MockRequest<String>> factory() =>
+            MockRequestHandler();
 
         requestsManager.registerFactory<String, MockRequest<String>>(
-          mockRequestHandlerFactory,
+          factory,
         );
 
         verify(
-          () => mockRequestHandlerStore
-              .registerFactory(mockRequestHandlerFactory),
+          () => mockRequestHandlerStore.register<String, MockRequest<String>>(
+            RequestHandler.factory(factory),
+          ),
         );
       });
     });
 
     group('registerFunction', () {
       test('it registers the handler', () {
-        requestsManager.registerFunction<String, MockRequest<String>>(
-          (request) async => '123',
-        );
+        String handle(MockRequest<String> req) {
+          return '123';
+        }
 
-        verify(() => mockRequestHandlerStore
-            .register<String, MockRequest<String>>(any()));
+        requestsManager.registerFunction<String, MockRequest<String>>(handle);
+
+        verify(
+          () => mockRequestHandlerStore.register<String, MockRequest<String>>(
+            RequestHandler.function(handle),
+          ),
+        );
       });
     });
 

@@ -4,9 +4,7 @@ import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
 
 class PipelineBehaviorStore implements PipelineConfigurator {
   final _handlers = <Type, List<PipelineBehavior>>{};
-  final _handlerFactories = <Type, List<PipelineBehaviorFactory>>{};
   final _genericHandlers = <PipelineBehavior>{};
-  final _genericHandlerFactories = <PipelineBehaviorFactory>{};
 
   @override
   void register<TResponse extends Object?, TRequest extends Request<TResponse>>(
@@ -21,19 +19,6 @@ class PipelineBehaviorStore implements PipelineConfigurator {
   }
 
   @override
-  void registerFactory<TResponse extends Object?,
-      TRequest extends Request<TResponse>>(
-    PipelineBehaviorFactory<TResponse, TRequest> factory,
-  ) {
-    final handlers = _handlerFactories.putIfAbsent(
-      TRequest,
-      () => <PipelineBehaviorFactory>[],
-    );
-
-    handlers.add(factory);
-  }
-
-  @override
   void registerGeneric(
     PipelineBehavior behavior,
   ) {
@@ -41,26 +26,28 @@ class PipelineBehaviorStore implements PipelineConfigurator {
   }
 
   @override
-  void registerGenericFactory(
-    PipelineBehaviorFactory factory,
+  void unregister<TResponse extends Object?,
+      TRequest extends Request<TResponse>>(
+    PipelineBehavior<TResponse, TRequest> behavior,
   ) {
-    _genericHandlerFactories.add(factory);
+    final handlers = _handlers[TRequest];
+
+    assert(
+      handlers != null,
+      'unregister<$TResponse, $TRequest> was called for a behavior that was never registered',
+    );
+
+    handlers!.remove(behavior);
   }
 
   @override
-  void unregister(PipelineBehavior behavior) {
-    for (final handlers in _handlers.values) {
-      handlers.remove(behavior);
-    }
+  void unregisterGeneric(PipelineBehavior behavior) {
+    assert(
+      _genericHandlers.contains(behavior),
+      'unregisterGeneric was called for a behavior that was never registered',
+    );
+
     _genericHandlers.remove(behavior);
-  }
-
-  @override
-  void unregisterFactory(PipelineBehaviorFactory factory) {
-    for (final handlers in _handlerFactories.values) {
-      handlers.remove(factory);
-    }
-    _genericHandlerFactories.remove(factory);
   }
 
   /// Returns all [PipelineBehavior]'s that match.
@@ -69,19 +56,11 @@ class PipelineBehaviorStore implements PipelineConfigurator {
   ) {
     final requestType = request.runtimeType;
 
-    final handlerFactories =
-        _handlerFactories[requestType]?.map((factory) => factory());
-
-    final genericFactories =
-        _genericHandlerFactories.map((factory) => factory());
-
     final handlers = _handlers[requestType];
 
     return [
       if (handlers != null) ...handlers,
-      if (handlerFactories != null) ...handlerFactories,
       ..._genericHandlers,
-      ...genericFactories,
     ];
   }
 }
