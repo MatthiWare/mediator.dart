@@ -3,7 +3,7 @@ import 'package:dart_mediator/src/request/pipeline/pipeline_configurator.dart';
 import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
 
 class PipelineBehaviorStore implements PipelineConfigurator {
-  final _handlers = <Type, List<PipelineBehavior>>{};
+  final _handlers = <Type, Set<PipelineBehavior>>{};
   final _genericHandlers = <PipelineBehavior>{};
 
   @override
@@ -12,7 +12,12 @@ class PipelineBehaviorStore implements PipelineConfigurator {
   ) {
     final handlers = _handlers.putIfAbsent(
       TRequest,
-      () => <PipelineBehavior>[],
+      () => <PipelineBehavior>{},
+    );
+
+    assert(
+      !handlers.contains(behavior),
+      'register<$TResponse, $TRequest> was called with an already registered behavior',
     );
 
     handlers.add(behavior);
@@ -22,6 +27,11 @@ class PipelineBehaviorStore implements PipelineConfigurator {
   void registerGeneric(
     PipelineBehavior behavior,
   ) {
+    assert(
+      !_genericHandlers.contains(behavior),
+      'registerGeneric was called with an already registered behavior',
+    );
+
     _genericHandlers.add(behavior);
   }
 
@@ -33,7 +43,7 @@ class PipelineBehaviorStore implements PipelineConfigurator {
     final handlers = _handlers[TRequest];
 
     assert(
-      handlers != null,
+      handlers != null && handlers.contains(behavior),
       'unregister<$TResponse, $TRequest> was called for a behavior that was never registered',
     );
 
