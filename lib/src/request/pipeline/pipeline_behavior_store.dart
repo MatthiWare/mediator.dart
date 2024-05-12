@@ -3,14 +3,14 @@ import 'package:dart_mediator/src/request/pipeline/pipeline_configurator.dart';
 import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
 
 class PipelineBehaviorStore implements PipelineConfigurator {
-  final _handlers = <Type, Set<PipelineBehavior>>{};
-  final _genericHandlers = <PipelineBehavior>{};
+  final _typedBehaviors = <Type, Set<PipelineBehavior>>{};
+  final _genericBehaviors = <PipelineBehavior>{};
 
   @override
   void register<TResponse extends Object?, TRequest extends Request<TResponse>>(
     PipelineBehavior<TResponse, TRequest> behavior,
   ) {
-    final handlers = _handlers.putIfAbsent(
+    final handlers = _typedBehaviors.putIfAbsent(
       TRequest,
       () => <PipelineBehavior>{},
     );
@@ -28,11 +28,11 @@ class PipelineBehaviorStore implements PipelineConfigurator {
     PipelineBehavior behavior,
   ) {
     assert(
-      !_genericHandlers.contains(behavior),
+      !_genericBehaviors.contains(behavior),
       'registerGeneric was called with an already registered behavior',
     );
 
-    _genericHandlers.add(behavior);
+    _genericBehaviors.add(behavior);
   }
 
   @override
@@ -40,24 +40,24 @@ class PipelineBehaviorStore implements PipelineConfigurator {
       TRequest extends Request<TResponse>>(
     PipelineBehavior<TResponse, TRequest> behavior,
   ) {
-    final handlers = _handlers[TRequest];
+    final behaviors = _typedBehaviors[TRequest];
 
     assert(
-      handlers != null && handlers.contains(behavior),
+      behaviors != null && behaviors.contains(behavior),
       'unregister<$TResponse, $TRequest> was called for a behavior that was never registered',
     );
 
-    handlers!.remove(behavior);
+    behaviors!.remove(behavior);
   }
 
   @override
   void unregisterGeneric(PipelineBehavior behavior) {
     assert(
-      _genericHandlers.contains(behavior),
+      _genericBehaviors.contains(behavior),
       'unregisterGeneric was called for a behavior that was never registered',
     );
 
-    _genericHandlers.remove(behavior);
+    _genericBehaviors.remove(behavior);
   }
 
   /// Returns all [PipelineBehavior]'s that match.
@@ -66,11 +66,11 @@ class PipelineBehaviorStore implements PipelineConfigurator {
   ) {
     final requestType = request.runtimeType;
 
-    final handlers = _handlers[requestType];
+    final behaviors = _typedBehaviors[requestType];
 
     return [
-      if (handlers != null) ...handlers,
-      ..._genericHandlers,
+      if (behaviors != null) ...behaviors,
+      ..._genericBehaviors,
     ];
   }
 }
