@@ -22,8 +22,24 @@ void main() {
     });
 
     group('requests', () {
-      test('it handles the request', () async {
+      test('it handles the normal request', () async {
         mediator.requests.register(GetDataQueryHandler());
+
+        final data = await mediator.requests.send(const GetDataQuery(123));
+
+        expect(data, '123');
+      });
+
+      test('it handles the function request', () async {
+        mediator.requests.registerFunction(GetDataQueryHandler().handle);
+
+        final data = await mediator.requests.send(const GetDataQuery(123));
+
+        expect(data, '123');
+      });
+
+      test('it handles the factory request', () async {
+        mediator.requests.registerFactory(() => GetDataQueryHandler());
 
         final data = await mediator.requests.send(const GetDataQuery(123));
 
@@ -32,20 +48,20 @@ void main() {
 
       test('it handles the request with pipeline', () async {
         var pipeline = false;
-        final behavior = WrappingBehavior(
-          () {
-            print('pipeline callback');
-            pipeline = true;
-          },
-        );
 
         mediator.requests.register(GetDataQueryHandler());
-        mediator.requests.pipeline.registerGeneric(behavior);
-        mediator.requests.pipeline.registerGeneric(DelayBehavior());
+        mediator.requests.pipeline.registerGenericFunction((req, next) {
+          pipeline = true;
+          return next();
+        });
+        mediator.requests.pipeline.registerGenericFactory(
+          () => DelayBehavior(),
+        );
 
-        await mediator.requests.send(const GetDataQuery(123));
+        final data = await mediator.requests.send(const GetDataQuery(123));
 
         expect(pipeline, isTrue);
+        expect(data, '123');
       });
     });
   });

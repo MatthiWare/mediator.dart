@@ -46,17 +46,6 @@ class GetDataQuery implements Query<String> {
   }
 }
 
-class WrappingBehavior implements PipelineBehavior {
-  final void Function() callback;
-  WrappingBehavior(this.callback);
-
-  @override
-  FutureOr handle(request, RequestHandlerDelegate next) {
-    callback();
-    return next();
-  }
-}
-
 class DelayBehavior implements PipelineBehavior {
   @override
   Future handle(request, RequestHandlerDelegate next) async {
