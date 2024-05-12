@@ -1,9 +1,4 @@
-import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
-import 'package:dart_mediator/src/request/request.dart';
-
-/// Factory to create a [PipelineBehavior].
-typedef PipelineBehaviorFactory<TRequest, TResponse>
-    = PipelineBehavior<TRequest, TResponse> Function();
+import 'package:dart_mediator/request_manager.dart';
 
 abstract interface class PipelineConfigurator {
   /// Registers the [behavior].
@@ -14,15 +9,6 @@ abstract interface class PipelineConfigurator {
     PipelineBehavior<TResponse, TRequest> behavior,
   );
 
-  /// Registers the [factory].
-  ///
-  /// When using a generic [PipelineBehavior] the [registerGenericFactory] should
-  /// be used instead.
-  void registerFactory<TResponse extends Object?,
-      TRequest extends Request<TResponse>>(
-    PipelineBehaviorFactory<TResponse, TRequest> factory,
-  );
-
   /// Registers the generic [behavior].
   ///
   /// Note, this should only be used when [register] is not possible.
@@ -30,16 +16,65 @@ abstract interface class PipelineConfigurator {
     PipelineBehavior behavior,
   );
 
-  /// Registers the generic [factory].
-  ///
-  /// Note, this should only be used when [registerFactory] is not possible.
-  void registerGenericFactory(
-    PipelineBehaviorFactory factory,
+  /// Unregisters the given [behavior].
+  void unregister<TResponse extends Object?,
+      TRequest extends Request<TResponse>>(
+    PipelineBehavior<TResponse, TRequest> behavior,
   );
 
-  /// Unregisters the given [behavior].
-  void unregister(PipelineBehavior behavior);
+  /// Unregisters the generic [behavior].
+  void unregisterGeneric(PipelineBehavior behavior);
+}
 
-  /// Unregisters the given [factory].
-  void unregisterFactory(PipelineBehaviorFactory factory);
+extension PipelineConfiguratorExtensions on PipelineConfigurator {
+  /// Registers the given [handler].
+  ///
+  /// This will create a function based [PipelineBehavior].
+  ///
+  /// See [PipelineBehavior.function].
+  void registerFunction<TResponse extends Object?,
+      TRequest extends Request<TResponse>>(
+    PipelineHandler<TResponse, TRequest> handler,
+  ) {
+    register(PipelineBehavior.function(handler));
+  }
+
+  /// Registers the given [factory].
+  ///
+  /// This will create a factory based [PipelineBehavior]. This factory will be
+  /// resolved into an actual [PipelineBehavior] at request time.
+  ///
+  /// See [PipelineBehavior.factory].
+  void registerFactory<TResponse extends Object?,
+      TRequest extends Request<TResponse>>(
+    PipelineBehaviorFactory<TResponse, TRequest> factory,
+  ) {
+    register(PipelineBehavior.factory(factory));
+  }
+
+  /// Registers the given generic [handler].
+  ///
+  /// This will create a function based [PipelineBehavior].
+  ///
+  ///
+  /// See [registerGeneric].
+  /// See [PipelineBehavior.function].
+  void registerGenericFunction(
+    PipelineHandler handler,
+  ) {
+    registerGeneric(PipelineBehavior.function(handler));
+  }
+
+  /// Registers the given generic [factory].
+  ///
+  /// This will create a factory based [PipelineBehavior]. This factory will be
+  /// resolved into an actual [PipelineBehavior] at request time.
+  ///
+  /// See [registerGeneric].
+  /// See [PipelineBehavior.factory].
+  void registerGenericFactory(
+    PipelineBehaviorFactory factory,
+  ) {
+    registerGeneric(PipelineBehavior.factory(factory));
+  }
 }
