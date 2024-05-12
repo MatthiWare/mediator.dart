@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dart_mediator/mediator.dart';
 import 'package:test/test.dart';
 
+import '../mocks.dart';
 import '../test_data.dart';
 
 class GetDataQueryHandler implements QueryHandler<String, GetDataQuery> {
@@ -22,6 +23,18 @@ void main() {
     });
 
     group('requests', () {
+      test('it unregisters the request handler', () async {
+        final handler = GetDataQueryHandler();
+
+        mediator.requests.register(handler);
+        mediator.requests.unregister(handler);
+
+        await expectLater(
+          mediator.requests.send(const GetDataQuery(123)),
+          throwsAssertionError,
+        );
+      });
+
       test('it handles the normal request', () async {
         mediator.requests.register(GetDataQueryHandler());
 

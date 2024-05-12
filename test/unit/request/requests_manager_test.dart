@@ -82,6 +82,17 @@ void main() {
       });
     });
 
+    group('unregister', () {
+      test('it unregisters the handler', () {
+        final mockRequestHandler =
+            MockRequestHandler<String, MockRequest<String>>();
+
+        requestsManager.unregister(mockRequestHandler);
+
+        verify(() => mockRequestHandlerStore.unregister(mockRequestHandler));
+      });
+    });
+
     group('send{TResponse, TRequest}', () {
       const output = '123';
       late MockRequest<String> mockRequest;

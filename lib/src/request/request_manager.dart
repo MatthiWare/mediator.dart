@@ -43,6 +43,13 @@ class RequestManager {
     _requestHandlerStore.register(handler);
   }
 
+  /// Registers the request [handler] for the given [TRequest].
+  void unregister<TResponse, TRequest extends Request<TResponse>>(
+    RequestHandler<TResponse, TRequest> handler,
+  ) {
+    _requestHandlerStore.unregister(handler);
+  }
+
   /// Sends a [request] to a single [RequestHandler].
   ///
   /// Make sure the [RequestHandler] is [register]ed before calling this method.
