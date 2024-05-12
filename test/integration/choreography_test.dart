@@ -51,6 +51,33 @@ void main() {
           'keyboard': 9,
         });
       });
+
+      test('it does not place the failed order', () async {
+        // Requests
+        mediator.requests.register(PlaceOrderCommandHandler());
+        mediator.requests.register(GetInventoryQueryHandler());
+        mediator.requests.pipeline.register(PlaceOrderValidationBehavior());
+        mediator.requests.pipeline.registerGeneric(LoggingBehavior());
+
+        // Events
+        mediator.events
+            .on<OrderPlacedEvent>()
+            .subscribe(OrderPlacedEventHandler());
+        mediator.events
+            .on<InventoryAdjustedEvent>()
+            .subscribe(InventoryAdjustedEventHandler());
+
+        // Start flow
+        await expectLater(
+          mediator.requests.send(
+            const PlaceOrderCommand(
+              '123',
+              {'mouse': 20, 'keyboard': 10},
+            ),
+          ),
+          throwsStateError,
+        );
+      });
     });
   });
 }
@@ -78,7 +105,7 @@ class LoggingBehavior implements PipelineBehavior {
   @override
   FutureOr handle(request, RequestHandlerDelegate next) async {
     try {
-      print('$LoggingBehavior: Handeling $request');
+      print('$LoggingBehavior: Handling $request');
       return await next();
     } finally {
       print('$LoggingBehavior: $request completed');
