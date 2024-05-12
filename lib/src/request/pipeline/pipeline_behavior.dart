@@ -6,8 +6,8 @@ import 'package:meta/meta.dart';
 typedef RequestHandlerDelegate<TResponse> = FutureOr<TResponse> Function();
 
 /// Factory to create a [PipelineBehavior].
-typedef PipelineBehaviorFactory<TRequest, TResponse>
-    = PipelineBehavior<TRequest, TResponse> Function();
+typedef PipelineBehaviorFactory<TResponse, TRequest>
+    = PipelineBehavior<TResponse, TRequest> Function();
 
 typedef PipelineHandler<TResponse, TRequest> = FutureOr<TResponse> Function(
     TRequest, RequestHandlerDelegate<TResponse>);

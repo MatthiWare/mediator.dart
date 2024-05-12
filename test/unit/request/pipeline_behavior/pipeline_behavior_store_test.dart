@@ -16,7 +16,7 @@ void main() {
     group('register', () {
       final mockBehavior = MockPipelineBehavior<int, MockRequest<int>>();
 
-      test('it registers the handler', () {
+      test('it registers the behavior', () {
         expect(
           () => pipelineBehaviorStore.register(mockBehavior),
           returnsNormally,
@@ -25,6 +25,18 @@ void main() {
         expect(
           pipelineBehaviorStore.getPipelines(mockRequest),
           [mockBehavior],
+        );
+      });
+
+      test('it throws when the behavior was already registered', () {
+        expect(
+          () => pipelineBehaviorStore.register(mockBehavior),
+          returnsNormally,
+        );
+
+        expect(
+          () => pipelineBehaviorStore.register(mockBehavior),
+          throwsAssertionError,
         );
       });
     });
@@ -81,7 +93,7 @@ void main() {
     group('registerGeneric', () {
       final mockBehavior = MockPipelineBehavior();
 
-      test('it registers the handler', () {
+      test('it registers the behavior', () {
         expect(
           () => pipelineBehaviorStore.registerGeneric(mockBehavior),
           returnsNormally,
@@ -97,7 +109,7 @@ void main() {
     group('registerGenericFactory', () {
       MockPipelineBehavior factory() => MockPipelineBehavior();
 
-      test('it registers the handler', () {
+      test('it registers the behavior', () {
         expect(
           () => pipelineBehaviorStore.registerGenericFactory(factory),
           returnsNormally,
@@ -127,7 +139,21 @@ void main() {
         );
       });
 
-      test('it throws when behavior does not exist', () {
+      test('it throws when behavior type does not exist', () {
+        expect(
+          () => pipelineBehaviorStore.unregister(mockBehavior),
+          throwsAssertionError,
+        );
+      });
+
+      test('it throws when the behavior does not exist', () {
+        pipelineBehaviorStore.register(mockBehavior);
+
+        expect(
+          () => pipelineBehaviorStore.unregister(mockBehavior),
+          returnsNormally,
+        );
+
         expect(
           () => pipelineBehaviorStore.unregister(mockBehavior),
           throwsAssertionError,
@@ -222,17 +248,18 @@ void main() {
         // Will not be returned in the getPipelines call.
         pipelineBehaviorStore.register(incorrectBehavior);
         pipelineBehaviorStore.registerFactory(incorrectFactory);
+        pipelineBehaviorStore.registerFunction(incorrectBehavior.handle);
 
         expect(
           pipelineBehaviorStore.getPipelines(mockRequest),
-          [
+          {
             correctBehavior,
             PipelineBehavior.function(correctBehavior.handle),
             PipelineBehavior.factory(correctFactory),
             logBehavior,
             PipelineBehavior.function(logBehavior.handle),
             PipelineBehavior.factory(logBehaviorFactory),
-          ],
+          },
         );
       });
     });

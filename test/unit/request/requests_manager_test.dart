@@ -99,7 +99,7 @@ void main() {
             .thenReturn(mockRequestHandler);
 
         when(() => mockPipelineBehaviorStore.getPipelines(mockRequest))
-            .thenReturn([]);
+            .thenReturn({});
 
         final result = await requestsManager.send(mockRequest);
 
@@ -134,7 +134,7 @@ void main() {
         });
 
         when(() => mockPipelineBehaviorStore.getPipelines(mockRequest))
-            .thenReturn([mockBehavior]);
+            .thenReturn({mockBehavior});
 
         final result = await requestsManager.send(mockRequest);
 
@@ -166,7 +166,7 @@ void main() {
         });
 
         when(() => mockPipelineBehaviorStore.getPipelines(mockRequest))
-            .thenReturn([mockWrongBehavior]);
+            .thenReturn({mockWrongBehavior});
 
         await expectLater(
           () => requestsManager.send(mockRequest),
