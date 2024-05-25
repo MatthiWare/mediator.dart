@@ -116,6 +116,31 @@ void main() {
 
         expect(data, '123');
       });
+
+      test('it handles the stream request with pipeline', () async {
+        final pipelineCalls = <bool>[];
+
+        mediator.requests.register(GetDataQueryHandlerAsync());
+
+        mediator.requests.pipeline.register(GetDataQueryHandlerBehaviorAsync());
+        mediator.requests.pipeline.register(GetDataQueryHandlerBehaviorSync());
+        mediator.requests.pipeline.registerGenericFunction((req, next) {
+          pipelineCalls.add(true);
+          return next();
+        });
+        mediator.requests.pipeline.registerGenericFactory(
+          () => DelayBehavior(),
+        );
+
+        final stream = Stream.fromIterable(
+          Iterable.generate(3, (i) => GetDataQuery(i)),
+        );
+
+        final output = await mediator.requests.sendStream(stream).toList();
+
+        expect(pipelineCalls, [true, true, true]);
+        expect(output, ['0', '1', '2']);
+      });
     });
   });
 }
