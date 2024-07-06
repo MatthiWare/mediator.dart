@@ -14,7 +14,11 @@ class EventHandlerStore {
       'register<$TEvent> was called with an already registered handler',
     );
 
-    handlers.add(handler);
+    // When the store is being modified, create a new copy.
+    _handlers[TEvent] = <EventHandler<TEvent>>{
+      ...handlers,
+      handler,
+    };
   }
 
   /// Unregisters the given [handler].
@@ -26,7 +30,10 @@ class EventHandlerStore {
       'unregister<$TEvent> was called for a handler that was never registered',
     );
 
-    handlers.remove(handler);
+    // When the store is being modified, create a new copy.
+    final update = handlers.toSet()..remove(handler);
+
+    _handlers[TEvent] = update;
   }
 
   /// Returns all registered [EventHandler]'s for [TEvent].

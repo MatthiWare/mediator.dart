@@ -34,6 +34,28 @@ void main() {
         );
       });
 
+      test('it does not cause concurrent modification error', () async {
+        mediator.events.on<DomainIntEvent>().subscribeFunction((event) {
+          // While the handlers are being process, register a new one for the
+          // event that is currently being processed.
+          mediator.events.on<DomainIntEvent>().subscribeFunction((e) {});
+        });
+
+        await mediator.events.dispatch(const DomainIntEvent(1));
+
+        late final EventSubscription sub;
+
+        mediator.events.on<DomainIntEvent>().subscribeFunction((event) {
+          // While the handlers are being process, unregister the next one for
+          // the event that is currently being processed.
+          sub.cancel();
+        });
+
+        sub = mediator.events.on<DomainIntEvent>().subscribeFunction((e) {});
+
+        await mediator.events.dispatch(const DomainIntEvent(2));
+      });
+
       test('it handles the event', () async {
         final results = <int>[];
         mediator.events
