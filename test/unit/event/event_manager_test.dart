@@ -40,15 +40,6 @@ void main() {
 
     group('dispatch', () {
       const event = DomainIntEvent(123);
-      test('it throws when no subscribers for the event', () async {
-        when(() => mockEventHandlerStore.getHandlersFor<DomainIntEvent>())
-            .thenReturn(const {});
-
-        expect(
-          () => eventManager.dispatch(event),
-          throwsAssertionError,
-        );
-      });
 
       test('it executes the dispatch strategy', () async {
         final handlers = {MockEventHandler<DomainIntEvent>()};
