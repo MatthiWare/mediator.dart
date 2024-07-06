@@ -59,11 +59,6 @@ class EventManager {
   ]) async {
     final handlers = _eventHandlerStore.getHandlersFor<TEvent>();
 
-    assert(
-      handlers.isNotEmpty,
-      'dispatch<$TEvent> was invoked but no handlers are registered to handle this',
-    );
-
     for (final observer in _observers) {
       observer.onDispatch(event, handlers);
     }

@@ -56,6 +56,13 @@ void main() {
         await mediator.events.dispatch(const DomainIntEvent(2));
       });
 
+      test('it does not throw when no subscribers for the event', () async {
+        await expectLater(
+          mediator.events.dispatch(const DomainIntEvent(3)),
+          completes,
+        );
+      });
+
       test('it handles the event', () async {
         final results = <int>[];
         mediator.events
