@@ -14,6 +14,21 @@ class GetDataQueryHandler implements QueryHandler<String, GetDataQuery> {
   }
 }
 
+class GetDataQueryHandlerBehavior
+    implements PipelineBehavior<String, GetDataQuery> {
+  @override
+  FutureOr<String> handle(
+    GetDataQuery request,
+    RequestHandlerDelegate<String> next,
+  ) async {
+    try {
+      return await next();
+    } catch (e) {
+      return 'error';
+    }
+  }
+}
+
 void main() {
   group('Mediator', () {
     late Mediator mediator;
@@ -74,6 +89,20 @@ void main() {
         final data = await mediator.requests.send(const GetDataQuery(123));
 
         expect(pipeline, isTrue);
+        expect(data, '123');
+      });
+
+      test('it handles the request with multiple pipelines', () async {
+        mediator.requests.register(GetDataQueryHandler());
+
+        // See: https://github.com/MatthiWare/mediator.dart/issues/16
+        mediator.requests.pipeline.register(GetDataQueryHandlerBehavior());
+        mediator.requests.pipeline.register(GetDataQueryHandlerBehavior());
+
+        mediator.requests.pipeline.registerGeneric(DelayBehavior());
+
+        final data = await mediator.requests.send(const GetDataQuery(123));
+
         expect(data, '123');
       });
     });
