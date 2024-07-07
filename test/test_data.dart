@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:dart_mediator/contracts.dart';
-import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
+import 'package:dart_mediator/request_manager.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -55,6 +55,60 @@ class DelayBehavior implements PipelineBehavior {
       return await next();
     } finally {
       print('$DelayBehavior: After');
+    }
+  }
+}
+
+class GenericSyncBehavior implements PipelineBehavior {
+  @override
+  FutureOr handle(request, RequestHandlerDelegate next) {
+    print('GenericSyncBehavior: Before');
+    return next();
+  }
+}
+
+class GetDataQueryHandlerAsync implements QueryHandler<String, GetDataQuery> {
+  @override
+  Future<String> handle(GetDataQuery request) async {
+    await Future.delayed(const Duration(milliseconds: 10));
+    return request.id.toString();
+  }
+}
+
+class GetDataQueryHandlerSync implements QueryHandler<String, GetDataQuery> {
+  @override
+  String handle(GetDataQuery request) {
+    return request.id.toString();
+  }
+}
+
+class GetDataQueryHandlerBehaviorAsync
+    implements PipelineBehavior<String, GetDataQuery> {
+  @override
+  FutureOr<String> handle(
+    GetDataQuery request,
+    RequestHandlerDelegate<String> next,
+  ) async {
+    try {
+      await Future.delayed(Duration.zero);
+      return await next();
+    } catch (e) {
+      return 'error';
+    }
+  }
+}
+
+class GetDataQueryHandlerBehaviorSync
+    implements PipelineBehavior<String, GetDataQuery> {
+  @override
+  FutureOr<String> handle(
+    GetDataQuery request,
+    RequestHandlerDelegate<String> next,
+  ) {
+    try {
+      return next();
+    } catch (e) {
+      return 'error';
     }
   }
 }

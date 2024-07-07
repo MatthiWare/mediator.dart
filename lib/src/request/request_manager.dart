@@ -69,20 +69,30 @@ class RequestManager {
 
     final RequestHandlerDelegate executionPlan = pipelines.fold(
       handle,
-      (next, pipeline) => () => pipeline.handle(request, next),
+      (next, pipeline) {
+        FutureOr<TResponse> pipelineHandler() async {
+          final futureOrResult = pipeline.handle(request, next);
+          final result =
+              futureOrResult is Future ? await futureOrResult : futureOrResult;
+
+          assert(
+            result is TResponse,
+            '$request expected a return type of $TResponse but '
+            'got one of type ${result.runtimeType}. '
+            'One of the registered pipelines is not correctly returning the '
+            '`next()` call. Pipelines used: $pipelines',
+          );
+
+          return result;
+        }
+
+        return pipelineHandler;
+      },
     );
 
     final futureOrResult = executionPlan();
     final response =
         futureOrResult is Future ? await futureOrResult : futureOrResult;
-
-    assert(
-      response is TResponse,
-      '$request expected a return type of $TResponse but '
-      'got one of type ${response.runtimeType}. '
-      'One of the registered pipelines is not correctly returning the '
-      '`next()` call. Pipelines used: $pipelines',
-    );
 
     return response;
   }
