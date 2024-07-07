@@ -160,6 +160,46 @@ void main() {
         expect(invoked, isTrue);
       });
 
+      test('it handles the request with multiple behaviors', () async {
+        final mockBehavior =
+            MockPipelineBehavior<String, MockRequest<String>>();
+
+        int invoked = 0;
+
+        when(() => mockRequestHandler.handle(mockRequest)).thenReturn(output);
+
+        when(() => mockRequestHandlerStore.getHandlerFor(mockRequest))
+            .thenReturn(mockRequestHandler);
+
+        when(() => mockBehavior.handle(mockRequest, captureAny()))
+            .thenAnswer((invocation) async {
+          invoked++;
+
+          final handler = invocation.positionalArguments[1]
+              as RequestHandlerDelegate<String>;
+
+          return handler();
+        });
+
+        final behavior1 = PipelineBehavior.factory(() => mockBehavior);
+        final behavior2 = PipelineBehavior.factory(() => mockBehavior);
+
+        when(() => mockPipelineBehaviorStore.getPipelines(mockRequest))
+            .thenReturn({behavior1, behavior2});
+
+        final result = await requestsManager.send(mockRequest);
+
+        verify(() => mockRequestHandler.handle(mockRequest));
+
+        expect(
+          result,
+          output,
+          reason: 'Should return the handler response',
+        );
+
+        expect(invoked, 2);
+      });
+
       test('it throws when pipeline is misconfigured', () async {
         final mockWrongBehavior = MockPipelineBehavior();
 
