@@ -1,33 +1,8 @@
-import 'dart:async';
-
 import 'package:dart_mediator/mediator.dart';
 import 'package:test/test.dart';
 
 import '../mocks.dart';
 import '../test_data.dart';
-
-class GetDataQueryHandler implements QueryHandler<String, GetDataQuery> {
-  @override
-  Future<String> handle(GetDataQuery request) async {
-    await Future.delayed(const Duration(milliseconds: 10));
-    return request.id.toString();
-  }
-}
-
-class GetDataQueryHandlerBehavior
-    implements PipelineBehavior<String, GetDataQuery> {
-  @override
-  FutureOr<String> handle(
-    GetDataQuery request,
-    RequestHandlerDelegate<String> next,
-  ) async {
-    try {
-      return await next();
-    } catch (e) {
-      return 'error';
-    }
-  }
-}
 
 void main() {
   group('Mediator', () {
@@ -39,7 +14,7 @@ void main() {
 
     group('requests', () {
       test('it unregisters the request handler', () async {
-        final handler = GetDataQueryHandler();
+        final handler = GetDataQueryHandlerAsync();
 
         mediator.requests.register(handler);
         mediator.requests.unregister(handler);
@@ -51,7 +26,7 @@ void main() {
       });
 
       test('it handles the normal request', () async {
-        mediator.requests.register(GetDataQueryHandler());
+        mediator.requests.register(GetDataQueryHandlerAsync());
 
         final data = await mediator.requests.send(const GetDataQuery(123));
 
@@ -59,7 +34,7 @@ void main() {
       });
 
       test('it handles the function request', () async {
-        mediator.requests.registerFunction(GetDataQueryHandler().handle);
+        mediator.requests.registerFunction(GetDataQueryHandlerAsync().handle);
 
         final data = await mediator.requests.send(const GetDataQuery(123));
 
@@ -67,7 +42,7 @@ void main() {
       });
 
       test('it handles the factory request', () async {
-        mediator.requests.registerFactory(() => GetDataQueryHandler());
+        mediator.requests.registerFactory(() => GetDataQueryHandlerAsync());
 
         final data = await mediator.requests.send(const GetDataQuery(123));
 
@@ -77,7 +52,7 @@ void main() {
       test('it handles the request with pipeline', () async {
         var pipeline = false;
 
-        mediator.requests.register(GetDataQueryHandler());
+        mediator.requests.register(GetDataQueryHandlerAsync());
         mediator.requests.pipeline.registerGenericFunction((req, next) {
           pipeline = true;
           return next();
@@ -93,13 +68,49 @@ void main() {
       });
 
       test('it handles the request with multiple pipelines', () async {
-        mediator.requests.register(GetDataQueryHandler());
+        mediator.requests.register(GetDataQueryHandlerAsync());
 
         // See: https://github.com/MatthiWare/mediator.dart/issues/16
-        mediator.requests.pipeline.register(GetDataQueryHandlerBehavior());
-        mediator.requests.pipeline.register(GetDataQueryHandlerBehavior());
+        mediator.requests.pipeline.register(GetDataQueryHandlerBehaviorAsync());
+        mediator.requests.pipeline.register(GetDataQueryHandlerBehaviorAsync());
 
         mediator.requests.pipeline.registerGeneric(DelayBehavior());
+
+        final data = await mediator.requests.send(const GetDataQuery(123));
+
+        expect(data, '123');
+      });
+
+      test('it handles the async request with mixed pipelines', () async {
+        mediator.requests.register(GetDataQueryHandlerAsync());
+
+        for (var i = 0; i < 2; i++) {
+          mediator.requests.pipeline
+              .register(GetDataQueryHandlerBehaviorAsync());
+          mediator.requests.pipeline
+              .register(GetDataQueryHandlerBehaviorSync());
+
+          mediator.requests.pipeline.registerGeneric(DelayBehavior());
+          mediator.requests.pipeline.registerGeneric(GenericSyncBehavior());
+        }
+
+        final data = await mediator.requests.send(const GetDataQuery(123));
+
+        expect(data, '123');
+      });
+
+      test('it handles the sync request with mixed pipelines', () async {
+        mediator.requests.register(GetDataQueryHandlerSync());
+
+        for (var i = 0; i < 2; i++) {
+          mediator.requests.pipeline
+              .register(GetDataQueryHandlerBehaviorAsync());
+          mediator.requests.pipeline
+              .register(GetDataQueryHandlerBehaviorSync());
+
+          mediator.requests.pipeline.registerGeneric(DelayBehavior());
+          mediator.requests.pipeline.registerGeneric(GenericSyncBehavior());
+        }
 
         final data = await mediator.requests.send(const GetDataQuery(123));
 
