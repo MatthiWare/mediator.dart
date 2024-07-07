@@ -1,3 +1,9 @@
+## 0.3.1
+
+- Avoid concurrent modification errors (#14)
+- Remove empty event handlers assert (#15)
+- Fix unhandled exception when using multiple concrete pipelines (#17)
+
 ## 0.3.0
 
 - Reworked `registerFactory` methods used on `RequestManager`, `EventManager` and `PipelineConfigurator` to be extension methods (#9)
