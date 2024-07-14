@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dart_mediator/src/utils/sentinel.dart';
 import 'package:meta/meta.dart';
 import 'package:dart_mediator/src/mediator.dart';
 import 'package:dart_mediator/src/event/handler/event_handler.dart';
