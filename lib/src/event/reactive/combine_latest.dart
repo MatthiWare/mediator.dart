@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:dart_mediator/event_manager.dart';
 import 'package:dart_mediator/src/event/event_manager.dart';
 import 'package:dart_mediator/src/event/interfaces/event_manager_provider.dart';
 import 'package:dart_mediator/src/utils/sentinel.dart';
+import 'package:meta/meta.dart';
 
 void _assertEventManagersTheSame(List<EventSubscriptionBuilder> builders) {
   final eventManagers =
@@ -34,6 +37,14 @@ EventSubscriptionBuilder<R> combineLatest<R>(
   List<EventSubscriptionBuilder<dynamic>> events,
   R Function(List<dynamic> events) combinator,
 ) {
+  if (events.isEmpty) {
+    throw ArgumentError.value(
+      events,
+      'events',
+      'Cannot be empty',
+    );
+  }
+
   assert(() {
     _assertEventManagersTheSame(events);
     return true;
@@ -42,49 +53,16 @@ EventSubscriptionBuilder<R> combineLatest<R>(
   final forkedEventManager =
       (events.first as EventManagerProvider).eventManager.fork();
 
-  final builder = forkedEventManager.on<_WrappedR<R>>();
+  final builder = _CombineLatestEventSubscriptionBuilder<_WrappedR<R>, R>(
+    parent: forkedEventManager
+        .on<_WrappedR<R>>()
+        .map((wrapped) => wrapped.unwrapped),
+    fork: forkedEventManager,
+    combinator: combinator,
+    events: events,
+  );
 
-  final lastValues = List<Object?>.filled(events.length, sentinel);
-  final emittedHandlersList = List<bool>.filled(events.length, false);
-
-  bool allHandlersEmitted = false;
-
-  Future<void> emit() async {
-    if (!allHandlersEmitted) {
-      allHandlersEmitted = !emittedHandlersList.any((x) => x == false);
-
-      if (!allHandlersEmitted) {
-        return;
-      }
-    }
-
-    final result = _WrappedR(combinator(lastValues));
-
-    await forkedEventManager.dispatch<_WrappedR<R>>(result);
-  }
-
-  final subscriptions = events.indexed.map((e) {
-    final index = e.$1;
-    final eventBuilder = e.$2;
-
-    bool firstEvent = true;
-
-    final internalSubscription =
-        eventBuilder.map((e) => e as dynamic).subscribeFunction((event) async {
-      if (firstEvent) {
-        firstEvent = false;
-        emittedHandlersList[index] = true;
-      }
-
-      lastValues[index] = event;
-
-      await emit();
-    });
-
-    return internalSubscription;
-  }).toList(growable: false);
-
-  return builder.map((wrapped) => wrapped.r);
+  return builder;
 }
 
 EventSubscriptionBuilder<R> combineLatest2<R, A, B>(
@@ -103,8 +81,95 @@ EventSubscriptionBuilder<R> combineLatest2<R, A, B>(
   );
 }
 
+@immutable
 class _WrappedR<R> implements DomainEvent {
-  final R r;
+  final R unwrapped;
 
-  _WrappedR(this.r);
+  const _WrappedR(this.unwrapped);
+
+  @override
+  int get hashCode => Object.hash(runtimeType, unwrapped);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _WrappedR<R> &&
+            other.unwrapped == unwrapped);
+  }
+}
+
+class _CombineLatestEventSubscriptionBuilder<TWrapped, T>
+    extends BaseEventSubscriptionBuilder<T, T> {
+  final EventManager fork;
+  final List<EventSubscriptionBuilder<dynamic>> events;
+  final T Function(List<dynamic> events) combinator;
+
+  _CombineLatestEventSubscriptionBuilder({
+    required super.parent,
+    required this.fork,
+    required this.events,
+    required this.combinator,
+  });
+
+  @override
+  EventHandler<T> createHandler(EventHandler<T> handler) {
+    final lastValues = List<Object?>.filled(events.length, sentinel);
+    final emittedHandlersList = List<bool>.filled(events.length, false);
+
+    bool allHandlersEmitted = false;
+
+    final returnedHandler = _CombineLatestEventHandler(parent: handler);
+
+    Future<void> emit() async {
+      if (!allHandlersEmitted) {
+        allHandlersEmitted = !emittedHandlersList.any((x) => x == false);
+
+        if (!allHandlersEmitted) {
+          return;
+        }
+      }
+
+      final result = combinator(lastValues);
+
+      await returnedHandler.handle(result);
+    }
+
+    final subscriptions = events.indexed.map((e) {
+      final index = e.$1;
+      final eventBuilder = e.$2;
+
+      bool firstEvent = true;
+
+      final internalSubscription = eventBuilder
+          .map((e) => e as dynamic)
+          .subscribeFunction((event) async {
+        if (firstEvent) {
+          firstEvent = false;
+          emittedHandlersList[index] = true;
+        }
+
+        lastValues[index] = event;
+
+        await emit();
+      });
+
+      return internalSubscription;
+    }).toList(growable: false);
+
+    return returnedHandler;
+  }
+}
+
+class _CombineLatestEventHandler<T> implements EventHandler<T> {
+  final EventHandler<T> parent;
+
+  _CombineLatestEventHandler({
+    required this.parent,
+  });
+
+  @override
+  FutureOr<void> handle(T event) {
+    return parent.handle(event);
+  }
 }
