@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:dart_mediator/event_manager.dart';
 import 'package:dart_mediator/src/event/event_manager.dart';
 import 'package:dart_mediator/src/event/interfaces/event_manager_provider.dart';
+import 'package:dart_mediator/src/event/reactive/utils/wrapped_event.dart';
 import 'package:dart_mediator/src/utils/sentinel.dart';
-import 'package:meta/meta.dart';
 
 void _assertEventManagersTheSame(List<EventSubscriptionBuilder> builders) {
   final eventManagers =
@@ -53,8 +53,8 @@ EventSubscriptionBuilder<R> combineLatest<R>(
   final forkedEventManager =
       (events.first as EventManagerProvider).eventManager.fork();
 
-  final builder = _CombineLatestEventSubscriptionBuilder<_WrappedR<R>, R>(
-    parent: forkedEventManager.on<_WrappedR<R>>(),
+  final builder = _CombineLatestEventSubscriptionBuilder<WrappedEvent<R>, R>(
+    parent: forkedEventManager.on<WrappedEvent<R>>(),
     fork: forkedEventManager,
     combinator: combinator,
     events: events,
@@ -79,26 +79,8 @@ EventSubscriptionBuilder<R> combineLatest2<R, A, B>(
   );
 }
 
-@immutable
-class _WrappedR<R> implements DomainEvent {
-  final R unwrapped;
-
-  const _WrappedR(this.unwrapped);
-
-  @override
-  int get hashCode => Object.hash(runtimeType, unwrapped);
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _WrappedR<R> &&
-            other.unwrapped == unwrapped);
-  }
-}
-
-class _CombineLatestEventSubscriptionBuilder<TWrapped extends _WrappedR<T>, T>
-    extends BaseEventSubscriptionBuilder<TWrapped, T> {
+class _CombineLatestEventSubscriptionBuilder<TWrapped extends WrappedEvent<T>,
+    T> extends BaseEventSubscriptionBuilder<TWrapped, T> {
   final EventManager fork;
   final List<EventSubscriptionBuilder<dynamic>> events;
   final T Function(List<dynamic> events) combinator;
@@ -129,7 +111,7 @@ class _CombineLatestEventSubscriptionBuilder<TWrapped extends _WrappedR<T>, T>
         }
       }
 
-      final result = _WrappedR(combinator(lastValues)) as TWrapped;
+      final result = WrappedEvent(combinator(lastValues)) as TWrapped;
 
       await returnedHandler.handle(result);
     }
@@ -160,7 +142,7 @@ class _CombineLatestEventSubscriptionBuilder<TWrapped extends _WrappedR<T>, T>
   }
 }
 
-class _CombineLatestEventHandler<T, R extends _WrappedR<T>>
+class _CombineLatestEventHandler<T, R extends WrappedEvent<T>>
     implements EventHandler<R> {
   final EventHandler<T> parent;
 
