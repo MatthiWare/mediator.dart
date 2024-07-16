@@ -54,9 +54,7 @@ EventSubscriptionBuilder<R> combineLatest<R>(
       (events.first as EventManagerProvider).eventManager.fork();
 
   final builder = _CombineLatestEventSubscriptionBuilder<_WrappedR<R>, R>(
-    parent: forkedEventManager
-        .on<_WrappedR<R>>()
-        .map((wrapped) => wrapped.unwrapped),
+    parent: forkedEventManager.on<_WrappedR<R>>(),
     fork: forkedEventManager,
     combinator: combinator,
     events: events,
@@ -99,8 +97,8 @@ class _WrappedR<R> implements DomainEvent {
   }
 }
 
-class _CombineLatestEventSubscriptionBuilder<TWrapped, T>
-    extends BaseEventSubscriptionBuilder<T, T> {
+class _CombineLatestEventSubscriptionBuilder<TWrapped extends _WrappedR<T>, T>
+    extends BaseEventSubscriptionBuilder<TWrapped, T> {
   final EventManager fork;
   final List<EventSubscriptionBuilder<dynamic>> events;
   final T Function(List<dynamic> events) combinator;
@@ -113,13 +111,14 @@ class _CombineLatestEventSubscriptionBuilder<TWrapped, T>
   });
 
   @override
-  EventHandler<T> createHandler(EventHandler<T> handler) {
+  EventHandler<TWrapped> createHandler(EventHandler<T> handler) {
     final lastValues = List<Object?>.filled(events.length, sentinel);
     final emittedHandlersList = List<bool>.filled(events.length, false);
 
     bool allHandlersEmitted = false;
 
-    final returnedHandler = _CombineLatestEventHandler(parent: handler);
+    final returnedHandler =
+        _CombineLatestEventHandler<T, TWrapped>(parent: handler);
 
     Future<void> emit() async {
       if (!allHandlersEmitted) {
@@ -130,7 +129,7 @@ class _CombineLatestEventSubscriptionBuilder<TWrapped, T>
         }
       }
 
-      final result = combinator(lastValues);
+      final result = _WrappedR(combinator(lastValues)) as TWrapped;
 
       await returnedHandler.handle(result);
     }
@@ -161,7 +160,8 @@ class _CombineLatestEventSubscriptionBuilder<TWrapped, T>
   }
 }
 
-class _CombineLatestEventHandler<T> implements EventHandler<T> {
+class _CombineLatestEventHandler<T, R extends _WrappedR<T>>
+    implements EventHandler<R> {
   final EventHandler<T> parent;
 
   _CombineLatestEventHandler({
@@ -169,7 +169,7 @@ class _CombineLatestEventHandler<T> implements EventHandler<T> {
   });
 
   @override
-  FutureOr<void> handle(T event) {
-    return parent.handle(event);
+  FutureOr<void> handle(R event) {
+    return parent.handle(event.unwrapped);
   }
 }
