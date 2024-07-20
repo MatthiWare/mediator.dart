@@ -23,12 +23,7 @@ EventSubscriptionBuilder<R> combineLatest<R>(
     return true;
   }());
 
-  final forkedEventManager =
-      (events.first as EventManagerProvider).eventManager.fork();
-
-  final builder = _CombineLatestEventSubscriptionBuilder<WrappedEvent<R>, R>(
-    parent: forkedEventManager.on<WrappedEvent<R>>(),
-    fork: forkedEventManager,
+  final builder = _CombineLatestEventSubscriptionBuilder<R>(
     combinator: combinator,
     events: events,
   );
@@ -52,28 +47,21 @@ EventSubscriptionBuilder<R> combineLatest2<R, A, B>(
   );
 }
 
-class _CombineLatestEventSubscriptionBuilder<TWrapped extends WrappedEvent<T>,
-    T> extends BaseEventSubscriptionBuilder<TWrapped, T> {
-  final EventManager fork;
+class _CombineLatestEventSubscriptionBuilder<T>
+    extends EventSubscriptionBuilder<T> {
   final List<EventSubscriptionBuilder<dynamic>> events;
   final T Function(List<dynamic> events) combinator;
 
   _CombineLatestEventSubscriptionBuilder({
-    required super.parent,
-    required this.fork,
     required this.events,
     required this.combinator,
   });
 
-  @override
-  EventHandler<TWrapped> createHandler(EventHandler<T> handler) {
+  List<EventSubscription> _subscribeToEvents(EventHandler<T> handler) {
     final lastValues = List<Object?>.filled(events.length, sentinel);
     final emittedHandlersList = List<bool>.filled(events.length, false);
 
     bool allHandlersEmitted = false;
-
-    final returnedHandler =
-        _CombineLatestEventHandler<T, TWrapped>(parent: handler);
 
     Future<void> emit() async {
       if (!allHandlersEmitted) {
@@ -84,9 +72,9 @@ class _CombineLatestEventSubscriptionBuilder<TWrapped extends WrappedEvent<T>,
         }
       }
 
-      final result = WrappedEvent(combinator(lastValues)) as TWrapped;
+      final result = combinator(lastValues);
 
-      await returnedHandler.handle(result);
+      await handler.handle(result);
     }
 
     final subscriptions = events.indexed.map((e) {
@@ -111,20 +99,17 @@ class _CombineLatestEventSubscriptionBuilder<TWrapped extends WrappedEvent<T>,
       return internalSubscription;
     }).toList(growable: false);
 
-    return returnedHandler;
+    return subscriptions;
   }
-}
-
-class _CombineLatestEventHandler<T, R extends WrappedEvent<T>>
-    implements EventHandler<R> {
-  final EventHandler<T> parent;
-
-  _CombineLatestEventHandler({
-    required this.parent,
-  });
 
   @override
-  FutureOr<void> handle(R event) {
-    return parent.handle(event.unwrapped);
+  EventSubscription subscribe(EventHandler<T> handler) {
+    final subscriptions = _subscribeToEvents(handler);
+
+    return EventSubscription(() {
+      for (final sub in subscriptions) {
+        sub.cancel();
+      }
+    });
   }
 }

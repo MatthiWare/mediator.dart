@@ -21,57 +21,40 @@ EventSubscriptionBuilder<R> merge<R>(
     return true;
   }());
 
-  final forkedEventManager =
-      (events.first as EventManagerProvider).eventManager.fork();
-
-  final builder = _MergeEventSubscriptionBuilder<WrappedEvent<R>, R>(
-    parent: forkedEventManager.on<WrappedEvent<R>>(),
-    fork: forkedEventManager,
+  final builder = _MergeEventSubscriptionBuilder<R>(
     events: events,
   );
 
   return builder;
 }
 
-class _MergeEventSubscriptionBuilder<TWrapped extends WrappedEvent<T>, T>
-    extends BaseEventSubscriptionBuilder<TWrapped, T> {
-  final EventManager fork;
+class _MergeEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
   final List<EventSubscriptionBuilder<T>> events;
 
   _MergeEventSubscriptionBuilder({
-    required super.parent,
-    required this.fork,
     required this.events,
   });
 
-  @override
-  EventHandler<TWrapped> createHandler(EventHandler<T> handler) {
-    final returnedHandler = _MergeEventHandler<T, TWrapped>(parent: handler);
-
+  List<EventSubscription> _subscribeToEvents(EventHandler<T> handler) {
     Future<void> emit(T event) async {
-      final result = WrappedEvent(event) as TWrapped;
-
-      await returnedHandler.handle(result);
+      await handler.handle(event);
     }
 
     final subscriptions = events.map((eventBuilder) {
       return eventBuilder.subscribeFunction(emit);
     }).toList(growable: false);
 
-    return returnedHandler;
+    return subscriptions;
   }
-}
-
-class _MergeEventHandler<T, R extends WrappedEvent<T>>
-    implements EventHandler<R> {
-  final EventHandler<T> parent;
-
-  _MergeEventHandler({
-    required this.parent,
-  });
 
   @override
-  FutureOr<void> handle(R event) {
-    return parent.handle(event.unwrapped);
+  EventSubscription subscribe(EventHandler<T> handler) {
+    final subscriptions = _subscribeToEvents(handler);
+
+    return EventSubscription(() {
+      for (final sub in subscriptions) {
+        sub.cancel();
+      }
+    });
   }
 }
