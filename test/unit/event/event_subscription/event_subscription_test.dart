@@ -47,6 +47,31 @@ void main() {
 
         verify(() => callbackMock.call());
       });
+
+      test('it invokes the doOnCancel callbacks', () {
+        final callbackMock = CallbackMock();
+
+        final sub = EventSubscription(() {});
+
+        sub.doOnCancel(callbackMock.call);
+
+        sub.cancel();
+
+        verify(() => callbackMock.call());
+      });
+    });
+
+    group('doOnCancel', () {
+      test('it throws when subscription was already canceled', () {
+        final sub = EventSubscription(() {});
+
+        sub.cancel();
+
+        expect(
+          () => sub.doOnCancel(() {}),
+          throwsAssertionError,
+        );
+      });
     });
   });
 }
