@@ -23,6 +23,10 @@ class MockRequest<T> extends Mock implements Request<T> {}
 
 class MockEventObserver extends Mock implements EventObserver {}
 
+class CallbackMock extends Mock {
+  void call();
+}
+
 class MockRequestHandler<Res, Req extends Request<Res>> extends Mock
     implements RequestHandler<Res, Req> {}
 
