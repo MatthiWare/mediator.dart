@@ -54,63 +54,73 @@ class _ZipEventSubscriptionBuilder<R> extends EventSubscriptionBuilder<R> {
     required this.zipper,
   });
 
-  List<EventSubscription> _subscribeToEvents(EventHandler<R> handler) {
-    final lastValues = List<Object?>.filled(events.length, sentinel);
-    final emittedHandlersList = List<bool>.filled(events.length, false);
-
-    bool allHandlersEmitted = false;
-
-    void reset() {
-      allHandlersEmitted = false;
-      for (var i = 0; i < events.length; i++) {
-        lastValues[i] = sentinel;
-        emittedHandlersList[i] = false;
-      }
-    }
-
-    Future<void> emit() async {
-      if (!allHandlersEmitted) {
-        allHandlersEmitted = !emittedHandlersList.any((x) => x == false);
-
-        if (!allHandlersEmitted) {
-          return;
-        }
-      }
-
-      final result = zipper(lastValues);
-
-      reset();
-
-      await handler.handle(result);
-    }
-
-    final subscriptions = events.indexed.map((e) {
-      final index = e.$1;
-      final eventBuilder = e.$2;
-
-      final internalSubscription = eventBuilder
-          .map((e) => e as dynamic)
-          .subscribeFunction((event) async {
-        emittedHandlersList[index] = true;
-        lastValues[index] = event;
-
-        await emit();
-      });
-
-      return internalSubscription;
-    }).toList(growable: false);
-
-    return subscriptions;
-  }
-
   @override
   EventSubscription subscribe(EventHandler<R> handler) {
-    final subscriptions = _subscribeToEvents(handler);
+    final zipHandler = _ZipEventHandler(handler, events, zipper);
+    final subscriptions = zipHandler.subscribe();
 
     return EventSubscription(() {
       for (final sub in subscriptions) {
         sub.cancel();
       }
     });
+  }
+}
+
+class _ZipEventHandler<R> implements EventHandler<R> {
+  final EventHandler<R> parent;
+  final List<EventSubscriptionBuilder<dynamic>> events;
+  final R Function(List<dynamic> events) zipper;
+  late final lastValues = List<Object?>.filled(events.length, sentinel);
+  late final emittedHandlersList = List<bool>.filled(events.length, false);
+
+  _ZipEventHandler(
+    this.parent,
+    this.events,
+    this.zipper,
+  );
+
+  @override
+  FutureOr<void> handle(R event) {
+    return parent.handle(event);
+  }
+
+  void reset() {
+    for (var i = 0; i < events.length; i++) {
+      lastValues[i] = sentinel;
+      emittedHandlersList[i] = false;
+    }
+  }
+
+  Future<void> handleEvent(dynamic event, int index) async {
+    emittedHandlersList[index] = true;
+    lastValues[index] = event;
+
+    final allHandlersEmitted = emittedHandlersList.every((emitted) => emitted);
+
+    if (!allHandlersEmitted) {
+      return;
+    }
+
+    final result = zipper(lastValues);
+
+    reset();
+
+    await handle(result);
+  }
+
+  List<EventSubscription> subscribe() {
+    final subscriptions = events.indexed.map((e) {
+      final index = e.$1;
+      final eventBuilder = e.$2;
+
+      final internalSubscription = eventBuilder.subscribeFunction(
+        (e) => handleEvent(e, index),
+      );
+
+      return internalSubscription;
+    }).toList(growable: false);
+
+    return subscriptions;
   }
 }
