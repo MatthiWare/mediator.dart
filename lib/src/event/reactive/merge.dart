@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:dart_mediator/event_manager.dart';
-import 'package:dart_mediator/src/event/reactive/utils/asserts.dart';
 
 EventSubscriptionBuilder<R> merge<R>(
   List<EventSubscriptionBuilder<R>> events,
@@ -13,11 +12,6 @@ EventSubscriptionBuilder<R> merge<R>(
       'Cannot be empty',
     );
   }
-
-  assert(() {
-    assertEventManagersTheSame(events);
-    return true;
-  }());
 
   final builder = _MergeEventSubscriptionBuilder<R>(
     events: events,

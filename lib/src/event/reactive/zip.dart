@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:dart_mediator/event_manager.dart';
-import 'package:dart_mediator/src/event/reactive/utils/asserts.dart';
 import 'package:dart_mediator/src/utils/sentinel.dart';
 
 EventSubscriptionBuilder<R> zip<R>(
@@ -15,11 +14,6 @@ EventSubscriptionBuilder<R> zip<R>(
       'Cannot be empty',
     );
   }
-
-  assert(() {
-    assertEventManagersTheSame(events);
-    return true;
-  }());
 
   final builder = _ZipEventSubscriptionBuilder<R>(
     zipper: zipper,
