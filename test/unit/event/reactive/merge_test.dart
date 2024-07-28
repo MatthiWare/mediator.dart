@@ -39,23 +39,21 @@ void main() {
       });
 
       test('it merges the values', () async {
-        final a = EventSubscriptionBuilder<EventA>.create(mockEventHandlerStore)
-            .map((e) => e.a);
-        final b = EventSubscriptionBuilder<EventB>.create(mockEventHandlerStore)
-            .map((e) => e.b);
-        final c = EventSubscriptionBuilder<EventC>.create(mockEventHandlerStore)
-            .map((e) => e.c);
+        final a = TestableEventSubscriptionBuilder<EventA>();
+        final b = TestableEventSubscriptionBuilder<EventB>();
+        final c = TestableEventSubscriptionBuilder<EventC>();
 
         final values = <int>[];
 
-        merge([a, b, c]).subscribeFunction((value) => values.add(value));
+        merge([
+          a.map((e) => e.a),
+          b.map((e) => e.b),
+          c.map((e) => e.c),
+        ]).subscribeFunction((value) => values.add(value));
 
-        final aHandler =
-            getRegisteredEventHandler<EventA>(mockEventHandlerStore);
-        final bHandler =
-            getRegisteredEventHandler<EventB>(mockEventHandlerStore);
-        final cHandler =
-            getRegisteredEventHandler<EventC>(mockEventHandlerStore);
+        final aHandler = a.handler;
+        final bHandler = b.handler;
+        final cHandler = c.handler;
 
         await aHandler.handle(EventA(1));
         await bHandler.handle(EventB(2));

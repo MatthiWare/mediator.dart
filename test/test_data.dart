@@ -139,3 +139,57 @@ class EventC implements DomainEvent {
   @override
   String toString() => 'EventC(c: $c)';
 }
+
+class EventD implements DomainEvent {
+  final int d;
+
+  EventD(this.d);
+
+  @override
+  String toString() => 'EventD(d: $d)';
+}
+
+class EventE implements DomainEvent {
+  final int e;
+
+  EventE(this.e);
+
+  @override
+  String toString() => 'EventE(e: $e)';
+}
+
+class EventF implements DomainEvent {
+  final int f;
+
+  EventF(this.f);
+
+  @override
+  String toString() => 'EventF(f: $f)';
+}
+
+class EventG implements DomainEvent {
+  final int g;
+
+  EventG(this.g);
+
+  @override
+  String toString() => 'EventG(g: $g)';
+}
+
+class EventH implements DomainEvent {
+  final int h;
+
+  EventH(this.h);
+
+  @override
+  String toString() => 'EventH(h: $h)';
+}
+
+class EventI implements DomainEvent {
+  final int i;
+
+  EventI(this.i);
+
+  @override
+  String toString() => 'EventI(i: $i)';
+}

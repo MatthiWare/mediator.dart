@@ -10,3 +10,13 @@ EventHandler<T> getRegisteredEventHandler<T>(MockEventHandlerStore store) {
 
   return captureResult.captured.first as EventHandler<T>;
 }
+
+class TestableEventSubscriptionBuilder<T> extends EventSubscriptionBuilder<T> {
+  late final EventHandler<T> handler;
+
+  @override
+  EventSubscription subscribe(EventHandler<T> handler) {
+    this.handler = handler;
+    return MockEventSubscription();
+  }
+}
