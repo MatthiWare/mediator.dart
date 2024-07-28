@@ -3,6 +3,25 @@ import 'dart:async';
 import 'package:dart_mediator/event_manager.dart';
 import 'package:dart_mediator/src/utils/sentinel.dart';
 
+/// Combines the latest items emitted by the given [events] into a single
+/// [EventHandler] using the [combinator] function.
+///
+/// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+///
+/// Consider using the typed version [combineLatest2] - [combineLatest9].
+///
+/// ### Example
+///
+/// ```dart
+/// combineLatest(
+///  [
+///    eventManager.on<EventA>(), // emits ['a']
+///    eventManager.on<EventB>(), // emits ['b']
+///    eventManager.on<EventC>(), // emits ['c', 'C']
+///  ],
+///  (values) => values.join(' '),
+/// ).subscribeFunction(print); // prints ['a b c', 'a b C']
+/// ```
 EventSubscriptionBuilder<R> combineLatest<R>(
   List<EventSubscriptionBuilder<dynamic>> events,
   R Function(List<dynamic> events) combinator,
@@ -23,6 +42,10 @@ EventSubscriptionBuilder<R> combineLatest<R>(
   return builder;
 }
 
+/// Combines the latest values of each provided event using the [combinator]
+/// into a single output [EventHandler].
+///
+/// See [combineLatest].
 EventSubscriptionBuilder<R> combineLatest2<R, A, B>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -39,6 +62,10 @@ EventSubscriptionBuilder<R> combineLatest2<R, A, B>(
   );
 }
 
+/// Combines the latest values of each provided event using the [combinator]
+/// into a single output [EventHandler].
+///
+/// See [combineLatest].
 EventSubscriptionBuilder<R> combineLatest3<R, A, B, C>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -57,6 +84,10 @@ EventSubscriptionBuilder<R> combineLatest3<R, A, B, C>(
   );
 }
 
+/// Combines the latest values of each provided event using the [combinator]
+/// into a single output [EventHandler].
+///
+/// See [combineLatest].
 EventSubscriptionBuilder<R> combineLatest4<R, A, B, C, D>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -77,6 +108,10 @@ EventSubscriptionBuilder<R> combineLatest4<R, A, B, C, D>(
   );
 }
 
+/// Combines the latest values of each provided event using the [combinator]
+/// into a single output [EventHandler].
+///
+/// See [combineLatest].
 EventSubscriptionBuilder<R> combineLatest5<R, A, B, C, D, E>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -99,6 +134,10 @@ EventSubscriptionBuilder<R> combineLatest5<R, A, B, C, D, E>(
   );
 }
 
+/// Combines the latest values of each provided event using the [combinator]
+/// into a single output [EventHandler].
+///
+/// See [combineLatest].
 EventSubscriptionBuilder<R> combineLatest6<R, A, B, C, D, E, F>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -123,6 +162,10 @@ EventSubscriptionBuilder<R> combineLatest6<R, A, B, C, D, E, F>(
   );
 }
 
+/// Combines the latest values of each provided event using the [combinator]
+/// into a single output [EventHandler].
+///
+/// See [combineLatest].
 EventSubscriptionBuilder<R> combineLatest7<R, A, B, C, D, E, F, G>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -149,6 +192,10 @@ EventSubscriptionBuilder<R> combineLatest7<R, A, B, C, D, E, F, G>(
   );
 }
 
+/// Combines the latest values of each provided event using the [combinator]
+/// into a single output [EventHandler].
+///
+/// See [combineLatest].
 EventSubscriptionBuilder<R> combineLatest8<R, A, B, C, D, E, F, G, H>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -177,6 +224,10 @@ EventSubscriptionBuilder<R> combineLatest8<R, A, B, C, D, E, F, G, H>(
   );
 }
 
+/// Combines the latest values of each provided event using the [combinator]
+/// into a single output [EventHandler].
+///
+/// See [combineLatest].
 EventSubscriptionBuilder<R> combineLatest9<R, A, B, C, D, E, F, G, H, I>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,

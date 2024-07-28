@@ -2,6 +2,22 @@ import 'dart:async';
 
 import 'package:dart_mediator/event_manager.dart';
 
+/// Merges the items emitted by the given [events] into a single
+/// [EventHandler].
+///
+/// [Interactive marble diagram](http://rxmarbles.com/#merge)
+///
+/// ### Example
+///
+/// ```dart
+/// merge(
+///  [
+///    eventManager.on<EventA>().map((e) => e.value), // emits ['a']
+///    eventManager.on<EventB>().map((e) => e.value), // emits ['b']
+///    eventManager.on<EventC>().map((e) => e.value), // emits ['c']
+///  ],
+/// ).subscribeFunction(print); // prints 'a', 'b', 'c'
+/// ```
 EventSubscriptionBuilder<R> merge<R>(
   List<EventSubscriptionBuilder<R>> events,
 ) {

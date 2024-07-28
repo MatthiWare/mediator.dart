@@ -3,6 +3,25 @@ import 'dart:async';
 import 'package:dart_mediator/event_manager.dart';
 import 'package:dart_mediator/src/utils/sentinel.dart';
 
+/// Zips the items emitted by the given [events] into a single
+/// [EventHandler] using the [zipper] function.
+///
+/// [Interactive marble diagram](http://rxmarbles.com/#zip)
+///
+/// Consider using the typed version [zip2] - [zip9].
+///
+/// ### Example
+///
+/// ```dart
+/// zip(
+///  [
+///    eventManager.on<EventA>(), // emits ['a']
+///    eventManager.on<EventB>(), // emits ['b', 'B']
+///    eventManager.on<EventC>(), // emits ['c', 'C']
+///  ],
+///  (values) => values.join(' '),
+/// ).subscribeFunction(print); // prints 'a b c'
+/// ```
 EventSubscriptionBuilder<R> zip<R>(
   List<EventSubscriptionBuilder<dynamic>> events,
   R Function(List<dynamic> events) zipper,
@@ -23,6 +42,11 @@ EventSubscriptionBuilder<R> zip<R>(
   return builder;
 }
 
+/// Zips the values of each provided event using the [zipper]
+/// into a single output [EventHandler] when all handlers have emitted at
+/// each index.
+///
+/// See [zip].
 EventSubscriptionBuilder<R> zip2<R, A, B>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -39,6 +63,11 @@ EventSubscriptionBuilder<R> zip2<R, A, B>(
   );
 }
 
+/// Zips the values of each provided event using the [zipper]
+/// into a single output [EventHandler] when all handlers have emitted at
+/// each index.
+///
+/// See [zip].
 EventSubscriptionBuilder<R> zip3<R, A, B, C>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -57,6 +86,11 @@ EventSubscriptionBuilder<R> zip3<R, A, B, C>(
   );
 }
 
+/// Zips the values of each provided event using the [zipper]
+/// into a single output [EventHandler] when all handlers have emitted at
+/// each index.
+///
+/// See [zip].
 EventSubscriptionBuilder<R> zip4<R, A, B, C, D>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -77,6 +111,11 @@ EventSubscriptionBuilder<R> zip4<R, A, B, C, D>(
   );
 }
 
+/// Zips the values of each provided event using the [zipper]
+/// into a single output [EventHandler] when all handlers have emitted at
+/// each index.
+///
+/// See [zip].
 EventSubscriptionBuilder<R> zip5<R, A, B, C, D, E>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -99,6 +138,11 @@ EventSubscriptionBuilder<R> zip5<R, A, B, C, D, E>(
   );
 }
 
+/// Zips the values of each provided event using the [zipper]
+/// into a single output [EventHandler] when all handlers have emitted at
+/// each index.
+///
+/// See [zip].
 EventSubscriptionBuilder<R> zip6<R, A, B, C, D, E, F>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -123,6 +167,11 @@ EventSubscriptionBuilder<R> zip6<R, A, B, C, D, E, F>(
   );
 }
 
+/// Zips the values of each provided event using the [zipper]
+/// into a single output [EventHandler] when all handlers have emitted at
+/// each index.
+///
+/// See [zip].
 EventSubscriptionBuilder<R> zip7<R, A, B, C, D, E, F, G>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -149,6 +198,11 @@ EventSubscriptionBuilder<R> zip7<R, A, B, C, D, E, F, G>(
   );
 }
 
+/// Zips the values of each provided event using the [zipper]
+/// into a single output [EventHandler] when all handlers have emitted at
+/// each index.
+///
+/// See [zip].
 EventSubscriptionBuilder<R> zip8<R, A, B, C, D, E, F, G, H>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
@@ -177,6 +231,11 @@ EventSubscriptionBuilder<R> zip8<R, A, B, C, D, E, F, G, H>(
   );
 }
 
+/// Zips the values of each provided event using the [zipper]
+/// into a single output [EventHandler] when all handlers have emitted at
+/// each index.
+///
+/// See [zip].
 EventSubscriptionBuilder<R> zip9<R, A, B, C, D, E, F, G, H, I>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
