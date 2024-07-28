@@ -112,3 +112,30 @@ class GetDataQueryHandlerBehaviorSync
     }
   }
 }
+
+class EventA implements DomainEvent {
+  final int a;
+
+  EventA(this.a);
+
+  @override
+  String toString() => 'EventA(a: $a)';
+}
+
+class EventB implements DomainEvent {
+  final int b;
+
+  EventB(this.b);
+
+  @override
+  String toString() => 'EventB(b: $b)';
+}
+
+class EventC implements DomainEvent {
+  final int c;
+
+  EventC(this.c);
+
+  @override
+  String toString() => 'EventC(c: $c)';
+}
