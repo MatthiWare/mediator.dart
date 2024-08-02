@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:dart_mediator/event_manager.dart';
-import 'package:dart_mediator/src/utils/sentinel.dart';
 
 /// Zips the items emitted by the given [events] into a single
 /// [EventHandler] using the [zipper] function.
@@ -292,8 +292,9 @@ class _ZipEventHandler<R> implements EventHandler<R> {
   final EventHandler<R> parent;
   final List<EventSubscriptionBuilder<dynamic>> events;
   final R Function(List<dynamic> events) zipper;
-  late final lastValues = List<Object?>.filled(events.length, sentinel);
-  late final emittedHandlersList = List<bool>.filled(events.length, false);
+  late final values = <Queue<dynamic>>[
+    for (int i = 0; i < events.length; i++) Queue(),
+  ];
 
   _ZipEventHandler(
     this.parent,
@@ -306,26 +307,19 @@ class _ZipEventHandler<R> implements EventHandler<R> {
     return parent.handle(event);
   }
 
-  void reset() {
-    for (var i = 0; i < events.length; i++) {
-      lastValues[i] = sentinel;
-      emittedHandlersList[i] = false;
-    }
-  }
-
   Future<void> handleEvent(dynamic event, int index) async {
-    emittedHandlersList[index] = true;
-    lastValues[index] = event;
+    values[index].add(event);
 
-    final allHandlersEmitted = emittedHandlersList.every((emitted) => emitted);
+    final allHandlersEmitted = values.every((queue) => queue.isNotEmpty);
 
     if (!allHandlersEmitted) {
       return;
     }
 
-    final result = zipper(lastValues);
+    final lastValues =
+        values.map((e) => e.removeFirst()).toList(growable: false);
 
-    reset();
+    final result = zipper(lastValues);
 
     await handle(result);
   }

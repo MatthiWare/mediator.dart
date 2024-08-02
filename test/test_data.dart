@@ -193,3 +193,12 @@ class EventI implements DomainEvent {
   @override
   String toString() => 'EventI(i: $i)';
 }
+
+class EventS implements DomainEvent {
+  final String s;
+
+  EventS(this.s);
+
+  @override
+  String toString() => 'EventS(s: $s)';
+}

@@ -70,35 +70,33 @@ void main() {
 
       test('it zips the values', () async {
         final a = TestableEventSubscriptionBuilder<EventA>();
-        final b = TestableEventSubscriptionBuilder<EventB>();
-        final c = TestableEventSubscriptionBuilder<EventC>();
+        final s = TestableEventSubscriptionBuilder<EventS>();
 
         final values = <String>[];
 
         zip(
           [
             a.map((e) => e.a),
-            b.map((e) => e.b),
-            c.map((e) => e.c),
+            s.map((e) => e.s),
           ],
-          (events) => events.join(' '),
+          (events) => events.join(''),
         ).subscribeFunction((value) => values.add(value));
 
         final aHandler = a.handler;
-        final bHandler = b.handler;
-        final cHandler = c.handler;
+        final sHandler = s.handler;
 
         await aHandler.handle(EventA(1));
-        await bHandler.handle(EventB(2));
-        await cHandler.handle(EventC(3));
+        await aHandler.handle(EventA(2));
 
-        await aHandler.handle(EventA(10));
-        await aHandler.handle(EventA(20));
-        await bHandler.handle(EventB(10));
-        await bHandler.handle(EventB(20));
-        await cHandler.handle(EventC(30));
+        await sHandler.handle(EventS('A'));
+        await sHandler.handle(EventS('B'));
+        await sHandler.handle(EventS('C'));
+        await sHandler.handle(EventS('D'));
 
-        expect(values, ['1 2 3', '20 20 30']);
+        await aHandler.handle(EventA(3));
+        await aHandler.handle(EventA(4));
+
+        expect(values, ['1A', '2B', '3C', '4D']);
       });
 
       test('it cancels all underlying subscriptions', () {
