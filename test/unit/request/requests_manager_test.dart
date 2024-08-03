@@ -225,5 +225,38 @@ void main() {
         );
       });
     });
+
+    group('sendStream', () {
+      const output = '123';
+      late MockRequest<String> mockRequest;
+      late MockRequestHandler<String, MockRequest<String>> mockRequestHandler;
+
+      setUp(() {
+        mockRequest = MockRequest<String>();
+        mockRequestHandler = MockRequestHandler<String, MockRequest<String>>();
+      });
+
+      test('it handles the request', () async {
+        when(() => mockRequestHandler.handle(mockRequest)).thenReturn(output);
+
+        when(() => mockRequestHandlerStore.getHandlerFor(mockRequest))
+            .thenReturn(mockRequestHandler);
+
+        when(() => mockPipelineBehaviorStore.getPipelines(mockRequest))
+            .thenReturn({});
+
+        final inputStream = Stream.value(mockRequest);
+
+        final result = await requestsManager.sendStream(inputStream).toList();
+
+        verify(() => mockRequestHandler.handle(mockRequest));
+
+        expect(
+          result.first,
+          output,
+          reason: 'Should return the handler response',
+        );
+      });
+    });
   });
 }

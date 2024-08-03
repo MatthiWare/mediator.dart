@@ -122,3 +122,20 @@ extension RequestManagerExtensions on RequestManager {
     register(RequestHandler.factory(factory));
   }
 }
+
+extension RequestManagerStreamExtensions on RequestManager {
+  /// Sends a [requestStream] to a single [RequestHandler].
+  ///
+  /// Make sure the [RequestHandler] is [register]ed before calling this method.
+  ///
+  /// This request can be wrapped by [PipelineBehavior]'s see [pipeline].
+  ///
+  /// This will return [TResponse].
+  Stream<TResponse> sendStream<TResponse extends Object?>(
+    Stream<Request<TResponse>> requestStream,
+  ) async* {
+    await for (final request in requestStream) {
+      yield await send(request);
+    }
+  }
+}
