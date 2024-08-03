@@ -39,3 +39,5 @@ class MockEventSubscriptionBuilder<T> extends Mock
     implements EventSubscriptionBuilder<T> {}
 
 final throwsAssertionError = throwsA(const TypeMatcher<AssertionError>());
+
+final isEventSubscriptionBuilder = isA<EventSubscriptionBuilder>();

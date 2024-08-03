@@ -16,12 +16,10 @@ class _DistinctEventSubscriptionBuilder<T>
 }
 
 class _DistinctEventHandler<T> implements EventHandler<T> {
-  static final _sentinel = Object();
-
   final EventHandler<T> parent;
   final bool Function(T previous, T next) equals;
 
-  Object? _previous = _sentinel;
+  Object? _previous = sentinel;
 
   _DistinctEventHandler({
     required this.parent,
@@ -30,7 +28,7 @@ class _DistinctEventHandler<T> implements EventHandler<T> {
 
   @override
   FutureOr<void> handle(T event) {
-    if (identical(_previous, _sentinel)) {
+    if (identical(_previous, sentinel)) {
       _previous = event;
       // Skip first event.
       return parent.handle(event);

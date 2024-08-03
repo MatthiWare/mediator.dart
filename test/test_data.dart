@@ -112,3 +112,93 @@ class GetDataQueryHandlerBehaviorSync
     }
   }
 }
+
+class EventA implements DomainEvent {
+  final int a;
+
+  EventA(this.a);
+
+  @override
+  String toString() => 'EventA(a: $a)';
+}
+
+class EventB implements DomainEvent {
+  final int b;
+
+  EventB(this.b);
+
+  @override
+  String toString() => 'EventB(b: $b)';
+}
+
+class EventC implements DomainEvent {
+  final int c;
+
+  EventC(this.c);
+
+  @override
+  String toString() => 'EventC(c: $c)';
+}
+
+class EventD implements DomainEvent {
+  final int d;
+
+  EventD(this.d);
+
+  @override
+  String toString() => 'EventD(d: $d)';
+}
+
+class EventE implements DomainEvent {
+  final int e;
+
+  EventE(this.e);
+
+  @override
+  String toString() => 'EventE(e: $e)';
+}
+
+class EventF implements DomainEvent {
+  final int f;
+
+  EventF(this.f);
+
+  @override
+  String toString() => 'EventF(f: $f)';
+}
+
+class EventG implements DomainEvent {
+  final int g;
+
+  EventG(this.g);
+
+  @override
+  String toString() => 'EventG(g: $g)';
+}
+
+class EventH implements DomainEvent {
+  final int h;
+
+  EventH(this.h);
+
+  @override
+  String toString() => 'EventH(h: $h)';
+}
+
+class EventI implements DomainEvent {
+  final int i;
+
+  EventI(this.i);
+
+  @override
+  String toString() => 'EventI(i: $i)';
+}
+
+class EventS implements DomainEvent {
+  final String s;
+
+  EventS(this.s);
+
+  @override
+  String toString() => 'EventS(s: $s)';
+}
