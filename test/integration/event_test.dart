@@ -147,6 +147,22 @@ void main() {
         expect(handler3, expected);
         expect(eventHandler.events, expected);
       });
+
+      test('it uses instance event type to dispatch', () async {
+        bool addedEventHandled = false;
+
+        mediator.events
+            .on<_Added>()
+            .subscribeFunction((e) => addedEventHandled = true);
+
+        await mediator.events.dispatch(const _BaseEvent.added());
+
+        expect(
+          addedEventHandled,
+          isTrue,
+          reason: 'Instance type should be used to dispatch events',
+        );
+      });
     });
   });
 }
@@ -160,4 +176,12 @@ class _CollectingEventSubscriber implements EventHandler<DomainIntEvent> {
       events.add(event.count);
     }
   }
+}
+
+sealed class _BaseEvent implements DomainEvent {
+  const factory _BaseEvent.added() = _Added;
+}
+
+final class _Added implements _BaseEvent {
+  const _Added();
 }
