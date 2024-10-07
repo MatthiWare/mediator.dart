@@ -37,9 +37,32 @@ Future<void> main() async {
 }
 ```
 
+## Sending Commands
+
+A command can only have one handler and doesn't return a value.
+
+```dart
+class MyCommand implements Command {}
+
+class MyCommandHandler implements CommandHandler<MyCommand> {
+  @override
+  FutureOr<void> handle(MyCommand request) {
+    // Do something
+  }
+}
+
+Future<void> main() async {
+  final mediator = Mediator.create();
+
+  mediator.requests.register(MyCommandHandler());
+
+  await mediator.requests.send(MyCommand());
+}
+```
+
 ## Sending Requests
 
-A request can only have one handler.
+A request can only have one handler and returns a value.
 
 ```dart
 import 'package:dart_mediator/mediator.dart';
