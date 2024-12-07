@@ -1,4 +1,3 @@
-import 'package:dart_mediator/src/event/event.dart';
 import 'package:dart_mediator/src/event/handler/event_handler.dart';
 import 'package:dart_mediator/src/event/dispatch/concurrent_strategy.dart';
 import 'package:dart_mediator/src/event/dispatch/sequential_strategy.dart';
@@ -18,7 +17,7 @@ abstract interface class DispatchStrategy {
 
   /// Executes the given strategy by applying the [event] to the given
   /// [handlers].
-  Future<void> execute<TEvent extends DomainEvent>(
+  Future<void> execute<TEvent>(
     Set<EventHandler<TEvent>> handlers,
     TEvent event,
     List<EventObserver> observers,

@@ -57,7 +57,15 @@ class EventManager {
     TEvent event, [
     DispatchStrategy? dispatchStrategy,
   ]) async {
-    final handlers = _eventHandlerStore.getHandlersFor<TEvent>();
+    late final eventRuntimeType = event.runtimeType;
+
+    final handlers = {
+      // Add handlers for TEvent.
+      ..._eventHandlerStore.getHandlersFor(TEvent),
+      // If a base type was used, add handlers for the runtime type.
+      if (eventRuntimeType != TEvent)
+        ..._eventHandlerStore.getHandlersFor(eventRuntimeType)
+    };
 
     for (final observer in _observers) {
       observer.onDispatch(event, handlers);

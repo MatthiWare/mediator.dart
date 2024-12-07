@@ -7,7 +7,7 @@ class EventHandlerStore {
 
   /// Registers the [handler] to a given [TEvent].
   void register<TEvent>(EventHandler<TEvent> handler) {
-    final handlers = _getHandlersFor<TEvent>();
+    final handlers = _getHandlersFor(TEvent);
 
     assert(
       !handlers.contains(handler),
@@ -15,7 +15,7 @@ class EventHandlerStore {
     );
 
     // When the store is being modified, create a new copy.
-    _handlers[TEvent] = <EventHandler<TEvent>>{
+    _handlers[TEvent] = <EventHandler>{
       ...handlers,
       handler,
     };
@@ -23,7 +23,7 @@ class EventHandlerStore {
 
   /// Unregisters the given [handler].
   void unregister<TEvent>(EventHandler<TEvent> handler) {
-    final handlers = _getHandlersFor<TEvent>();
+    final handlers = _getHandlersFor(TEvent);
 
     assert(
       handlers.contains(handler),
@@ -36,18 +36,18 @@ class EventHandlerStore {
     _handlers[TEvent] = update;
   }
 
-  /// Returns all registered [EventHandler]'s for [TEvent].
-  Set<EventHandler<TEvent>> getHandlersFor<TEvent>() {
-    final handlers = _getHandlersFor<TEvent>();
+  /// Returns all registered [EventHandler]'s for [eventType].
+  Set<EventHandler> getHandlersFor(Type eventType) {
+    final handlers = _getHandlersFor(eventType);
 
     return UnmodifiableSetView(handlers);
   }
 
-  Set<EventHandler<TEvent>> _getHandlersFor<TEvent>() {
+  Set<EventHandler> _getHandlersFor(Type eventType) {
     final handlers = _handlers.putIfAbsent(
-      TEvent,
-      () => <EventHandler<TEvent>>{},
-    ) as Set<EventHandler<TEvent>>;
+      eventType,
+      () => <EventHandler>{},
+    );
 
     return handlers;
   }

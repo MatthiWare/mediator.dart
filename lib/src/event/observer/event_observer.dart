@@ -7,22 +7,22 @@ abstract interface class EventObserver {
   /// When the [event] is dispatched.
   ///
   /// [handlers] will be executed based on the [DispatchStrategy].
-  void onDispatch<TEvent extends DomainEvent>(
+  void onDispatch<TEvent>(
     TEvent event,
-    Set<EventHandler<TEvent>> handlers,
+    Set<EventHandler> handlers,
   );
 
   /// When the [event] is handled by the [handler].
-  void onHandled<TEvent extends DomainEvent>(
+  void onHandled<TEvent>(
     TEvent event,
-    EventHandler<TEvent> handler,
+    EventHandler handler,
   );
 
   /// When the [event] is failed by the [handler] the [error] contains the
   /// exception object.
-  void onError<TEvent extends DomainEvent>(
+  void onError<TEvent>(
     TEvent event,
-    EventHandler<TEvent> handler,
+    EventHandler handler,
     Object error,
     StackTrace stackTrace,
   );

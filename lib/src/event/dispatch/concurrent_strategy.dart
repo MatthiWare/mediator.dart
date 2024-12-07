@@ -1,5 +1,4 @@
 import 'package:dart_mediator/src/event/dispatch/dispatch_strategy.dart';
-import 'package:dart_mediator/src/event/event.dart';
 import 'package:dart_mediator/src/event/handler/event_handler.dart';
 import 'package:dart_mediator/src/event/observer/event_observer.dart';
 
@@ -12,7 +11,7 @@ class ConcurrentDispatchStrategy implements DispatchStrategy {
   const ConcurrentDispatchStrategy();
 
   @override
-  Future<void> execute<TEvent extends DomainEvent>(
+  Future<void> execute<TEvent>(
     Set<EventHandler<TEvent>> handlers,
     TEvent event,
     List<EventObserver> observers,

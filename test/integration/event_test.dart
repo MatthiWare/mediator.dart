@@ -147,8 +147,39 @@ void main() {
         expect(handler3, expected);
         expect(eventHandler.events, expected);
       });
+
+      test('it uses instance and compile event type to dispatch', () async {
+        late final bool concreteEventHandled;
+        late final bool baseEventHandled;
+
+        mediator.events
+            .on<BaseEvent>()
+            .subscribeFunction((e) => baseEventHandled = true);
+
+        mediator.events
+            .on<ConcreteEvent>()
+            .subscribeFunction((e) => concreteEventHandled = true);
+
+        await mediator.events.dispatchBaseEvent(const BaseEvent.concrete());
+
+        expect(
+          baseEventHandled,
+          isTrue,
+          reason: 'Compile type should be used to dispatch events',
+        );
+
+        expect(
+          concreteEventHandled,
+          isTrue,
+          reason: 'Instance type should be used to dispatch events',
+        );
+      });
     });
   });
+}
+
+extension _BaseEventExtension on EventManager {
+  Future<void> dispatchBaseEvent(BaseEvent event) => dispatch(event);
 }
 
 class _CollectingEventSubscriber implements EventHandler<DomainIntEvent> {

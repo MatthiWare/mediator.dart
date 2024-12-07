@@ -220,9 +220,9 @@ class InventoryAdjustedEventHandler
 
 class LoggingEventObserver implements EventObserver {
   @override
-  void onDispatch<TEvent extends DomainEvent>(
+  void onDispatch<TEvent>(
     TEvent event,
-    Set<EventHandler<TEvent>> handlers,
+    Set<EventHandler> handlers,
   ) {
     print(
       '$LoggingEventObserver: onDispatch $event with ${handlers.length} handlers',
@@ -230,9 +230,9 @@ class LoggingEventObserver implements EventObserver {
   }
 
   @override
-  void onError<TEvent extends DomainEvent>(
+  void onError<TEvent>(
     TEvent event,
-    EventHandler<TEvent> handler,
+    EventHandler handler,
     Object error,
     StackTrace stackTrace,
   ) {
@@ -241,9 +241,9 @@ class LoggingEventObserver implements EventObserver {
   }
 
   @override
-  void onHandled<TEvent extends DomainEvent>(
+  void onHandled<TEvent>(
     TEvent event,
-    EventHandler<TEvent> handler,
+    EventHandler handler,
   ) {
     print('$LoggingEventObserver: onHandled $event -> ${handler.runtimeType}');
   }
