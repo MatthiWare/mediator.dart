@@ -2,6 +2,7 @@ import 'package:dart_mediator/src/event/handler/event_handler_store.dart';
 import 'package:test/test.dart';
 
 import '../../../mocks.dart';
+import '../../../test_data.dart';
 
 void main() {
   group('EventHandlerStore', () {
@@ -57,13 +58,20 @@ void main() {
 
     group('getHandlersFor{TEvent}', () {
       test('it returns the registered handlers', () {
-        final handler = MockEventHandler<int>();
+        final baseHandler = MockEventHandler<BaseEvent>();
+        final concreteHandler = MockEventHandler<ConcreteEvent>();
 
-        eventHandlerStore.register(handler);
+        eventHandlerStore.register(baseHandler);
+        eventHandlerStore.register(concreteHandler);
 
         expect(
-          eventHandlerStore.getHandlersFor<int>(),
-          {handler},
+          eventHandlerStore.getHandlersFor(BaseEvent),
+          {baseHandler},
+        );
+
+        expect(
+          eventHandlerStore.getHandlersFor(ConcreteEvent),
+          {concreteHandler},
         );
       });
     });

@@ -202,3 +202,11 @@ class EventS implements DomainEvent {
   @override
   String toString() => 'EventS(s: $s)';
 }
+
+class BaseEvent implements DomainEvent {
+  factory BaseEvent.concrete() = ConcreteEvent;
+}
+
+class ConcreteEvent implements BaseEvent {
+  ConcreteEvent();
+}
