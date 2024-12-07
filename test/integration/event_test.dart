@@ -148,23 +148,38 @@ void main() {
         expect(eventHandler.events, expected);
       });
 
-      test('it uses instance event type to dispatch', () async {
-        bool addedEventHandled = false;
+      test('it uses instance and compile event type to dispatch', () async {
+        late final bool concreteEventHandled;
+        late final bool baseEventHandled;
 
         mediator.events
-            .on<_Added>()
-            .subscribeFunction((e) => addedEventHandled = true);
+            .on<BaseEvent>()
+            .subscribeFunction((e) => baseEventHandled = true);
 
-        await mediator.events.dispatch(const _BaseEvent.added());
+        mediator.events
+            .on<ConcreteEvent>()
+            .subscribeFunction((e) => concreteEventHandled = true);
+
+        await mediator.events.dispatchBaseEvent(const BaseEvent.concrete());
 
         expect(
-          addedEventHandled,
+          baseEventHandled,
+          isTrue,
+          reason: 'Compile type should be used to dispatch events',
+        );
+
+        expect(
+          concreteEventHandled,
           isTrue,
           reason: 'Instance type should be used to dispatch events',
         );
       });
     });
   });
+}
+
+extension _BaseEventExtension on EventManager {
+  Future<void> dispatchBaseEvent(BaseEvent event) => dispatch(event);
 }
 
 class _CollectingEventSubscriber implements EventHandler<DomainIntEvent> {
@@ -176,12 +191,4 @@ class _CollectingEventSubscriber implements EventHandler<DomainIntEvent> {
       events.add(event.count);
     }
   }
-}
-
-sealed class _BaseEvent implements DomainEvent {
-  const factory _BaseEvent.added() = _Added;
-}
-
-final class _Added implements _BaseEvent {
-  const _Added();
 }

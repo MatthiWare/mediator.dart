@@ -204,9 +204,9 @@ class EventS implements DomainEvent {
 }
 
 class BaseEvent implements DomainEvent {
-  factory BaseEvent.concrete() = ConcreteEvent;
+  const factory BaseEvent.concrete() = ConcreteEvent;
 }
 
 class ConcreteEvent implements BaseEvent {
-  ConcreteEvent();
+  const ConcreteEvent();
 }
