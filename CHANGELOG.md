@@ -1,3 +1,9 @@
+## 0.3.2
+
+- Add `combineLatest`, `merge` and `zip` event extension methods (#20)
+- Add `sendStream` method to `RequestManager` (#21)
+- Add more cancellation functionality (#19)
+
 ## 0.3.1
 
 - Avoid concurrent modification errors (#14)
