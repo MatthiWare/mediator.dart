@@ -2,7 +2,7 @@ name: dart_mediator
 description: >
   A simple yet highly configurable Mediator implementation
   that allows sending requests and publishing events.
-version: 0.3.2
+version: 0.4.0
 repository: https://github.com/MatthiWare/mediator.dart
 issue_tracker: https://github.com/MatthiWare/mediator.dart/issues
 
