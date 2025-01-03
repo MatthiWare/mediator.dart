@@ -1,3 +1,7 @@
+## 0.4.0
+
+- Fix events not using correct type (#25)
+
 ## 0.3.2
 
 - Add `combineLatest`, `merge` and `zip` event extension methods (#20)
