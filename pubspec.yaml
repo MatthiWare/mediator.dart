@@ -8,7 +8,6 @@ issue_tracker: https://github.com/MatthiWare/mediator.dart/issues
 
 topics:
   - mediator
-  - mediatr
   - event
   - command
   - query
