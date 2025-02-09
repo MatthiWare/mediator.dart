@@ -111,9 +111,9 @@ class LoggingEventObserver implements EventObserver {
   /// Called when an event is dispatched but before any handlers have
   /// been called.
   @override
-  void onDispatch<TEvent extends DomainEvent>(
+  void onDispatch<TEvent>(
     TEvent event,
-    Set<EventHandler<TEvent>> handlers,
+    Set<EventHandler> handlers,
   ) {
     print(
       '[LoggingEventObserver] onDispatch "$event" with ${handlers.length} handlers',
@@ -122,9 +122,9 @@ class LoggingEventObserver implements EventObserver {
 
   /// Called when an event returned an error for a given handler.
   @override
-  void onError<TEvent extends DomainEvent>(
+  void onError<TEvent>(
     TEvent event,
-    EventHandler<TEvent> handler,
+    EventHandler handler,
     Object error,
     StackTrace stackTrace,
   ) {
@@ -133,9 +133,9 @@ class LoggingEventObserver implements EventObserver {
 
   /// Called when an event has been handled by a handler.
   @override
-  void onHandled<TEvent extends DomainEvent>(
+  void onHandled<TEvent>(
     TEvent event,
-    EventHandler<TEvent> handler,
+    EventHandler handler,
   ) {
     print('[LoggingEventObserver] onHandled $event -> $handler');
   }
@@ -159,12 +159,12 @@ A pipeline behavior can be used to add cross cutting concerns to requests/comman
 ```dart
 class LoggingBehavior implements PipelineBehavior {
   @override
-  Future handle(request, RequestHandlerDelegate next) async {
+  Future handle(dynamic request, RequestHandlerDelegate next) async {
     try {
-      print('[$LoggingBehavior] [${request.runtimeType}] Before');
+      print('[LoggingBehavior] [${request.runtimeType}] Before');
       return await next();
     } finally {
-      print('[$LoggingBehavior] [${request.runtimeType}] After');
+      print('[LoggingBehavior] [${request.runtimeType}] After');
     }
   }
 }
