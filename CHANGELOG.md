@@ -1,3 +1,7 @@
+## 0.4.1
+
+- Fix mistake in documentation.
+
 ## 0.4.0
 
 - Fix events not using correct type (#25)
