@@ -1,5 +1,5 @@
 /// Reactive extensions for events
-library reactive;
+library;
 
 export 'src/event/reactive/combine_latest.dart';
 export 'src/event/reactive/merge.dart';

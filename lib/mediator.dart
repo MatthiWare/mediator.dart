@@ -1,5 +1,5 @@
-// A predictable Mediator library.
-library mediator;
+/// A predictable Mediator library.
+library;
 
 export 'event_manager.dart';
 export 'request_manager.dart';

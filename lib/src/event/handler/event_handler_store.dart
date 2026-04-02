@@ -44,11 +44,6 @@ class EventHandlerStore {
   }
 
   Set<EventHandler> _getHandlersFor(Type eventType) {
-    final handlers = _handlers.putIfAbsent(
-      eventType,
-      () => <EventHandler>{},
-    );
-
-    return handlers;
+    return _handlers[eventType] ?? const <EventHandler>{};
   }
 }

@@ -1,4 +1,5 @@
-import 'package:dart_mediator/request_manager.dart';
+import 'package:dart_mediator/src/request/pipeline/pipeline_behavior.dart';
+import 'package:dart_mediator/src/request/request.dart';
 
 abstract interface class PipelineConfigurator {
   /// Registers the [behavior].

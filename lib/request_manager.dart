@@ -1,5 +1,5 @@
 /// A predictable CQRS manager.
-library request_manager;
+library;
 
 export 'src/request/request.dart';
 export 'src/request/request_manager.dart';

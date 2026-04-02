@@ -65,7 +65,7 @@ linter:
     - use_late_for_private_fields_and_variables
     - use_named_constants
     - use_rethrow_when_possible
-    - library_names
+    - unnecessary_library_name
     - library_prefixes
 # analyzer:
 #   exclude:

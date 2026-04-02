@@ -67,7 +67,7 @@ class RequestManager {
 
     FutureOr<TResponse> handle() => handler.handle(request);
 
-    final RequestHandlerDelegate executionPlan = pipelines.fold(
+    final RequestHandlerDelegate<TResponse> executionPlan = pipelines.fold(
       handle,
       (next, pipeline) {
         FutureOr<TResponse> pipelineHandler() async {

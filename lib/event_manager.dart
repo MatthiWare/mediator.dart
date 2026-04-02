@@ -1,5 +1,5 @@
 /// A predictable event manager library for domain events.
-library event_manager;
+library;
 
 export 'src/event/event.dart';
 export 'src/event/event_manager.dart';
