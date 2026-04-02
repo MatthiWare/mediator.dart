@@ -30,7 +30,7 @@ class _DistinctEventHandler<T> implements EventHandler<T> {
   FutureOr<void> handle(T event) {
     if (identical(_previous, sentinel)) {
       _previous = event;
-      // Skip first event.
+      // Always emit first event.
       return parent.handle(event);
     }
 
