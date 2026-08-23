@@ -59,6 +59,17 @@ void main() {
         );
       });
 
+      test('it rejects an invalid buffer size', () {
+        expect(
+          () => zip(
+            [a],
+            (events) {},
+            maxBufferSize: 0,
+          ),
+          throwsArgumentError,
+        );
+      });
+
       test('it returns a builder', () {
         final a = EventSubscriptionBuilder.create(mockEventHandlerStore);
         final b = EventSubscriptionBuilder.create(mockEventHandlerStore);
@@ -99,6 +110,24 @@ void main() {
         expect(values, ['1A', '2B', '3C', '4D']);
       });
 
+      test('it rejects values beyond the buffer limit', () async {
+        final a = TestableEventSubscriptionBuilder<EventA>();
+        final b = TestableEventSubscriptionBuilder<EventB>();
+
+        zip(
+          [a.map((e) => e.a), b.map((e) => e.b)],
+          (events) => events.join(''),
+          maxBufferSize: 1,
+        ).subscribeFunction((_) {});
+
+        await a.handler.handle(EventA(1));
+
+        await expectLater(
+          a.handler.handle(EventA(2)),
+          throwsStateError,
+        );
+      });
+
       test('it cancels all underlying subscriptions', () {
         final mockBuilder = MockEventSubscriptionBuilder<dynamic>();
         final mockSub = MockEventSubscription();
@@ -112,6 +141,28 @@ void main() {
         sub.cancel();
 
         verify(() => mockSub.cancel());
+      });
+
+      test('it rolls back subscriptions when setup fails', () {
+        final firstBuilder = MockEventSubscriptionBuilder<dynamic>();
+        final failingBuilder = MockEventSubscriptionBuilder<dynamic>();
+        final firstSub = MockEventSubscription();
+
+        when(() => firstBuilder.cast()).thenReturn(firstBuilder);
+        when(() => firstBuilder.subscribe(any())).thenReturn(firstSub);
+        when(() => failingBuilder.cast()).thenReturn(failingBuilder);
+        when(() => failingBuilder.subscribe(any()))
+            .thenThrow(StateError('setup failed'));
+
+        expect(
+          () => zip(
+            [firstBuilder, failingBuilder],
+            (events) {},
+          ).subscribeFunction((_) {}),
+          throwsStateError,
+        );
+
+        verify(() => firstSub.cancel()).called(1);
       });
     });
 

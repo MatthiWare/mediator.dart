@@ -313,30 +313,39 @@ class _CombineLatestEventHandler<T> implements EventHandler<T> {
       }
     }
 
-    final result = combinator(lastValues);
+    final result = combinator(List<dynamic>.unmodifiable(lastValues));
 
     await handle(result);
   }
 
   List<EventSubscription> subscribe() {
-    final subscriptions = events.indexed.map((e) {
-      final index = e.$1;
-      final eventBuilder = e.$2;
+    final subscriptions = <EventSubscription>[];
 
-      bool firstEvent = true;
+    try {
+      for (final e in events.indexed) {
+        final index = e.$1;
+        final eventBuilder = e.$2;
 
-      final internalSubscription =
-          eventBuilder.cast<dynamic>().subscribeFunction((event) async {
-        await handleEvent(event, index, firstEvent);
+        bool firstEvent = true;
 
-        if (firstEvent) {
-          firstEvent = false;
-        }
-      });
+        final internalSubscription =
+            eventBuilder.cast<dynamic>().subscribeFunction((event) async {
+          await handleEvent(event, index, firstEvent);
 
-      return internalSubscription;
-    }).toList(growable: false);
+          if (firstEvent) {
+            firstEvent = false;
+          }
+        });
 
-    return subscriptions;
+        subscriptions.add(internalSubscription);
+      }
+    } catch (_) {
+      for (final subscription in subscriptions) {
+        subscription.cancel();
+      }
+      rethrow;
+    }
+
+    return subscriptions.toList(growable: false);
   }
 }
