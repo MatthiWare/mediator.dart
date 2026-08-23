@@ -67,8 +67,10 @@ class EventManager {
         ..._eventHandlerStore.getHandlersFor(eventRuntimeType)
     };
 
+    final observerHandlers = Set<EventHandler>.unmodifiable(handlers);
+
     for (final observer in _observers) {
-      observer.onDispatch(event, handlers);
+      observer.onDispatch(event, observerHandlers);
     }
 
     await (dispatchStrategy ?? _defaultDispatchStrategy)

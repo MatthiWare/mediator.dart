@@ -42,6 +42,26 @@ void main() {
         verify(() => observer.onHandled(event, handler));
       });
 
+      test('it does not report onHandled failures as handler errors', () async {
+        final handler = MockEventHandler<DomainIntEvent>();
+        final observer = MockEventObserver();
+        final handlers = {handler};
+        const event = DomainIntEvent(123);
+
+        when(() => handler.handle(event)).thenAnswer((_) => Future.value());
+        when(() => observer.onHandled(event, handler))
+            .thenThrow(StateError('observer failed'));
+
+        await expectLater(
+          () => strategy.execute(handlers, event, [observer]),
+          throwsStateError,
+        );
+
+        verifyNever(
+          () => observer.onError(event, handler, any(), any<StackTrace>()),
+        );
+      });
+
       test('it calls onError on observer', () async {
         final handler = MockEventHandler<DomainIntEvent>();
         final observer = MockEventObserver();

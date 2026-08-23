@@ -71,6 +71,36 @@ void main() {
         verify(() => mockEventObserver.onDispatch(event, handlers));
       });
 
+      test('it gives observers an immutable handler snapshot', () async {
+        final handler = MockEventHandler<DomainIntEvent>();
+        final Set<EventHandler> handlers = {handler};
+
+        when(() => mockEventHandlerStore.getHandlersFor(DomainIntEvent))
+            .thenReturn(handlers);
+
+        when(() => mockEventObserver.onDispatch(any(), any()))
+            .thenAnswer((invocation) {
+          final observedHandlers =
+              invocation.positionalArguments[1] as Set<EventHandler>;
+
+          expect(
+            () => observedHandlers.clear(),
+            throwsA(isA<UnsupportedError>()),
+          );
+        });
+
+        when(() => mockDispatchStrategy.execute(any(), any(), any()))
+            .thenAnswer((_) => Future.value());
+
+        await eventManager.dispatch(event);
+
+        verify(() => mockDispatchStrategy.execute(
+              handlers,
+              event,
+              [mockEventObserver],
+            ));
+      });
+
       test('it gets both runtime and compile time handlers', () async {
         final Set<MockEventHandler> baseHandlers = {
           MockEventHandler<BaseEvent>()
