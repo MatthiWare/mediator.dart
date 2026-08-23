@@ -20,10 +20,21 @@ class RequestHandlerStore {
   void unregister<TResponse, TRequest extends Request<TResponse>>(
     RequestHandler<TResponse, TRequest> handler,
   ) {
+    final registeredHandler = _handlers[TRequest];
+
     assert(
-      _handlers.containsKey(TRequest),
+      registeredHandler != null,
       'unregister<$TResponse, $TRequest> was called for a handler that was never subscribed to',
     );
+
+    assert(
+      registeredHandler == handler,
+      'unregister<$TResponse, $TRequest> was called for a handler that is not registered',
+    );
+
+    if (registeredHandler != handler) {
+      return;
+    }
 
     _handlers.remove(TRequest);
   }

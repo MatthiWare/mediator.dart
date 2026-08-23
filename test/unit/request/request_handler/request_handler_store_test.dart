@@ -51,6 +51,23 @@ void main() {
           throwsAssertionError,
         );
       });
+
+      test('it does not unregister a different handler', () {
+        final registeredHandler = MockRequestHandler<int, MockRequest<int>>();
+        final differentHandler = MockRequestHandler<int, MockRequest<int>>();
+
+        requestHandlerStore.register(registeredHandler);
+
+        expect(
+          () => requestHandlerStore.unregister(differentHandler),
+          throwsAssertionError,
+        );
+
+        expect(
+          requestHandlerStore.getHandlerFor(MockRequest<int>()),
+          registeredHandler,
+        );
+      });
     });
 
     group('getHandlerFor{TResponse, TRequest}', () {
