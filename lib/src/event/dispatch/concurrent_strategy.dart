@@ -19,14 +19,15 @@ class ConcurrentDispatchStrategy implements DispatchStrategy {
     Future<void> handleEvent(EventHandler<TEvent> handler) async {
       try {
         await handler.handle(event);
-        for (final observer in observers) {
-          observer.onHandled<TEvent>(event, handler);
-        }
       } catch (e, stackTrace) {
         for (final observer in observers) {
           observer.onError(event, handler, e, stackTrace);
         }
         rethrow;
+      }
+
+      for (final observer in observers) {
+        observer.onHandled<TEvent>(event, handler);
       }
     }
 
