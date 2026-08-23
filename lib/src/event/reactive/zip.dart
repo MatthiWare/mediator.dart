@@ -22,10 +22,15 @@ import 'package:dart_mediator/event_manager.dart';
 ///  (values) => values.join(' '),
 /// ).subscribeFunction(print); // prints 'a b c'
 /// ```
+///
+/// Values emitted by a source before the other sources are buffered. Set
+/// [maxBufferSize] to limit the number of buffered values per source. When the
+/// limit is reached, the source event fails with a [StateError].
 EventSubscriptionBuilder<R> zip<R>(
   List<EventSubscriptionBuilder<dynamic>> events,
-  R Function(List<dynamic> events) zipper,
-) {
+  R Function(List<dynamic> events) zipper, {
+  int? maxBufferSize,
+}) {
   if (events.isEmpty) {
     throw ArgumentError.value(
       events,
@@ -34,9 +39,18 @@ EventSubscriptionBuilder<R> zip<R>(
     );
   }
 
+  if (maxBufferSize != null && maxBufferSize < 1) {
+    throw ArgumentError.value(
+      maxBufferSize,
+      'maxBufferSize',
+      'Must be greater than zero',
+    );
+  }
+
   final builder = _ZipEventSubscriptionBuilder<R>(
     zipper: zipper,
     events: events,
+    maxBufferSize: maxBufferSize,
   );
 
   return builder;
@@ -50,8 +64,9 @@ EventSubscriptionBuilder<R> zip<R>(
 EventSubscriptionBuilder<R> zip2<R, A, B>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
-  R Function(A a, B b) zipper,
-) {
+  R Function(A a, B b) zipper, {
+  int? maxBufferSize,
+}) {
   return zip(
     [eventA, eventB],
     (values) {
@@ -60,6 +75,7 @@ EventSubscriptionBuilder<R> zip2<R, A, B>(
 
       return zipper(a, b);
     },
+    maxBufferSize: maxBufferSize,
   );
 }
 
@@ -72,8 +88,9 @@ EventSubscriptionBuilder<R> zip3<R, A, B, C>(
   EventSubscriptionBuilder<A> eventA,
   EventSubscriptionBuilder<B> eventB,
   EventSubscriptionBuilder<C> eventC,
-  R Function(A a, B b, C c) zipper,
-) {
+  R Function(A a, B b, C c) zipper, {
+  int? maxBufferSize,
+}) {
   return zip(
     [eventA, eventB, eventC],
     (values) {
@@ -83,6 +100,7 @@ EventSubscriptionBuilder<R> zip3<R, A, B, C>(
 
       return zipper(a, b, c);
     },
+    maxBufferSize: maxBufferSize,
   );
 }
 
@@ -96,8 +114,9 @@ EventSubscriptionBuilder<R> zip4<R, A, B, C, D>(
   EventSubscriptionBuilder<B> eventB,
   EventSubscriptionBuilder<C> eventC,
   EventSubscriptionBuilder<D> eventD,
-  R Function(A a, B b, C c, D d) zipper,
-) {
+  R Function(A a, B b, C c, D d) zipper, {
+  int? maxBufferSize,
+}) {
   return zip(
     [eventA, eventB, eventC, eventD],
     (values) {
@@ -108,6 +127,7 @@ EventSubscriptionBuilder<R> zip4<R, A, B, C, D>(
 
       return zipper(a, b, c, d);
     },
+    maxBufferSize: maxBufferSize,
   );
 }
 
@@ -122,8 +142,9 @@ EventSubscriptionBuilder<R> zip5<R, A, B, C, D, E>(
   EventSubscriptionBuilder<C> eventC,
   EventSubscriptionBuilder<D> eventD,
   EventSubscriptionBuilder<E> eventE,
-  R Function(A a, B b, C c, D d, E e) zipper,
-) {
+  R Function(A a, B b, C c, D d, E e) zipper, {
+  int? maxBufferSize,
+}) {
   return zip(
     [eventA, eventB, eventC, eventD, eventE],
     (values) {
@@ -135,6 +156,7 @@ EventSubscriptionBuilder<R> zip5<R, A, B, C, D, E>(
 
       return zipper(a, b, c, d, e);
     },
+    maxBufferSize: maxBufferSize,
   );
 }
 
@@ -150,8 +172,9 @@ EventSubscriptionBuilder<R> zip6<R, A, B, C, D, E, F>(
   EventSubscriptionBuilder<D> eventD,
   EventSubscriptionBuilder<E> eventE,
   EventSubscriptionBuilder<F> eventF,
-  R Function(A a, B b, C c, D d, E e, F f) zipper,
-) {
+  R Function(A a, B b, C c, D d, E e, F f) zipper, {
+  int? maxBufferSize,
+}) {
   return zip(
     [eventA, eventB, eventC, eventD, eventE, eventF],
     (values) {
@@ -164,6 +187,7 @@ EventSubscriptionBuilder<R> zip6<R, A, B, C, D, E, F>(
 
       return zipper(a, b, c, d, e, f);
     },
+    maxBufferSize: maxBufferSize,
   );
 }
 
@@ -180,8 +204,9 @@ EventSubscriptionBuilder<R> zip7<R, A, B, C, D, E, F, G>(
   EventSubscriptionBuilder<E> eventE,
   EventSubscriptionBuilder<F> eventF,
   EventSubscriptionBuilder<G> eventG,
-  R Function(A a, B b, C c, D d, E e, F f, G g) zipper,
-) {
+  R Function(A a, B b, C c, D d, E e, F f, G g) zipper, {
+  int? maxBufferSize,
+}) {
   return zip(
     [eventA, eventB, eventC, eventD, eventE, eventF, eventG],
     (values) {
@@ -195,6 +220,7 @@ EventSubscriptionBuilder<R> zip7<R, A, B, C, D, E, F, G>(
 
       return zipper(a, b, c, d, e, f, g);
     },
+    maxBufferSize: maxBufferSize,
   );
 }
 
@@ -212,8 +238,9 @@ EventSubscriptionBuilder<R> zip8<R, A, B, C, D, E, F, G, H>(
   EventSubscriptionBuilder<F> eventF,
   EventSubscriptionBuilder<G> eventG,
   EventSubscriptionBuilder<H> eventH,
-  R Function(A a, B b, C c, D d, E e, F f, G g, H h) zipper,
-) {
+  R Function(A a, B b, C c, D d, E e, F f, G g, H h) zipper, {
+  int? maxBufferSize,
+}) {
   return zip(
     [eventA, eventB, eventC, eventD, eventE, eventF, eventG, eventH],
     (values) {
@@ -228,6 +255,7 @@ EventSubscriptionBuilder<R> zip8<R, A, B, C, D, E, F, G, H>(
 
       return zipper(a, b, c, d, e, f, g, h);
     },
+    maxBufferSize: maxBufferSize,
   );
 }
 
@@ -246,8 +274,9 @@ EventSubscriptionBuilder<R> zip9<R, A, B, C, D, E, F, G, H, I>(
   EventSubscriptionBuilder<G> eventG,
   EventSubscriptionBuilder<H> eventH,
   EventSubscriptionBuilder<I> eventI,
-  R Function(A a, B b, C c, D d, E e, F f, G g, H h, I i) zipper,
-) {
+  R Function(A a, B b, C c, D d, E e, F f, G g, H h, I i) zipper, {
+  int? maxBufferSize,
+}) {
   return zip(
     [eventA, eventB, eventC, eventD, eventE, eventF, eventG, eventH, eventI],
     (values) {
@@ -263,21 +292,29 @@ EventSubscriptionBuilder<R> zip9<R, A, B, C, D, E, F, G, H, I>(
 
       return zipper(a, b, c, d, e, f, g, h, i);
     },
+    maxBufferSize: maxBufferSize,
   );
 }
 
 class _ZipEventSubscriptionBuilder<R> extends EventSubscriptionBuilder<R> {
   final List<EventSubscriptionBuilder<dynamic>> events;
   final R Function(List<dynamic> events) zipper;
+  final int? maxBufferSize;
 
   _ZipEventSubscriptionBuilder({
     required this.events,
     required this.zipper,
+    required this.maxBufferSize,
   });
 
   @override
   EventSubscription subscribe(EventHandler<R> handler) {
-    final zipHandler = _ZipEventHandler(handler, events, zipper);
+    final zipHandler = _ZipEventHandler(
+      handler,
+      events,
+      zipper,
+      maxBufferSize,
+    );
     final subscriptions = zipHandler.subscribe();
 
     return EventSubscription(() {
@@ -292,6 +329,7 @@ class _ZipEventHandler<R> implements EventHandler<R> {
   final EventHandler<R> parent;
   final List<EventSubscriptionBuilder<dynamic>> events;
   final R Function(List<dynamic> events) zipper;
+  final int? maxBufferSize;
   late final values = <Queue<dynamic>>[
     for (int i = 0; i < events.length; i++) Queue(),
   ];
@@ -300,6 +338,7 @@ class _ZipEventHandler<R> implements EventHandler<R> {
     this.parent,
     this.events,
     this.zipper,
+    this.maxBufferSize,
   );
 
   @override
@@ -308,7 +347,16 @@ class _ZipEventHandler<R> implements EventHandler<R> {
   }
 
   Future<void> handleEvent(dynamic event, int index) async {
-    values[index].add(event);
+    final queue = values[index];
+
+    if (maxBufferSize != null && queue.length >= maxBufferSize!) {
+      throw StateError(
+        'zip buffer for source $index reached maxBufferSize of '
+        '$maxBufferSize',
+      );
+    }
+
+    queue.add(event);
 
     final allHandlersEmitted = values.every((queue) => queue.isNotEmpty);
 
@@ -325,17 +373,26 @@ class _ZipEventHandler<R> implements EventHandler<R> {
   }
 
   List<EventSubscription> subscribe() {
-    final subscriptions = events.indexed.map((e) {
-      final index = e.$1;
-      final eventBuilder = e.$2;
+    final subscriptions = <EventSubscription>[];
 
-      final internalSubscription = eventBuilder
-          .cast<dynamic>()
-          .subscribeFunction((e) => handleEvent(e, index));
+    try {
+      for (final e in events.indexed) {
+        final index = e.$1;
+        final eventBuilder = e.$2;
 
-      return internalSubscription;
-    }).toList(growable: false);
+        final internalSubscription = eventBuilder
+            .cast<dynamic>()
+            .subscribeFunction((e) => handleEvent(e, index));
 
-    return subscriptions;
+        subscriptions.add(internalSubscription);
+      }
+    } catch (_) {
+      for (final subscription in subscriptions) {
+        subscription.cancel();
+      }
+      rethrow;
+    }
+
+    return subscriptions.toList(growable: false);
   }
 }

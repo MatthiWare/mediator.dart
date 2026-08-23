@@ -104,6 +104,43 @@ void main() {
         );
       });
 
+      test('it provides an isolated immutable snapshot', () async {
+        final a = TestableEventSubscriptionBuilder<EventA>();
+        final b = TestableEventSubscriptionBuilder<EventB>();
+        final snapshots = <List<dynamic>>[];
+        var mutationFailed = false;
+
+        combineLatest(
+          [
+            a.map((e) => e.a),
+            b.map((e) => e.b),
+          ],
+          (events) {
+            snapshots.add(events);
+
+            if (snapshots.length == 1) {
+              try {
+                events[0] = 'mutated';
+              } on UnsupportedError {
+                mutationFailed = true;
+              }
+            }
+
+            return events.join(' ');
+          },
+        ).subscribeFunction((_) {});
+
+        await a.handler.handle(EventA(1));
+        await b.handler.handle(EventB(2));
+        await a.handler.handle(EventA(3));
+
+        expect(mutationFailed, isTrue);
+        expect(snapshots, [
+          [1, 2],
+          [3, 2],
+        ]);
+      });
+
       test('it cancels all underlying subscriptions', () {
         final mockBuilder = MockEventSubscriptionBuilder<dynamic>();
         final mockSub = MockEventSubscription();
@@ -118,6 +155,28 @@ void main() {
         sub.cancel();
 
         verify(() => mockSub.cancel());
+      });
+
+      test('it rolls back subscriptions when setup fails', () {
+        final firstBuilder = MockEventSubscriptionBuilder<dynamic>();
+        final failingBuilder = MockEventSubscriptionBuilder<dynamic>();
+        final firstSub = MockEventSubscription();
+
+        when(() => firstBuilder.cast()).thenReturn(firstBuilder);
+        when(() => firstBuilder.subscribe(any())).thenReturn(firstSub);
+        when(() => failingBuilder.cast()).thenReturn(failingBuilder);
+        when(() => failingBuilder.subscribe(any()))
+            .thenThrow(StateError('setup failed'));
+
+        expect(
+          () => combineLatest(
+            [firstBuilder, failingBuilder],
+            (events) {},
+          ).subscribeFunction((_) {}),
+          throwsStateError,
+        );
+
+        verify(() => firstSub.cancel()).called(1);
       });
     });
 
