@@ -1,3 +1,10 @@
+## Unreleased
+
+- Harden `zip` #42
+- Harden Event Observers #40
+- Prevent unregistering incorrect request handlers #39
+- Dependencies bumps
+
 ## 0.4.1
 
 - Fix mistake in documentation.
